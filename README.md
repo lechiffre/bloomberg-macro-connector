@@ -1,1 +1,1 @@
-# Bloomber GECO Connector
+# Bloomberg GECO Connector

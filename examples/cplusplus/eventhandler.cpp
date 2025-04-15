@@ -10,13 +10,11 @@ bool TickersEventHandler::processEvent(const Event& event, Session *session) {
                 Message msg = msgIter.message();
                 std::cout << "session_status: " << msg.messageType() << std::endl;
                 if (msg.messageType() == Name("SessionStarted")) {
-                    /*
                     Identity identity = session->createIdentity();
                     Service authService = session->getService("//blp//apiauth");
                     Request request = authService.createAuthorizationRequest();
                     request.set(Name("ApplicationId"), "example");
                     session->sendAuthorizationRequest(request, &identity);
-                    */
                     session->openServiceAsync("//blp/globalecoref", CorrelationId(99));
                 } else if (msg.messageType() == Name("SessionTerminated") ||
                            msg.messageType() == Name("SessionStartupFailure")) {

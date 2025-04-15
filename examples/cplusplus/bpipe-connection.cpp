@@ -42,13 +42,9 @@ BloombergLP::blpapi::Session* connectToBpipe() {
             rootCertPath.c_str()
         );
     sessionOptions.setTlsOptions(tlsOptions);
+    // sessionOptions.setClientMode(BloombergLP::blpapi::SessionOptions::ClientMode::SAPI);
     sessionOptions.setAutoRestartOnDisconnection(true);
     sessionOptions.setNumStartAttempts(3);
-    AuthOptions authOptions(AuthApplication("example"));
-    sessionOptions.setSessionIdentityOptions(authOptions);
-    // sessionOptions.setApplicationIdentityKey("example");
-    // std::cout << "application Id: " << sessionOptions.applicationIdentityKey() << std::endl;
-    std::cout << "Attempting to start session..." << std::endl;
     BloombergLP::blpapi::Session* session = new BloombergLP::blpapi::Session(sessionOptions, &eventHandler);
     if (!session->start()) {
         std::cerr << "Failed to start session" << std::endl;

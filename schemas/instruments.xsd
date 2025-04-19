@@ -1,0 +1,606 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ServiceDefinition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    name="apiinstr" version="1.7.0.0">
+    <service name="//blp/instruments" version="1.7.0.0">
+        <operation name="instrumentListRequest" serviceId="14892">
+            <request>Request</request>
+            <requestSelection>InstrumentListRequest</requestSelection>
+            <response>Response</response>
+            <responseSelection>InstrumentListResponse</responseSelection>
+            <responseSelection>ErrorResponse</responseSelection>
+        </operation>
+        <operation name="curveListRequest" serviceId="14892">
+            <request>Request</request>
+            <requestSelection>CurveListRequest</requestSelection>
+            <response>Response</response>
+            <responseSelection>CurveListResponse</responseSelection>
+            <responseSelection>ErrorResponse</responseSelection>
+        </operation>
+        <operation name="govtListRequest" serviceId="14892">
+            <request>Request</request>
+            <requestSelection>GovtListRequest</requestSelection>
+            <response>Response</response>
+            <responseSelection>GovtListResponse</responseSelection>
+            <responseSelection>ErrorResponse</responseSelection>
+        </operation>
+        <publisherSupportsRecap>false</publisherSupportsRecap>
+        <authoritativeSourceSupportsRecap>true</authoritativeSourceSupportsRecap>
+        <isInfrastructureService>false</isInfrastructureService>
+        <isMetered>false</isMetered>
+        <appendMtrId>false</appendMtrId>
+        <persistentLastValueCache>false</persistentLastValueCache>
+        <abArbitrationEnabled>false</abArbitrationEnabled>
+    </service>
+    <schema>
+        <sequenceType name="InstrumentListRequest">
+            <description>Instrument list request</description>
+            <element name="query" type="String">
+                <description>String with keywords</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="yellowKeyFilter" type="YellowKeyFilter">
+                <description>Yellow key filter</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="languageOverride" type="LanguageOverride">
+                <description>Language override</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="maxResults" type="Int32">
+                <description>Number of results requested</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="InstrumentListResponse">
+            <description>Instrument list response</description>
+            <element name="results" type="InstrumentRecord"
+                maxOccurs="unbounded">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="InstrumentRecord">
+            <description>Instrument record</description>
+            <element name="security" type="String">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="description" type="String">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="CurveListRequest">
+            <description>Instrument list request</description>
+            <element name="query" type="String">
+                <description>String with keywords</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="maxResults" type="Int32">
+                <description>Number of results requested; 0 if all available results should be provided.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="countryCode" type="String" minOccurs="0">
+                <description>Filter selecting only curves matching the two character country code.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="currencyCode" type="String" minOccurs="0">
+                <description>Filter selecting only curves matching the three character currency code.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="type" type="CurveCategoryEnum" minOccurs="0">
+                <description>Filter selecting only curves matching the type.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="subtype" type="CurveSubclassEnum" minOccurs="0">
+                <description>Filter selecting only curves matching the subtype.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="curveid" type="String" minOccurs="0">
+                <description>Filter selecting only the curve with the given curve ID.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="bbgid" type="String" minOccurs="0">
+                <description>Filter selecting only the curve with the given Bloomberg ID.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="CurveListResponse">
+            <description>Curve list response</description>
+            <element name="results" type="CurveRecord" maxOccurs="unbounded">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="CurveRecord">
+            <description>Curve record</description>
+            <element name="curve" type="String">
+                <description>Ticker of the curve.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="description" type="String">
+                <description>Description of the curve.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="country" type="String">
+                <description>The curve&apos;s two letter country code.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="currency" type="String">
+                <description>The curve&apos;s three letter currency code.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="curveid" type="String">
+                <description>Unique identifier of the curve.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="type" type="CurveCategoryEnum"
+                maxOccurs="unbounded">
+                <description>Type of the curve.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="subtype" type="CurveSubclassEnum"
+                maxOccurs="unbounded">
+                <description>Subtype of the curve.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="publisher" type="String">
+                <description>Publisher of the curve.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="bbgid" type="String">
+                <description>Bloomberg identifier of the curve.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="GovtListRequest">
+            <description>Govt list request</description>
+            <element name="query" type="String">
+                <description>String with keywords</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="ticker" type="String" minOccurs="0">
+                <description>Ticker filter</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="partialMatch" type="Boolean">
+                <description>If true do partial match, else do exact match</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="maxResults" type="Int32">
+                <description>Number of results requested</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="GovtListResponse">
+            <description>Govt list response</description>
+            <element name="results" type="GovtRecord" maxOccurs="unbounded">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="GovtRecord">
+            <description>Govt record</description>
+            <element name="parseky" type="String">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="name" type="String">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="ticker" type="String">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="ErrorResponse">
+            <description>seqErrorResponse</description>
+            <element name="description" type="String">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <choiceType name="Request">
+            <description>Request</description>
+            <element name="InstrumentListRequest"
+                type="InstrumentListRequest">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="CurveListRequest" type="CurveListRequest">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="GovtListRequest" type="GovtListRequest">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </choiceType>
+        <choiceType name="Response">
+            <description>Response</description>
+            <element name="InstrumentListResponse"
+                type="InstrumentListResponse">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="CurveListResponse" type="CurveListResponse">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="GovtListResponse" type="GovtListResponse">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="ErrorResponse" type="ErrorResponse">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </choiceType>
+        <enumerationType name="CurveCategoryEnum" type="String">
+            <description></description>
+            <enumerator name="INVALID">
+                <description></description>
+                <value>
+                    <String>INVALID</String>
+                </value>
+            </enumerator>
+            <enumerator name="UNASSIGNED">
+                <description></description>
+                <value>
+                    <String>UNASSIGNED</String>
+                </value>
+            </enumerator>
+            <enumerator name="IRS">
+                <description></description>
+                <value>
+                    <String>IRS</String>
+                </value>
+            </enumerator>
+            <enumerator name="GOVT">
+                <description></description>
+                <value>
+                    <String>GOVT</String>
+                </value>
+            </enumerator>
+            <enumerator name="AGENCY">
+                <description></description>
+                <value>
+                    <String>AGENCY</String>
+                </value>
+            </enumerator>
+            <enumerator name="MUNI">
+                <description></description>
+                <value>
+                    <String>MUNI</String>
+                </value>
+            </enumerator>
+            <enumerator name="CORP">
+                <description></description>
+                <value>
+                    <String>CORP</String>
+                </value>
+            </enumerator>
+            <enumerator name="MTGE">
+                <description></description>
+                <value>
+                    <String>MTGE</String>
+                </value>
+            </enumerator>
+            <enumerator name="MMKT">
+                <description></description>
+                <value>
+                    <String>MMKT</String>
+                </value>
+            </enumerator>
+            <enumerator name="CURNCY">
+                <description></description>
+                <value>
+                    <String>CURNCY</String>
+                </value>
+            </enumerator>
+            <enumerator name="COMDTY">
+                <description></description>
+                <value>
+                    <String>COMDTY</String>
+                </value>
+            </enumerator>
+        </enumerationType>
+        <enumerationType name="CurveSubclassEnum" type="String">
+            <description></description>
+            <enumerator name="INVALID">
+                <description></description>
+                <value>
+                    <String>INVALID</String>
+                </value>
+            </enumerator>
+            <enumerator name="UNASSIGNED">
+                <description></description>
+                <value>
+                    <String>UNASSIGNED</String>
+                </value>
+            </enumerator>
+            <enumerator name="SENIOR">
+                <description></description>
+                <value>
+                    <String>SENIOR</String>
+                </value>
+            </enumerator>
+            <enumerator name="SUBORDINATED">
+                <description></description>
+                <value>
+                    <String>SUBORDINATED</String>
+                </value>
+            </enumerator>
+            <enumerator name="ZERO">
+                <description></description>
+                <value>
+                    <String>ZERO</String>
+                </value>
+            </enumerator>
+            <enumerator name="OIS">
+                <description></description>
+                <value>
+                    <String>OIS</String>
+                </value>
+            </enumerator>
+            <enumerator name="INFLATION">
+                <description></description>
+                <value>
+                    <String>INFLATION</String>
+                </value>
+            </enumerator>
+            <enumerator name="SPREAD">
+                <description></description>
+                <value>
+                    <String>SPREAD</String>
+                </value>
+            </enumerator>
+            <enumerator name="CDS">
+                <description></description>
+                <value>
+                    <String>CDS</String>
+                </value>
+            </enumerator>
+            <enumerator name="RATE">
+                <description></description>
+                <value>
+                    <String>RATE</String>
+                </value>
+            </enumerator>
+            <enumerator name="SECTOR">
+                <description></description>
+                <value>
+                    <String>SECTOR</String>
+                </value>
+            </enumerator>
+            <enumerator name="ISSUER">
+                <description></description>
+                <value>
+                    <String>ISSUER</String>
+                </value>
+            </enumerator>
+        </enumerationType>
+        <enumerationType name="YellowKeyFilter" type="String">
+            <description></description>
+            <enumerator name="YK_FILTER_NONE">
+                <description></description>
+                <value>
+                    <String>YK_FILTER_NONE</String>
+                </value>
+            </enumerator>
+            <enumerator name="YK_FILTER_CMDT">
+                <description></description>
+                <value>
+                    <String>YK_FILTER_CMDT</String>
+                </value>
+            </enumerator>
+            <enumerator name="YK_FILTER_EQTY">
+                <description></description>
+                <value>
+                    <String>YK_FILTER_EQTY</String>
+                </value>
+            </enumerator>
+            <enumerator name="YK_FILTER_MUNI">
+                <description></description>
+                <value>
+                    <String>YK_FILTER_MUNI</String>
+                </value>
+            </enumerator>
+            <enumerator name="YK_FILTER_PRFD">
+                <description></description>
+                <value>
+                    <String>YK_FILTER_PRFD</String>
+                </value>
+            </enumerator>
+            <enumerator name="YK_FILTER_CLNT">
+                <description></description>
+                <value>
+                    <String>YK_FILTER_CLNT</String>
+                </value>
+            </enumerator>
+            <enumerator name="YK_FILTER_MMKT">
+                <description></description>
+                <value>
+                    <String>YK_FILTER_MMKT</String>
+                </value>
+            </enumerator>
+            <enumerator name="YK_FILTER_GOVT">
+                <description></description>
+                <value>
+                    <String>YK_FILTER_GOVT</String>
+                </value>
+            </enumerator>
+            <enumerator name="YK_FILTER_CORP">
+                <description></description>
+                <value>
+                    <String>YK_FILTER_CORP</String>
+                </value>
+            </enumerator>
+            <enumerator name="YK_FILTER_INDX">
+                <description></description>
+                <value>
+                    <String>YK_FILTER_INDX</String>
+                </value>
+            </enumerator>
+            <enumerator name="YK_FILTER_CURR">
+                <description></description>
+                <value>
+                    <String>YK_FILTER_CURR</String>
+                </value>
+            </enumerator>
+            <enumerator name="YK_FILTER_MTGE">
+                <description></description>
+                <value>
+                    <String>YK_FILTER_MTGE</String>
+                </value>
+            </enumerator>
+        </enumerationType>
+        <enumerationType name="LanguageOverride" type="String">
+            <description></description>
+            <enumerator name="LANG_OVERRIDE_NONE">
+                <description></description>
+                <value>
+                    <String>LANG_OVERRIDE_NONE</String>
+                </value>
+            </enumerator>
+            <enumerator name="LANG_OVERRIDE_ENGLISH">
+                <description></description>
+                <value>
+                    <String>LANG_OVERRIDE_ENGLISH</String>
+                </value>
+            </enumerator>
+            <enumerator name="LANG_OVERRIDE_KANJI">
+                <description></description>
+                <value>
+                    <String>LANG_OVERRIDE_KANJI</String>
+                </value>
+            </enumerator>
+            <enumerator name="LANG_OVERRIDE_FRENCH">
+                <description></description>
+                <value>
+                    <String>LANG_OVERRIDE_FRENCH</String>
+                </value>
+            </enumerator>
+            <enumerator name="LANG_OVERRIDE_GERMAN">
+                <description></description>
+                <value>
+                    <String>LANG_OVERRIDE_GERMAN</String>
+                </value>
+            </enumerator>
+            <enumerator name="LANG_OVERRIDE_SPANISH">
+                <description></description>
+                <value>
+                    <String>LANG_OVERRIDE_SPANISH</String>
+                </value>
+            </enumerator>
+            <enumerator name="LANG_OVERRIDE_PORTUGUESE">
+                <description></description>
+                <value>
+                    <String>LANG_OVERRIDE_PORTUGUESE</String>
+                </value>
+            </enumerator>
+            <enumerator name="LANG_OVERRIDE_ITALIAN">
+                <description></description>
+                <value>
+                    <String>LANG_OVERRIDE_ITALIAN</String>
+                </value>
+            </enumerator>
+            <enumerator name="LANG_OVERRIDE_CHINESE_TRAD">
+                <description></description>
+                <value>
+                    <String>LANG_OVERRIDE_CHINESE_TRAD</String>
+                </value>
+            </enumerator>
+            <enumerator name="LANG_OVERRIDE_KOREAN">
+                <description></description>
+                <value>
+                    <String>LANG_OVERRIDE_KOREAN</String>
+                </value>
+            </enumerator>
+            <enumerator name="LANG_OVERRIDE_CHINESE_SIMP">
+                <description></description>
+                <value>
+                    <String>LANG_OVERRIDE_CHINESE_SIMP</String>
+                </value>
+            </enumerator>
+            <enumerator name="LANG_OVERRIDE_NONE_1">
+                <description></description>
+                <value>
+                    <String>LANG_OVERRIDE_NONE_1</String>
+                </value>
+            </enumerator>
+            <enumerator name="LANG_OVERRIDE_NONE_2">
+                <description></description>
+                <value>
+                    <String>LANG_OVERRIDE_NONE_2</String>
+                </value>
+            </enumerator>
+            <enumerator name="LANG_OVERRIDE_NONE_3">
+                <description></description>
+                <value>
+                    <String>LANG_OVERRIDE_NONE_3</String>
+                </value>
+            </enumerator>
+            <enumerator name="LANG_OVERRIDE_NONE_4">
+                <description></description>
+                <value>
+                    <String>LANG_OVERRIDE_NONE_4</String>
+                </value>
+            </enumerator>
+            <enumerator name="LANG_OVERRIDE_NONE_5">
+                <description></description>
+                <value>
+                    <String>LANG_OVERRIDE_NONE_5</String>
+                </value>
+            </enumerator>
+            <enumerator name="LANG_OVERRIDE_RUSSIAN">
+                <description></description>
+                <value>
+                    <String>LANG_OVERRIDE_RUSSIAN</String>
+                </value>
+            </enumerator>
+        </enumerationType>
+    </schema>
+</ServiceDefinition>

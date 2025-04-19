@@ -104,15 +104,6 @@ blpapi::Session *createSession() {
     return new blpapi::Session(sessionOptions, new TickersEventHandler());
 }
 
-blpapi::Identity getIdentity(blpapi::Session *session) {
-    blpapi::Identity identity = session->createIdentity();
-    if (!identity.isValid()) {
-        throw std::runtime_error("Failed to create identity");
-    }
-    std::cout << "Seat type: " << identity.getSeatType() << std::endl;
-    return identity;
-}
-
 blpapi::Service openService(blpapi::Session *session, std::string service_id) {
     if (!session->openService(service_id.c_str())) {
         throw std::runtime_error("Failed to open service: " + service_id);
@@ -122,31 +113,46 @@ blpapi::Service openService(blpapi::Session *session, std::string service_id) {
     if (!service.isValid()) {
         throw std::runtime_error("Failed to get service: " + service_id);
     }
-    /*
-    blpapi::Identity identity = getIdentity(session);
-    if (!identity.isAuthorized(service)) {
-        throw std::runtime_error("Identity is not authorized for service: " + service_id);
-    }
-    */
     return service;
 }
 
-void getTickers(blpapi::Session *session) {
+void getTickersList(blpapi::Session *session) {
     auto service = openService(session, SERVICE_GECO);
     blpapi::Request request = service.createRequest("GetTickersRequest");
     blpapi::CorrelationId corrId = session->sendRequest(request);
     std::cout << "Request sent with correlation ID: " << corrId << std::endl;
 }
- 
 
-void getEconomicDataReferences(blpapi::Session *session) {
+void getEconomicData(blpapi::Session *session) {
     auto service = openService(session, SERVICE_ECONDATA);
-    blpapi::Request request = service.createRequest("GetData");
-    blpapi::CorrelationId corrId = session->sendRequest(request);
-    std::cout << "Request sent with correlation ID: " << corrId << std::endl;
+    blpapi::SubscriptionList sub;
+    sub.add("WORLDT");
+    /*
+    sub.add("GDPUS Index",
+                  "COUNTRY,SERIES_TYPE,VALUE,DATE",
+                  "",
+                  blpapi::CorrelationId(1));
+    sub.add("USUERATE Index",
+                  "COUNTRY,SERIES_TYPE,VALUE,DATE",
+                  "",
+                  blpapi::CorrelationId(2));
+    sub.add("IBM US Equity",
+                  "LAST_PRICE,BID,ASK,VOLUME,BID_SIZE,ASK_SIZE",
+                  "",
+                  blpapi::CorrelationId(3));
+    sub.add("AAPL US Equity",
+                  "LAST_PRICE,BID,ASK,VOLUME",
+                  "",
+                  blpapi::CorrelationId(4));
+    sub.add("MSFT US Equity",
+                  "LAST_PRICE,BID,ASK,VOLUME,OPEN,HIGH,LOW",
+                  "",
+                  blpapi::CorrelationId(5));
+    */
+    session->subscribe(sub);
 }
 
-
+ 
 int main() {
     try {
         blpapi::Session *session = createSession();
@@ -155,10 +161,10 @@ int main() {
         }
         std::cout << "Successfully connected to B-PIPE" << std::endl;
         /**** TESTING FEATURES ***/
-        // getTickers(session);
-        getEconomicDataReferences(session);
-        std::this_thread::sleep_for(std::chrono::seconds(5));
+        // getTickersList(session);
+        getEconomicData(session);
         /*** TESTING FEATURES ***/
+        std::this_thread::sleep_for(std::chrono::seconds(5));
         session->stop();
         delete session;
     } catch (const std::exception &e) {

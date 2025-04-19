@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ServiceDefinition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    name="blp.economic-data" version="1.0.0.7">
+    <service name="//blp/economic-data" version="1.0.0.7">
+        <event name="EconomicEvent" eventType="EconomicEvent">
+            <eventId>0</eventId>
+            <eventId>9999</eventId>
+            <eventId>10000</eventId>
+            <cacheable>true</cacheable>
+        </event>
+        <event name="Heartbeat" eventType="Heartbeat">
+            <eventId>1</eventId>
+            <cacheable>true</cacheable>
+        </event>
+        <defaultServiceId>197210</defaultServiceId>
+        <publisherSupportsRecap>true</publisherSupportsRecap>
+        <authoritativeSourceSupportsRecap>false</authoritativeSourceSupportsRecap>
+        <SubscriberResolutionServiceId>197211</SubscriberResolutionServiceId>
+        <isInfrastructureService>false</isInfrastructureService>
+        <isMetered>false</isMetered>
+        <appendMtrId>false</appendMtrId>
+        <persistentLastValueCache>false</persistentLastValueCache>
+        <abArbitrationEnabled>false</abArbitrationEnabled>
+    </service>
+    <schema>
+        <sequenceType name="Heartbeat">
+            <description>Indication that the subscription is active</description>
+        </sequenceType>
+        <sequenceType name="DateRangeType">
+            <description>The start date and end date for an economic release</description>
+            <element name="START" id="0" type="Date">
+                <description>Scheduled start date range for an economic release as currently known</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="END" id="1" type="Date">
+                <description>Scheduled end date range for an economic release as currently known</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="Distribution">
+            <description>Statistical distribution of economist estimates for a given release</description>
+            <element name="LOW" id="0" type="String">
+                <description>Low value of the distribution</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="HIGH" id="1" type="String">
+                <description>High value of the distribution</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="MEDIAN" id="2" type="String">
+                <description>Median value of the distribution</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="AVERAGE" id="3" type="String">
+                <description>Average value of the distribution</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="STANDARD_DEVIATION" id="4" type="String">
+                <description>Standard deviation value of the distribution</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="NUMBER" id="5" type="String">
+                <description>Number of estimates in the distribution</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="RevisionMetadata">
+            <description>Metadata about the actual economic release that is associated with the incoming revision to that event. Applicable only when EVENT_TYPE = &apos;REVISION&apos; and the revision corresponds to the previous observation period.</description>
+            <element name="PRIOR_EVENT_ID" id="0" type="Int32">
+                <description>Unique key of the prior economic event which is having its actuals revised.</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="PRIOR_OBSERVATION_PERIOD" id="1" type="String">
+                <description>Specifies the observation period of the prior economic event which is having its actuals revised.</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="PRIOR_ECO_RELEASE_DT" id="2" type="ReleaseTime">
+                <description>
+                    The expected (or completed) release time in UTC of the prior economic event which is having its actuals revised, as currently known.
+
+                    There are three levels of granularity for when an indicator will be released, based on currently known information:
+                    1) a specific time on a specific day (DATETIME).
+                    2) a specific day with no certain time (DATE).
+                    3) a range of days (DATERANGE).
+                </description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="HeadlineEconomicEvent">
+            <description>The most widely tracked market-moving economic indicators on {ECO GO} that provide an overview of the state of an economy</description>
+            <element name="ID_BB_GLOBAL" id="0" type="String">
+                <description>
+                    Immutable twelve character alphanumeric identifier uniquely identifying an individual economic indicator (ID135)
+
+                    @annotate(standard-field) This is a standard field.
+                </description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="PARSEKYABLE_DES" id="1" type="String">
+                <description>
+                    Specific identifier for a economic indicator (DS001)
+
+                    @annotate(standard-field) This is a standard field.
+                </description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="DESCRIPTION" id="2" type="String">
+                <description>Description of the economic indicator (DS520)</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="EVENT_TYPE" id="3" type="EventType">
+                <description>Defines the type of event that applies to an economic indicator release update - one of ACTUAL, REVISION and ESTIMATE for HeadlineEconomicEvent messages</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="EVENT_SUBTYPE" id="4" type="EventSubType">
+                <description>Nature of the event associated with a specific message - one of NEW, UPDATE, DELETE, and INITPAINT</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="EVENT_ID" id="5" type="Int32">
+                <description>Unique key for the specific economic event, defined by the release of actuals for a given observation period</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="OBSERVATION_PERIOD" id="6" type="String">
+                <description>
+                    Specifies the observation period associated with release of actuals for a given economic indicator (DZ065)
+
+                    @annotate(standard-field) This is a standard field.
+                </description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="ECO_RELEASE_DT" id="7" type="ReleaseTime">
+                <description>
+                    The expected (or completed) release time in UTC of actuals for a given economic indicator and observation period, as currently known.
+
+                    There are three levels of granularity for when an indicator will be released, based on currently known information:
+                    1) a specific time on a specific day (DATETIME).
+                    2) a specific day with no certain time (DATE).
+                    3) a range of days (DATERANGE).
+
+                    @annotate(standard-field) This is a standard field.
+                </description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="VALUE" id="8" type="Value">
+                <description>Value associated with the economic release event as announced by the source, or the value that is now deleted and should be considered invalid</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="PRIOR_VALUE" id="9" type="Value" minOccurs="0">
+                <description>Applicable only (and always) when EVENT_TYPE = &apos;REVISION&apos;. The actual value being revised as part of an economic release event.</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="REVISION_METADATA" id="10" type="RevisionMetadata"
+                minOccurs="0">
+                <description>Metadata about the actual economic release that is associated with the incoming revision to that event. Applicable only when EVENT_TYPE = &apos;REVISION&apos; and the revision corresponds to the previous observation period.</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="HeadlineCalendarEvent">
+            <description>Notification of announcement or modification of a Headline Economic Event calendar schedule</description>
+            <element name="ID_BB_GLOBAL" id="0" type="String">
+                <description>
+                    Immutable twelve character alphanumeric identifier uniquely identifying an individual economic indicator (ID135)
+
+                    @annotate(standard-field) This is a standard field.
+                </description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="PARSEKYABLE_DES" id="1" type="String">
+                <description>
+                    Specific identifier for a economic indicator (DS001)
+
+                    @annotate(standard-field) This is a standard field.
+                </description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="DESCRIPTION" id="2" type="String">
+                <description>Description of the economic indicator (DS520)</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="EVENT_TYPE" id="3" type="EventType">
+                <description>Defines the type of event that applies to an economic indicator release update - always CALENDAR for HeadlineCalendarEvent messages</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="EVENT_SUBTYPE" id="4" type="EventSubType">
+                <description>Nature of the event associated with a specific message - one of NEW, UPDATE, DELETE, and INITPAINT</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="EVENT_ID" id="5" type="Int32">
+                <description>Unique key for the specific economic event, defined by the release of actuals for a given observation period</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="OBSERVATION_PERIOD" id="6" type="String">
+                <description>
+                    Specifies the observation period associated with release of actuals for a given economic indicator (DZ065)
+
+                    @annotate(standard-field) This is a standard field.
+                </description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="ECO_RELEASE_DT" id="7" type="ReleaseTime">
+                <description>
+                    The expected (or completed) release time in UTC of actuals for a given economic indicator and observation period, as currently known.
+
+                    There are three levels of granularity for when an indicator will be released, based on currently known information:
+                    1) a specific time on a specific day (DATETIME).
+                    2) a specific day with no certain time (DATE).
+                    3) a range of days (DATERANGE).
+
+                    @annotate(standard-field) This is a standard field.
+                </description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="RELEASE_STATUS" id="8" type="ReleaseStatus">
+                <description>Specifies whether the actual of the economic indicator has been released - one of SCHEDULED or RELEASED</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="EmptyEconomicEvent">
+            <description>Empty initial paint message. Applicable to economic indicators for which the most recent information is not yet available</description>
+        </sequenceType>
+        <choiceType name="EconomicEvent">
+            <description>Supported types of economic releases</description>
+            <element name="HeadlineEconomicEvent" id="0"
+                type="HeadlineEconomicEvent">
+                <description>The most widely tracked market-moving economic indicators on {ECO GO} that provide an overview of the state of an economy</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="HeadlineCalendarEvent" id="2"
+                type="HeadlineCalendarEvent">
+                <description>Notification of announcement or modification of a Headline Economic Event calendar schedule</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="EmptyEconomicEvent" id="1"
+                type="EmptyEconomicEvent">
+                <description>Empty initial paint message. Applicable to economic indicators for which the most recent information is not yet available</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </choiceType>
+        <choiceType name="Value">
+            <description>Value of the economic indicator data point</description>
+            <element name="SINGLE" id="0" type="String">
+                <description>Single/point value</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="DISTRIBUTION" id="1" type="Distribution">
+                <description>Statistical distribution</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </choiceType>
+        <choiceType name="ReleaseTime">
+            <description>
+                The expected (or completed) release time in UTC of actuals for a given economic indicator and observation period, as currently known.
+
+                There are three levels of granularity for when an indicator will be released, based on currently known information:
+                1) a specific time on a specific day (DATETIME).
+                2) a specific day with no certain time (DATE).
+                3) a range of days (DATERANGE).
+            </description>
+            <element name="DATETIME" id="0" type="Datetime">
+                <description>Date and time</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="DATE" id="1" type="Date">
+                <description>Date only</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="DATERANGE" id="2" type="DateRangeType">
+                <description>Start/End Date Range</description>
+                <cacheable>false</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </choiceType>
+        <enumerationType name="EventType" type="String">
+            <description>Describes the nature of the economic data point - one of ACTUAL, REVISION, ESTIMATE, or CALENDAR</description>
+            <enumerator name="ACTUAL">
+                <description>Actual value associated with the economic release, as announced by the source - applicable only to HeadlineEconomicEvent messages.</description>
+                <value>
+                    <String>ACTUAL</String>
+                </value>
+            </enumerator>
+            <enumerator name="REVISION">
+                <description>Latest revised value for the economic release, as announced by the source - applicable only to HeadlineEconomicEvent messages.</description>
+                <value>
+                    <String>REVISION</String>
+                </value>
+            </enumerator>
+            <enumerator name="ESTIMATE">
+                <description>Estimates associated with a given economic release, based on inputs from surveyed economists - applicable only to HeadlineEconomicEvent messages.</description>
+                <value>
+                    <String>ESTIMATE</String>
+                </value>
+            </enumerator>
+            <enumerator name="CALENDAR">
+                <description>A calendar event for the economic release schedule - applicable only to HeadlineCalendarEvent messages.</description>
+                <value>
+                    <String>CALENDAR</String>
+                </value>
+            </enumerator>
+        </enumerationType>
+        <enumerationType name="EventSubType" type="String">
+            <description>Nature of the event associated with a specific message - one of NEW, UPDATE, DELETE, and INITPAINT</description>
+            <enumerator name="NEW">
+                <description>Newly announced data point</description>
+                <value>
+                    <String>NEW</String>
+                </value>
+            </enumerator>
+            <enumerator name="UPDATE">
+                <description>Update to an existing data point</description>
+                <value>
+                    <String>UPDATE</String>
+                </value>
+            </enumerator>
+            <enumerator name="INITPAINT">
+                <description>Recap of the most recently known information associated with a given economic indicator</description>
+                <value>
+                    <String>INITPAINT</String>
+                </value>
+            </enumerator>
+            <enumerator name="DELETE">
+                <description>Deletion of an existing data point</description>
+                <value>
+                    <String>DELETE</String>
+                </value>
+            </enumerator>
+        </enumerationType>
+        <enumerationType name="ReleaseStatus" type="String">
+            <description>Specifies whether the actual value associated with the economic indicator has been released - one of SCHEDULED or RELEASED</description>
+            <enumerator name="SCHEDULED">
+                <description>The actual value associated with the economic indicator has not been released by the source</description>
+                <value>
+                    <String>SCHEDULED</String>
+                </value>
+            </enumerator>
+            <enumerator name="RELEASED">
+                <description>The actual value associated with the economic indicator has been released by the source</description>
+                <value>
+                    <String>RELEASED</String>
+                </value>
+            </enumerator>
+        </enumerationType>
+    </schema>
+</ServiceDefinition>

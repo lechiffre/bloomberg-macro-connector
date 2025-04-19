@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ServiceDefinition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    name="blp.globalecoref" version="1.2.0.2">
+    <service name="//blp/globalecoref" version="1.2.0.2">
+        <operation name="GetTickersRequest" serviceId="1073993860">
+            <request>Request</request>
+            <requestSelection>GetTickersRequest</requestSelection>
+            <response>Response</response>
+            <responseSelection>GetTickersResponse</responseSelection>
+            <responseSelection>ErrorResponse</responseSelection>
+        </operation>
+        <operation name="GetTickerListRequest" serviceId="1073993860">
+            <request>Request</request>
+            <requestSelection>GetTickerListRequest</requestSelection>
+            <response>Response</response>
+            <responseSelection>GetTickersResponse</responseSelection>
+            <responseSelection>ErrorResponse</responseSelection>
+        </operation>
+        <operation name="GetCalendarRequest" serviceId="1073993860">
+            <request>Request</request>
+            <requestSelection>GetCalendarRequest</requestSelection>
+            <response>Response</response>
+            <responseSelection>GetCalendarResponse</responseSelection>
+            <responseSelection>ErrorResponse</responseSelection>
+        </operation>
+        <operation name="GetCentralBankCalendarRequest"
+            serviceId="1073993860">
+            <request>Request</request>
+            <requestSelection>GetCentralBankCalendarRequest</requestSelection>
+            <response>Response</response>
+            <responseSelection>GetCentralBankCalendarResponse</responseSelection>
+            <responseSelection>ErrorResponse</responseSelection>
+        </operation>
+        <defaultServiceId>196780</defaultServiceId>
+        <publisherSupportsRecap>false</publisherSupportsRecap>
+        <authoritativeSourceSupportsRecap>false</authoritativeSourceSupportsRecap>
+        <isInfrastructureService>false</isInfrastructureService>
+        <isMetered>false</isMetered>
+        <appendMtrId>false</appendMtrId>
+        <persistentLastValueCache>false</persistentLastValueCache>
+        <abArbitrationEnabled>false</abArbitrationEnabled>
+    </service>
+    <schema>
+        <sequenceType name="GetTickersRequest">
+            <description>
+        Get the list of available tickers and the reference information for each ticker.
+      </description>
+        </sequenceType>
+        <sequenceType name="GetTickerListRequest">
+            <description>
+        Get the reference information for a specific selection of tickers.
+      </description>
+            <element name="Tickers" id="1" type="String" minOccurs="1"
+                maxOccurs="unbounded">
+                <description>{FLDS TICKER} (DS001)</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="GetCalendarRequest">
+            <description>
+        Get the economic calendar for a list of tickers and/or a
+        time period. This will return every release date for all or specified
+        tickers for whole future or within the specified date range.
+        At least one of the of the parameters need to be specified.
+      </description>
+            <element name="DatetimeRange" id="1" type="DatetimeRange"
+                minOccurs="0" maxOccurs="1">
+                <description>Datetime range of the calendar. A record with a release time that is a date or a date range is considered to be within the query range if there is any overlap between the whole 24 hour period(s) of the record date(s) and the query range.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="Tickers" id="2" type="String" minOccurs="0"
+                maxOccurs="unbounded">
+                <description>Identifier of the ticker: {FLDS TICKER} (DS001).</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="GetCentralBankCalendarRequest">
+            <description>
+        Get the central bank calendar for a list of region codes and/or a
+        time period. This will return every event date for all
+        or specified codes for whole future or within the specified date range.
+        At least one of the of the parameters need to be specified.
+      </description>
+            <element name="DatetimeRange" id="1" type="DatetimeRange"
+                minOccurs="0" maxOccurs="1">
+                <description>Datetime range of the calendar. A record with a release time that is a date or a date range is considered to be within the query range if there is any overlap between the whole 24 hour period(s) of the record date(s) and the query range.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="Region" id="2" type="String" minOccurs="0"
+                maxOccurs="unbounded">
+                <description>
+          Two letter region codes as defined in ISO 3166-1 alpha-2.
+          All &apos;Officially assigned&apos; codes plus &apos;EU&apos; are supported.
+        </description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="ErrorResponseType">
+            <description>Indicates that a request failed on the service.</description>
+            <element name="ErrorCategory" id="1" type="ErrorCategoryType"
+                minOccurs="1" maxOccurs="1">
+                <description>The category of the error.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="ErrorDescription" id="2" type="String"
+                minOccurs="1" maxOccurs="1">
+                <description>A description of the error.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="GetTickersResponse">
+            <description>
+        The response to the GetTickersRequest and GetTickerListRequest.  Contains a list of tickers
+        with related reference data.
+      </description>
+            <element name="Ticker" id="1" type="TickerType" minOccurs="0"
+                maxOccurs="unbounded">
+                <description>A list of economic tickers with related reference data.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="TickerType">
+            <description>An economic indicator with related reference data.</description>
+            <element name="Ticker" id="1" type="String" minOccurs="1"
+                maxOccurs="1">
+                <description>Identifier of the ticker:{FLDS TICKER} (DS001).</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="FIGI" id="2" type="String" minOccurs="1"
+                maxOccurs="1">
+                <description>Bloomberg standard field identifier: {FLDS ID_BB_GLOBAL} (ID135).</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="Country" id="4" type="String" minOccurs="0"
+                maxOccurs="1">
+                <description>The country that the economic event is related to: {FLDS COUNTRY} (DS003).</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="Description" id="5" type="String" minOccurs="1"
+                maxOccurs="1">
+                <description>The name of the economic event: {FLDS LONG_COMP_NAME} (DS520).</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="Frequency" id="6" type="String" minOccurs="1"
+                maxOccurs="1">
+                <description>The frequency that the economic event is released: {FLDS INDX_FREQ} (DS223).</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="Relevance" id="7" type="Float64" minOccurs="0"
+                maxOccurs="1">
+                <description>The Blooomberg calculated relevance of the economic indicator: {FLDS RELEVANCE_VALUE} (PX657).</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="Source" id="8" type="String" minOccurs="1"
+                maxOccurs="1">
+                <description>The source organization that releases the indicator: {FLDS INDX_SOURCE} (DS226).</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="Currency" id="9" type="String" minOccurs="0"
+                maxOccurs="1">
+                <description>The currency (for indices denominated in a currency): {FLDS CRNCY} (DS004).</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="NextRelease" id="10" type="ReleaseInfo"
+                minOccurs="0">
+                <description>Reference data information for the next release</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="SurveyInfo" id="11" type="SurveyInfo"
+                minOccurs="0">
+                <description>Survey estimates for the next release</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="Units" id="12" type="String" minOccurs="1"
+                maxOccurs="1">
+                <description>Describes how the index is quoted: {FLDS INDX_UNITS} (DS229). Typical values are: Value, Rate, Percent, Yield, Quantity, Volume, Price, Discount, Units</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="ScalingFactor" id="13" type="String" minOccurs="0"
+                maxOccurs="1">
+                <description>Specifies the units in which index values are scaled: {FLDS SCALING_FORMAT} (DY339). Typical values are: Thousand, Million, Billion, Trillion</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="GetCalendarResponse">
+            <description>The response for the GetTickerCalendarRequest.  This contains a calendar
+        of all releases for all tickers requested within the specified date ranges.</description>
+            <element name="TickerCalendar" id="1"
+                type="TickerCalendarResponse" minOccurs="0"
+                maxOccurs="unbounded">
+                <description>A calendar of releases during requested range of dates.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="TickerCalendarResponse">
+            <description>Calendar information for a single ticker.</description>
+            <element name="Ticker" id="1" type="TickerType" minOccurs="1"
+                maxOccurs="1">
+                <description>The ticker identifiers and related reference data.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="Release" id="2" type="ReleaseInfo" minOccurs="0"
+                maxOccurs="unbounded">
+                <description>The list of expected release dates.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="GetCentralBankCalendarResponse">
+            <description>
+        The response for the GetCentralBankCalendarRequest.
+        This contains a calendar of all the central bank events
+        for all codes requested within the specified date ranges.
+      </description>
+            <element name="CentralBankRelease" id="1"
+                type="CentralBankRelease" minOccurs="0" maxOccurs="unbounded">
+                <description>A calendar of central banks releases.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="CentralBankRelease">
+            <description></description>
+            <element name="ReleaseTime" id="1" type="ReleaseTime">
+                <description>The release date/time for the economic indicator.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="EcoEventID" id="2" type="Int32">
+                <description>A unique identifier for the specific release event.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="Description" id="3" type="String">
+                <description>Description of central bank event.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="Regions" id="4" type="String" minOccurs="1"
+                maxOccurs="unbounded">
+                <description>
+          Two letter region codes as defined in ISO 3166-1 alpha-2.
+          All &apos;Officially assigned&apos; codes plus &apos;EU&apos; are supported.
+        </description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="DatetimeRange">
+            <description>The start datetime (inclusive) and end datetime (inclusive).</description>
+            <element name="Start" type="Datetime">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="End" type="Datetime">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="DateRangeType">
+            <description>The start date and end date for an economic release.</description>
+            <element name="StartDate" type="Date">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="EndDate" type="Date">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="ReleaseInfo">
+            <description></description>
+            <element name="ReleaseTime" id="1" type="ReleaseTime">
+                <description>
+          The release date/time for the economic indicator.
+        </description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="Prior" id="2" type="String" minOccurs="0">
+                <description>The prior value of this economic indicator.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="Period" id="3" type="String" minOccurs="0">
+                <description>The time period which the economic release covers.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="ReleaseType" id="4" type="String" minOccurs="0">
+                <description>The release type </description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="QuantityOfType" id="5" type="String" minOccurs="0">
+                <description>A description of the units or quantity that the numeric value of the indicator represents.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="EcoEventID" id="6" type="Int32" minOccurs="0">
+                <description>A unique identifier for the specific release event.</description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <sequenceType name="SurveyInfo">
+            <description></description>
+            <element name="NumberOfObservations" id="1" type="Int32"
+                minOccurs="0">
+                <description>
+          Number of all survey estimates available for this release:
+          {FLDS RT_BN_SURVEY_NUMBER} (RQ639).
+        </description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="LowOfAllEstimates" id="2" type="Float64"
+                minOccurs="0">
+                <description>
+          Low all survey estimates available for this release:
+          {FLDS RT_BN_SURVEY_LOW} (RQ638).
+        </description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="AverageOfAllEstimates" id="3" type="Float64"
+                minOccurs="0">
+                <description>
+          Average all survey estimates available for this release:
+          {FLDS RT_BN_SURVEY_AVERAGE} (RQ636).
+        </description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="HighOfAllEstimates" id="4" type="Float64"
+                minOccurs="0">
+                <description>
+          High of all survey estimates available for this release:
+          {FLDS RT_BN_SURVEY_HIGH} (RQ637).
+        </description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="MedianOfAllEstimates" id="5" type="Float64"
+                minOccurs="0">
+                <description>
+          Median of all survey estimates available for this release:
+          {FLDS RT_BN_SURVEY_MEDIAN} (RQ635).
+        </description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="StandardDeviationOfAllEstimates" id="6"
+                type="Float64" minOccurs="0">
+                <description>
+          Standard deviation of all survey estimates available for this release:
+          {FLDS FORECAST_STANDARD_DEVIATION} (DZ087).
+        </description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </sequenceType>
+        <choiceType name="ReleaseTime">
+            <description>
+        Choice of the possible release time formats.
+        There are three levels of granularity for when an indicator will be released:
+          1) A specific time on a specific day.
+          2) A specific day with no certain time.
+          3) A range of days.
+      </description>
+            <element name="Datetime" type="Datetime">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="Date" type="Date">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="DateRange" type="DateRangeType">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </choiceType>
+        <choiceType name="Request">
+            <description>The possible requests avaliable on this service.</description>
+            <element name="GetTickersRequest" type="GetTickersRequest">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="GetTickerListRequest" type="GetTickerListRequest">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="GetCalendarRequest" type="GetCalendarRequest">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="GetCentralBankCalendarRequest"
+                type="GetCentralBankCalendarRequest">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </choiceType>
+        <choiceType name="Response">
+            <description>The possible responses that can be returned by this service.</description>
+            <element name="ErrorResponse" type="ErrorResponseType">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="GetTickersResponse" type="GetTickersResponse">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="GetCalendarResponse" type="GetCalendarResponse">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+            <element name="GetCentralBankCalendarResponse"
+                type="GetCentralBankCalendarResponse">
+                <description></description>
+                <cacheable>true</cacheable>
+                <cachedOnlyOnInitialPaint>false</cachedOnlyOnInitialPaint>
+            </element>
+        </choiceType>
+        <enumerationType name="ErrorCategoryType" type="String">
+            <description>Possible error categories that may be returned by the ErrorResponse.</description>
+            <enumerator name="INTERNAL_ERROR">
+                <description>An internal system error in the globaleco service.</description>
+                <value>
+                    <String>INTERNAL_ERROR</String>
+                </value>
+            </enumerator>
+            <enumerator name="INVALID_INPUT">
+                <description>Invalid input was provided in the request.</description>
+                <value>
+                    <String>INVALID_INPUT</String>
+                </value>
+            </enumerator>
+            <enumerator name="AUTHORIZATION_FAILURE">
+                <description>The user was not privileged for this service.</description>
+                <value>
+                    <String>AUTHORIZATION_FAILURE</String>
+                </value>
+            </enumerator>
+        </enumerationType>
+    </schema>
+</ServiceDefinition>

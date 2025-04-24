@@ -84,14 +84,16 @@ blpapi::SessionOptions defineSessionOptions() {
     sessionOptions.setTlsOptions(defineTlsOptions());
     // Authentication Options
     std::string appName = getEnvVar("APP_NAME");
-    std::string authOptions = "AuthenticationType=Application;ApplicationName=" + appName;
+    std::string authOptions = "AuthenticationType=Application;ApplicationAuthenticationType=APPNAME_AND_KEY;ApplicationName=" + appName;
     sessionOptions.setAuthenticationOptions(authOptions.c_str());
     // Runtime parameters
     sessionOptions.setAutoRestartOnDisconnection(true);
     sessionOptions.setNumStartAttempts(3);
-    // sessionOptions.setClientMode(blpapi::SessionOptions::ClientMode::DAPI);
+    // sessionOptions.setClientMode(blpapi::SessionOptions::ClientMode::SAPI);
     // Other
     sessionOptions.setDefaultServices("//blp/economic-data");
+    sessionOptions.setDefaultSubscriptionService("//blp/economic-data");
+    // sessionOptions.setDefaultTopicPrefix("/indicator/");
     std::cout << "Session options: " << sessionOptions << std::endl;
     return sessionOptions;
 }
@@ -126,34 +128,26 @@ void getTickersList(blpapi::Session *session) {
     std::cout << "Request sent with correlation ID: " << corrId << std::endl;
 }
 
+void getEco(blpapi::Session *session) {
+    auto service = openService(session, SERVICE_ECONDATA);
+    blpapi::Request request = service.createRequest("ReferenceDataRequest");
+    blpapi::CorrelationId corrId = session->sendRequest(request);
+    std::cout << "Request sent with correlation ID: " << corrId << std::endl;
+}
+
+
 void getEconomicData(blpapi::Session *session) {
     auto service = openService(session, SERVICE_ECONDATA);
+    // std::cout << service << std::endl;
     blpapi::SubscriptionList sub;
-    // sub.add("WORLDT");
-    sub.add("BBHBEAT Index", "LAST_PRICE", "",
-                  blpapi::CorrelationId(50));
-    /*
-    sub.add("GDPUS Index",
-                  "COUNTRY,SERIES_TYPE,VALUE,DATE",
-                  "",
-                  blpapi::CorrelationId(1));
-    sub.add("USUERATE Index",
-                  "COUNTRY,SERIES_TYPE,VALUE,DATE",
-                  "",
-                  blpapi::CorrelationId(2));
-    sub.add("IBM US Equity",
-                  "LAST_PRICE,BID,ASK,VOLUME,BID_SIZE,ASK_SIZE",
-                  "",
-                  blpapi::CorrelationId(3));
-    sub.add("AAPL US Equity",
-                  "LAST_PRICE,BID,ASK,VOLUME",
-                  "",
-                  blpapi::CorrelationId(4));
-    sub.add("MSFT US Equity",
-                  "LAST_PRICE,BID,ASK,VOLUME,OPEN,HIGH,LOW",
-                  "",
-                  blpapi::CorrelationId(5));
-    */
+    // sub.add("ECFC");
+    // sub.add("/releasecalendar");
+    sub.add(
+        "USURTOT Index",
+        "LAST_PRICE,RELEASE_DATE,SURVEY_MEDIAN,PREVIOUS_RELEASE",
+        "",
+        blpapi::CorrelationId(24)
+    );
     session->subscribe(sub);
 }
 
@@ -168,6 +162,7 @@ int main() {
         /**** TESTING FEATURES ***/
         // getTickersList(session);
         getEconomicData(session);
+        // getEco(session);
         /*** TESTING FEATURES ***/
         std::this_thread::sleep_for(std::chrono::seconds(5));
         session->stop();

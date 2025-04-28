@@ -1,0 +1,12 @@
+build/
+*.o
+*.a
+*.so
+*.exe
+*.log
+*.swp
+*.user
+*.vcxproj*
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt

@@ -80,4 +80,7 @@ private:
 
 json newLogMessage(const std::string& module_name);
 
+
+void parseElement(const blpapi::Element& elem, json j);
+
 #endif // _BLPCONN_H

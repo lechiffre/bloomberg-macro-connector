@@ -8,17 +8,10 @@ bool EventHandler::processEvent(const blpapi::Event& event, blpapi::Session *ses
     while (msgIter.next()) {
         blpapi::Message msg = msgIter.message();
         std::cout << msg << std::endl;
-        /*
-        std::string service = msg.service();
-        j["service"] = service;
-        j["message_type"] = msg.messageType();
-        j["correlation_id"] = msg.correlationId();
-        j["num_elements"] = msg.numElements();
-        */
-        /*
-        std::string raw = msg;
-        j["raw"] = raw;
-        */
+        blpapi::Element elem = msg.asElement();
+        json j;
+        parseElement(elem, j);
+        std::cout << j.dump() << std::endl;
     }
     return true;
 }

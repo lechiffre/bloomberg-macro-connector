@@ -4,7 +4,8 @@ OBJS = timeutils.o \
 	logger.o \
 	connection.o \
 	eventhandler.o \
-	subscription.o 
+	subscription.o \
+	parser.o
 
 all: $(OBJS)
 	ar rcs $(LIBNAME) $(OBJS)

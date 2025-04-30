@@ -8,7 +8,8 @@
 #include <thread>
 
 #define SERVICE_GECO "//blp/globalecoref"
-#define SERVICE_AUTH "//blp/apiauth"
+#define SERVICE_ECONDATA "//blp/economic-data"
+#define SERVICE_ECONDATARESOLVE "//blp/economic-data-resolve"
 
 using namespace BloombergLP;
 
@@ -79,14 +80,24 @@ blpapi::SessionOptions defineSessionOptions() {
     blpapi::SessionOptions sessionOptions;
     sessionOptions.setServerAddress(hostPrimary.c_str(), port, 0);
     sessionOptions.setServerAddress(hostSecondary.c_str(), port, 1);
-    // Authentication parameters
+    // TLS parameters
     sessionOptions.setTlsOptions(defineTlsOptions());
+    // Authentication Options
+    std::string appName = getEnvVar("APP_NAME");
+    std::string authOptions = "AuthenticationType=Application;ApplicationAuthenticationType=APPNAME_AND_KEY;ApplicationName=" + appName;
+    sessionOptions.setAuthenticationOptions(authOptions.c_str());
     // Runtime parameters
     sessionOptions.setAutoRestartOnDisconnection(true);
     sessionOptions.setNumStartAttempts(3);
-    sessionOptions.setClientMode(blpapi::SessionOptions::ClientMode::SAPI);
+    // sessionOptions.setClientMode(blpapi::SessionOptions::ClientMode::SAPI);
+    // Other
+    sessionOptions.setDefaultServices("//blp/economic-data");
+    sessionOptions.setDefaultSubscriptionService("//blp/economic-data");
+    // sessionOptions.setDefaultTopicPrefix("/indicator/");
+    std::cout << "Session options: " << sessionOptions << std::endl;
     return sessionOptions;
 }
+
 
 /**
  * Creates a new BLPAPI session with the defined session options.
@@ -98,62 +109,44 @@ blpapi::Session *createSession() {
     return new blpapi::Session(sessionOptions, new TickersEventHandler());
 }
 
-blpapi::Identity getIdentity(blpapi::Session *session) {
-    blpapi::Identity identity = session->createIdentity();
-    if (!identity.isValid()) {
-        throw std::runtime_error("Failed to create identity");
+blpapi::Service openService(blpapi::Session *session, std::string service_id) {
+    if (!session->openService(service_id.c_str())) {
+        throw std::runtime_error("Failed to open service: " + service_id);
+    
     }
-    /*
-    if (!identity.isAuthorized()) {
-        throw std::runtime_error("Identity is not authorized");
-    }
-    */
-    std::cout << "Seat type: " << identity.getSeatType() << std::endl;
-    return identity;
-}
-
-void authorizeApp(blpapi::Session *session) {
-    blpapi::Identity identity = getIdentity(session);
-    if (!session->openService(SERVICE_AUTH)) {
-        throw std::runtime_error("Failed to open service: " + std::string(SERVICE_AUTH));
-    }
-    blpapi::Service service = session->getService(SERVICE_AUTH);
-    if (!service.isValid()){
-        throw std::runtime_error("Failed to get service: " + std::string(SERVICE_AUTH));
-    }
-    /*
-    if (!identity.isAuthorized(service)) {
-        throw std::runtime_error("Identity is not authorized for service: " + std::string(SERVICE_AUTH));
-    }
-    */
-    blpapi::Request request = service.createAuthorizationRequest();
-    // Register the application
-    request.set(blpapi::Name("ApplicationName"), "YourAppName");
-    blpapi::CorrelationId corrId = session->sendAuthorizationRequest(request, &identity);
-    std::cout << "Authorization request sent with correlation ID: " << corrId << std::endl;
-}
-
-void getTickers(blpapi::Session *session) {
-    blpapi::Identity identity = getIdentity(session);
-    if (!session->openService(SERVICE_GECO)) {
-        throw std::runtime_error("Failed to open service: " + std::string(SERVICE_GECO));
-    }
-    blpapi::Service service = session->getService(SERVICE_GECO);
+    blpapi::Service service = session->getService(SERVICE_ECONDATA);
     if (!service.isValid()) {
-        throw std::runtime_error("Failed to get service: " + std::string(SERVICE_GECO));
+        throw std::runtime_error("Failed to get service: " + service_id);
     }
-    /*
-    if (!identity.isAuthorized(service)) {
-        throw std::runtime_error("Identity is not authorized for service: " + std::string(SERVICE_GECO));
-    }*/
+    return service;
+}
+
+void getTickersList(blpapi::Session *session) {
+    auto service = openService(session, SERVICE_GECO);
     blpapi::Request request = service.createRequest("GetTickersRequest");
-    blpapi::CorrelationId corrId = session->sendRequest(request, identity);
+    blpapi::CorrelationId corrId = session->sendRequest(request);
+    std::cout << "Request sent with correlation ID: " << corrId << std::endl;
+}
+
+void getEco(blpapi::Session *session) {
+    auto service = openService(session, SERVICE_ECONDATA);
+    blpapi::Request request = service.createRequest("ReferenceDataRequest");
+    blpapi::CorrelationId corrId = session->sendRequest(request);
     std::cout << "Request sent with correlation ID: " << corrId << std::endl;
 }
 
 
+void getEconomicData(blpapi::Session *session) {
+    auto service = openService(session, SERVICE_ECONDATA);
+    // std::cout << service << std::endl;
+    blpapi::SubscriptionList sub;
+    // sub.add("ECFC");
+    // sub.add("/releasecalendar");
+    sub.add("//blp/economic-data/headline-actuals/ticker/CATBTOTB Index");
+    session->subscribe(sub);
+}
 
-
+ 
 int main() {
     try {
         blpapi::Session *session = createSession();
@@ -162,9 +155,11 @@ int main() {
         }
         std::cout << "Successfully connected to B-PIPE" << std::endl;
         /**** TESTING FEATURES ***/
-        getTickers(session);
-        std::this_thread::sleep_for(std::chrono::seconds(5));
+        // getTickersList(session);
+        getEconomicData(session);
+        // getEco(session);
         /*** TESTING FEATURES ***/
+        std::this_thread::sleep_for(std::chrono::seconds(10));
         session->stop();
         delete session;
     } catch (const std::exception &e) {

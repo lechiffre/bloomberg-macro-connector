@@ -1,0 +1,3 @@
+- Use asynchronous open service
+- Review session status events (json vs binary messaging)
+- Parsing messages in binary format (protobuffers or another alternative)

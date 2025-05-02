@@ -1,0 +1,70 @@
+namespace BlpConn.Message;
+
+table DateTime {
+    micros: ulong;
+    offset: short;
+}
+
+table DateRange {
+    start: DateTime;
+    end: DateTime;
+}
+
+union ReleaseTime { DateTime, DateRange }
+
+table Distribution {
+    low: float;
+    high: float;
+    median: float;
+    average: float;
+    standard_deviation: float;
+    number: float;
+}
+
+table Single {
+    number: float;
+}
+
+union Value { Single, Distribution }
+
+table RevisionMetadata {
+    prior_event_id: int;
+    prior_observation_period: string;
+    prior_economic_release: ReleaseTime;
+}
+
+table HeadlineEconomicEvent {
+    id_bb_global: string (required);
+    parsekyable_des: string (required);
+    description: string;
+    event_type: string;
+    event_subtype: string;
+    event_id: int;
+    observation_period: string;
+    release_start_dt: DateTime;
+    release_end_dt: DateTime;
+    eco_release_dt: ReleaseTime (required);
+    value: Value;
+    prior_value: Value;
+    revision_metadata: RevisionMetadata;
+}
+
+table HeadlineCalendarEvent {
+    id_bb_global: string (required);
+    parsekyable_des: string (required);
+    description: string;
+    event_type: string;
+    event_subtype: string;
+    event_id: int;
+    observation_period: string;
+    release_start_dt: DateTime;
+    release_end_dt: DateTime;
+    release_status: string;
+}
+
+table EmptyEconomicEvent {}
+
+table HeartBeat {
+}
+
+union EconomicEvent { HeadlineEconomicEvent, HeadlineCalendarEvent, EmptyEconomicEvent }

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project(blpconn VERSION 0.0.1 LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -fPIE")
 
@@ -52,10 +52,14 @@ endif()
 
 link_directories(${BLPAPI3_64_DIR}/blpapi_cpp_3.25.3.1/Linux)
 
-file(GLOB SOURCE_FILES src/*.cpp)
+set(BLPAPILIB "${BLPAPI3_64_DIR}/blpapi_cpp_3.25.3.1/Linux/libblpapi3_64.so")
 
+file(GLOB SOURCE_FILES src/*.cpp)  # This already includes serialize.cpp
 add_library(blpconn STATIC ${SOURCE_FILES})
+
 target_include_directories(blpconn PRIVATE include)
+# target_link_libraries(blpconn PRIVATE ${BLPAPI3_64_DIR}/blpapi_cpp_3.25.3.1/Linux/libblpapi3_64.so)
+target_link_libraries(blpconn PRIVATE ${BLPAPILIB})
 install(TARGETS blpconn DESTINATION lib)
 
 file(GLOB EXAMPLE_FILES examples/*.cpp)
@@ -63,7 +67,31 @@ foreach(example ${EXAMPLE_FILES})
     get_filename_component(binname ${example} NAME_WE)
     add_executable(${binname} ${example})
     target_include_directories(${binname} PRIVATE include)
-    target_link_libraries(${binname} PRIVATE blpconn blpapi3_64)
+    # target_link_libraries(${binname} PRIVATE blpconn ${BLPAPI3_64_DIR}/blpapi_cpp_3.25.3.1/Linux/libblpapi3_64.so)
+    target_link_libraries(${binname} PRIVATE blpconn ${BLPAPILIB})
     install(TARGETS ${binname} DESTINATION bin)
     add_dependencies(${binname} blpconn)
 endforeach(example ${EXAMPLE_FILES})
+
+# Google Test - to process files in ./tests
+include(FetchContent)
+FetchContent_Declare(
+    googletest
+    https://github.com/google/googletest.git)
+
+FetchContent_MakeAvailable(googletest)
+enable_testing()
+include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+include_directories(${gtest_SOURCE_DIR}/googletest/include ${gtest_SOURCE_DIR}/googlemock/include)
+
+file(GLOB TEST_FILES tests/*.cpp)
+foreach(test ${TEST_FILES})
+    get_filename_component(binname ${test} NAME_WE)
+    add_executable(${binname} ${test})
+    target_include_directories(${binname} PRIVATE include)
+    target_link_libraries(${binname} PRIVATE blpconn ${BLPAPILIB} gtest gmock pthread)
+    install(TARGETS ${binname} DESTINATION bin)
+    add_dependencies(${binname} blpconn)
+    add_test(NAME ${binname} COMMAND ${binname})
+endforeach(test ${TEST_FILES})
+

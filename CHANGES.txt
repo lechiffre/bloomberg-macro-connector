@@ -9,3 +9,7 @@
 0.0.3 - 2025-04-29
 
 - CMake include, Makefiles removed
+
+0.0.4 - 2025-05-03
+
+- Flatbuffers for serialization

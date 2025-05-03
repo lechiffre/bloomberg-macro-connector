@@ -6,14 +6,14 @@ namespace BlpConn {
 
 std::string SubscriptionRequest::toUri() {
     std::string uri = "";
-    switch (event_type) {
-        case EventType::HeadLineActuals:
+    switch (subscription_type) {
+        case SubscriptionType::HeadLineActuals:
             uri += "/headline-actuals";
             break;
-        case EventType::ReleaseCalendar:
+        case SubscriptionType::ReleaseCalendar:
             uri += "/release-calendar";
             break;
-        case EventType::HeadLineSurveys:
+        case SubscriptionType::HeadLineSurveys:
             uri += "/headline-surveys";
             break;
     }
@@ -48,8 +48,15 @@ int Context::subscribe(SubscriptionRequest& request) {
     blpapi::SubscriptionList sub;
     blpapi::CorrelationId corr_id(++subscription_counter_);
     std::string reference = service_ + request.toUri();
+    try {
     sub.add(reference.c_str(), corr_id);
     session_->subscribe(sub);
+    } catch (const blpapi::Exception& e) {
+        j["message"] = "Subscription failed";
+        j["error"] = e.description();
+        logger_.log(j.dump());
+        return -1;
+    }
     return 0;
 
 }

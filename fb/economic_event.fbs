@@ -1,70 +1,80 @@
-namespace BlpConn.Message;
+namespace BlpConn.FB;
+
+enum ReleaseStatus: int {
+    Unknown = 0,
+    Released = 1,
+    Scheduled = 2,
+    Another = 99
+}
+
+enum EventSubType: int {
+    Unknown = 0,
+    New = 1,
+    Update = 2,
+    Unitpaint = 3,
+    Delete = 4,
+    Another = 99
+}
+
+enum EventType: int {
+    Unknown = 0,
+    Actual = 1,
+    Revision = 2,
+    Estimate = 3,
+    Calendar = 4,
+    Another = 99
+}
 
 table DateTime {
     micros: ulong;
     offset: short;
 }
 
-table DateRange {
-    start: DateTime;
-    end: DateTime;
-}
-
-union ReleaseTime { DateTime, DateRange }
-
-table Distribution {
+table Value {
+    number: float;
+    value: float;
     low: float;
     high: float;
     median: float;
     average: float;
     standard_deviation: float;
-    number: float;
-}
-
-table Single {
-    number: float;
-}
-
-union Value { Single, Distribution }
-
-table RevisionMetadata {
-    prior_event_id: int;
-    prior_observation_period: string;
-    prior_economic_release: ReleaseTime;
 }
 
 table HeadlineEconomicEvent {
+    // Shared fields
     id_bb_global: string (required);
     parsekyable_des: string (required);
     description: string;
-    event_type: string;
-    event_subtype: string;
+    event_type: EventType;
+    event_subtype: EventSubType;
     event_id: int;
     observation_period: string;
     release_start_dt: DateTime;
     release_end_dt: DateTime;
-    eco_release_dt: ReleaseTime (required);
+
+    // Specific fields
     value: Value;
     prior_value: Value;
-    revision_metadata: RevisionMetadata;
+    prior_event_id: int;
+    prior_observation_period: string;
+    prior_economic_release_start_dt: DateTime;
+    prior_economic_release_end_dt: DateTime;
 }
 
 table HeadlineCalendarEvent {
+    // Shared fields
     id_bb_global: string (required);
     parsekyable_des: string (required);
     description: string;
-    event_type: string;
-    event_subtype: string;
+    event_type: EventType;
+    event_subtype: EventSubType;
     event_id: int;
     observation_period: string;
     release_start_dt: DateTime;
     release_end_dt: DateTime;
-    release_status: string;
+
+    // Specific fields
+    release_status: ReleaseStatus;
 }
 
-table EmptyEconomicEvent {}
-
-table HeartBeat {
-}
-
-union EconomicEvent { HeadlineEconomicEvent, HeadlineCalendarEvent, EmptyEconomicEvent }
+union EconomicEvent { HeadlineEconomicEvent, HeadlineCalendarEvent }

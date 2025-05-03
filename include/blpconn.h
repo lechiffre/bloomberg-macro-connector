@@ -41,7 +41,7 @@ namespace BlpConn {
  * subscribed to. The client program can choose one or more
  * event types when subscribing to a data feed.
  */
-enum class EventType {
+enum class SubscriptionType {
     HeadLineActuals,
     ReleaseCalendar,
     HeadLineSurveys
@@ -66,7 +66,7 @@ enum class TopicType {
 struct SubscriptionRequest {
     std::string topic;
     TopicType topic_type = TopicType::Ticker;
-    EventType event_type = EventType::HeadLineActuals;
+    SubscriptionType subscription_type = SubscriptionType::HeadLineActuals;
     std::string options = "";
     std::string toUri();
 };

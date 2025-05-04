@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <flatbuffers/flatbuffers.h>
-#include <economic_event.h>
-#include <economic_event_generated.h>
+#include <blpconn_message.h>
+#include <blpconn_fb_generated.h>
 #include <vector>
 
 // Helper function to create test data for HeadlineEconomicEvent

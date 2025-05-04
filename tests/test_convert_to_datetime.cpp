@@ -1,4 +1,4 @@
-#include "economic_event.h"
+#include "blpconn_message.h"
 #include <blpapi_datetime.h>
 #include <gtest/gtest.h>
 #include <ctime>

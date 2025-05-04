@@ -4,7 +4,7 @@
 #include <blpapi_datetime.h>
 #include <blpapi_name.h>
 #include <blpapi_element.h>
-#include "economic_event.h"
+#include "blpconn_message.h"
 
 using namespace BloombergLP;
 

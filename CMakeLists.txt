@@ -67,19 +67,11 @@ foreach(example ${EXAMPLE_FILES})
     get_filename_component(binname ${example} NAME_WE)
     add_executable(${binname} ${example})
     target_include_directories(${binname} PRIVATE include)
-    # target_link_libraries(${binname} PRIVATE blpconn ${BLPAPI3_64_DIR}/blpapi_cpp_3.25.3.1/Linux/libblpapi3_64.so)
-    target_link_libraries(${binname} PRIVATE blpconn ${BLPAPILIB})
+    target_link_libraries(${binname} PRIVATE boost_system readline blpconn ${BLPAPILIB})
     install(TARGETS ${binname} DESTINATION bin)
     add_dependencies(${binname} blpconn)
 endforeach(example ${EXAMPLE_FILES})
 
-# Google Test - to process files in ./tests
-include(FetchContent)
-FetchContent_Declare(
-    googletest
-    https://github.com/google/googletest.git)
-
-FetchContent_MakeAvailable(googletest)
 enable_testing()
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 include_directories(${gtest_SOURCE_DIR}/googletest/include ${gtest_SOURCE_DIR}/googlemock/include)

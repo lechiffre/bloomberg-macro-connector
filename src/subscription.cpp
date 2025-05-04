@@ -33,16 +33,12 @@ std::string SubscriptionRequest::toUri() {
 }
 
 int Context::subscribe(SubscriptionRequest& request) {
-    json j = newLogMessage(module_name);
-    j["result"] = "error";
     if (!session_) {
-        j["message"] = "Session not initialized";
-        logger_.log(j.dump());
+        log(module_name, "Error: Session not initialized");
         return -1;
     }
     if (request.topic.empty()) {
-        j["message"] = "Topic is empty";
-        logger_.log(j.dump());
+        log(module_name, "Error: Topic cannot be empty");
         return -1;
     }
     blpapi::SubscriptionList sub;
@@ -52,9 +48,7 @@ int Context::subscribe(SubscriptionRequest& request) {
     sub.add(reference.c_str(), corr_id);
     session_->subscribe(sub);
     } catch (const blpapi::Exception& e) {
-        j["message"] = "Subscription failed";
-        j["error"] = e.description();
-        logger_.log(j.dump());
+        log(module_name, "Error: Subscription failed");
         return -1;
     }
     return 0;

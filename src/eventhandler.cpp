@@ -2,7 +2,6 @@
 #include <unistd.h>
 #include <iostream>
 #include "blpconn.h"
-#include "economic_event.h"
 
 namespace BlpConn {
 
@@ -10,19 +9,26 @@ static const blpapi::Name ECONOMIC_EVENT("EconomicEvent");
 static const blpapi::Name HEADLINE_ECONOMIC_EVENT("HeadlineEconomicEvent");
 static const blpapi::Name HEADLINE_CALENDAR_EVENT("HeadlineCalendarEvent");
 
-void processEconomicEvent(const blpapi::Element& elem) {
+void EventHandler::processEconomicEvent(const blpapi::Element& elem) {
     if (elem.name() == HEADLINE_ECONOMIC_EVENT) {
-        HeadlineEconomicEvent message = parseHeadlineEconomicEvent(elem);
-        std::cout << ">>> HeadlineEconomicEvent: " << message << std::endl;
+        // HeadlineEconomicEvent economic_event = parseHeadlineEconomicEvent(elem);
+        // Message message = economic_event;
+        HeadlineEconomicEvent event = parseHeadlineEconomicEvent(elem);
+        flatbuffers::FlatBufferBuilder builder = buildBufferEconomicEvent(event);
+        // prt_logger_->send_notification(message, MessageType::EconomicEvent);
+        logger_.sendNotification(builder);
+        // std::cout << ">>> HeadlineEconomicEvent: " << event << std::endl;
     } else if (elem.name() == HEADLINE_CALENDAR_EVENT) {
-        HeadlineCalendarEvent message = parseHeadlineCalendarEvent(elem);
-        std::cout << ">>> HeadlineCalendarEvent: " << message << std::endl;
+        HeadlineCalendarEvent event = parseHeadlineCalendarEvent(elem);
+        // prt_logger_->send_notification(message, MessageType::CalendarEvent);
+        // logger_.send_notification(message, MessageType::CalendarEvent);
+        // std::cout << ">>> HeadlineCalendarEvent: " << event << std::endl;
     } else {
         std::cout << ">>> Unknown event type: " << elem.name() << std::endl;
     }
 }
 
-bool processSubscriptionData(const blpapi::Event& event, blpapi::Session *session) {
+bool EventHandler::processSubscriptionData(const blpapi::Event& event, blpapi::Session *session) {
     blpapi::MessageIterator msgIter(event);
     while (msgIter.next()) {
         blpapi::Message msg = msgIter.message();
@@ -38,7 +44,7 @@ bool processSubscriptionData(const blpapi::Event& event, blpapi::Session *sessio
     return true;
 }
 
-bool processSessionStatus(const blpapi::Event& event, blpapi::Session *session) {
+bool EventHandler::processSessionStatus(const blpapi::Event& event, blpapi::Session *session) {
     blpapi::MessageIterator msgIter(event);
     while (msgIter.next()) {
         blpapi::Message msg = msgIter.message();
@@ -49,7 +55,7 @@ bool processSessionStatus(const blpapi::Event& event, blpapi::Session *session) 
     return true;
 }
 
-bool processSubscriptionStatus(const blpapi::Event& event, blpapi::Session *session) {
+bool EventHandler::processSubscriptionStatus(const blpapi::Event& event, blpapi::Session *session) {
     blpapi::MessageIterator msgIter(event);
     while (msgIter.next()) {
         blpapi::Message msg = msgIter.message();

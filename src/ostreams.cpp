@@ -1,4 +1,6 @@
-#include "economic_event.h"
+#include "blpconn_message.h"
+#include <ctime>
+#include <iomanip>
 #include <ostream>
 
 namespace BlpConn {
@@ -50,6 +52,20 @@ std::ostream& operator<<(std::ostream& os, const HeadlineCalendarEvent& event) {
        << ", release_status: " << releaseStatusToString(event.release_status)
        << " }";
     return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const DateTimeType& dt) {
+    // Convert to a human-readable format
+    std::time_t time = dt.microseconds / 1000000; // Convert microseconds to seconds
+    std::tm* tm = std::localtime(&time);
+    os << std::put_time(tm, "%Y-%m-%d %H:%M:%S");
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const LogMessage& log_message) {
+    os << log_message.log_dt << " : "
+       << log_message.module_name << " : "
+       << log_message.message;
 }
 
 } // namespace BlpConn

@@ -77,4 +77,18 @@ table HeadlineCalendarEvent {
     release_status: ReleaseStatus;
 }
 
-union EconomicEvent { HeadlineEconomicEvent, HeadlineCalendarEvent }
+table LogMessage {
+    log_dt: DateTime; // Timestamp of the log
+    module_name: string; // Module that generated the log
+    message: string; // Log message
+}
+
+union Message {
+    HeadlineEconomicEvent,
+    HeadlineCalendarEvent,
+    LogMessage,
+}
+
+table Main {
+    message: Message;
+}

@@ -1,3 +1,3 @@
 all:
-	flatc --cpp -o ../include economic_event.fbs
-	flatc --python -o ../vrs/python economic_event.fbs
+	flatc --cpp -o ../include blpconn_fb.fbs
+	flatc --python -o ../vrs/python blpconn_fb.fbs

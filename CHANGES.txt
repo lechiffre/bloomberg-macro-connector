@@ -13,3 +13,10 @@
 0.0.4 - 2025-05-03
 
 - Flatbuffers for serialization
+
+0.0.5 - 2025-05-04
+
+- examples/cli started
+- deserialize in c++
+- schema updated
+- notifications with flatbuffers

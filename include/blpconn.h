@@ -15,26 +15,36 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include <nlohmann/json.hpp>
 #include <blpapi_session.h>
+#include <blpconn_message.h>
+#include <blpconn_fb_generated.h>
 
-using json = nlohmann::json;
 using namespace BloombergLP;
 
-/**
- * Function definition for observer functions. A client
- * program can provide one or more observer functions.
- * These functions will receive JSON messages in string format.
- * The client program is resposible to parse and process
- * the JSON messages.
- */
-typedef void (*observerFunc)(const char* json_);
+
 
 /**
  * The namespace for classes and functions in this library is
  * blpconn.
  */
 namespace BlpConn {
+
+/**
+ * Definition for observer functions. A client program can provide one or more
+ * observer functions to handle serialized values. These functions will receive
+ * the type of object being received, a pointer to the serialized buffer, and
+ * its size.  The client program is responsible for parsing and processing the
+ * data. Data is serialized using FlatBuffers.
+ *
+ * @param type The type of the object being received.
+ * @param buffer A pointer to the serialized buffer.
+ * @param size The size of the serialized buffer.
+ */
+typedef void (*ObserverFunc)(
+    const uint8_t *buffer,
+    size_t size
+);
+
 
 /**
  * The EventType enum defines the types of events that can be
@@ -71,6 +81,7 @@ struct SubscriptionRequest {
     std::string toUri();
 };
 
+class Context;
 /**
  * This class is responsible for logging messages. It can log messages
  * to a specified output stream (default is std::cout) or to the collection
@@ -91,18 +102,26 @@ public:
      * The client program can register one or more observer functions.
      * These functions will receive JSON messages in string format.
      */
-    void addNotificationHandler(observerFunc fnc) noexcept;
+    void addNotificationHandler(ObserverFunc fnc) noexcept;
 
     /**
      * This method is used to log messages. It can be used to log
      * messages to the output stream or to the registered observer
      * functions.
      */
-    void log(const std::string& json_message);
+    void log(const std::string& module_name, const std::string& message);
+
+    // void send_notification(Message message, MessageType msg_type);
+    void sendNotification(flatbuffers::FlatBufferBuilder& builder);
+    /**
+     * Notifies to all registered observer functions.
+     */
+    void notify(const uint8_t* buffer, size_t size);
 
 private:
     std::ostream* out_stream_;
-    std::vector<observerFunc> callbacks_;
+    std::vector<ObserverFunc> callbacks_;
+    // TODO: check if it needs to have one or more buffers
 };
 
 /**
@@ -118,7 +137,8 @@ class EventHandler: public blpapi::EventHandler {
         /**
          * It is possible to set a custom logger object.
          */
-        void setLogger(Logger *prt_logger) { prt_logger_ = prt_logger; }
+        // void setLogger(Logger *prt_logger) { prt_logger_ = prt_logger; }
+        // void setLogger2(Logger& logger) { logger_ = logger; }
 
         /**
          * This method is called when an event is received. It processes
@@ -126,9 +146,15 @@ class EventHandler: public blpapi::EventHandler {
          * This method is call by the Bloomberg API when an event is received.
          */
         bool processEvent(const blpapi::Event& event, blpapi::Session *session) override;
+        friend Context;
 
     private:
-        Logger *prt_logger_;
+        void processEconomicEvent(const blpapi::Element& elem);
+        bool processSubscriptionData(const blpapi::Event& event, blpapi::Session *session);
+        bool processSessionStatus(const blpapi::Event& event, blpapi::Session *session);
+        bool processSubscriptionStatus(const blpapi::Event& event, blpapi::Session *session);
+        // Logger *prt_logger_;
+        Logger logger_;
 };
 
 /**
@@ -144,7 +170,17 @@ public:
      * Constructor. It initializes the logger and event handler objects.
      */
     Context() {
-        event_handler_.setLogger(&logger_);
+        // event_handler_.setLogger(&logger_);
+    }
+
+    /**
+     * In the case the service is still active, the destructor
+     * take care to shut it down
+     */
+    ~Context() {
+        if (session_) {
+            shutdownService();
+        }
     }
 
     /**
@@ -194,40 +230,31 @@ public:
      *
      * @param fnc The observer function to register.
      */
-    void addNotificationHandler(observerFunc fnc) noexcept;
+    void addNotificationHandler(ObserverFunc fnc) noexcept {
+        std::cout << ">>> Context addNotificationHandler" << std::endl;
+        event_handler_.logger_.addNotificationHandler(fnc);
+    }
+
+
+    void sendNotification(flatbuffers::FlatBufferBuilder& builder) {
+        event_handler_.logger_.sendNotification(builder);
+    }
 
     /**
      * The client program can use this method to log own messages.
      * Message should be in JSON format and be passed as strings.
      */
-    void log(const std::string &json_message) {
-        logger_.log(json_message);
+    void log(const std::string& module_name, const std::string& message) {
+        event_handler_.logger_.log(module_name, message);
     }
+
 private:
     std::string service_ = "//blp/economic-data";
-    Logger logger_;
     EventHandler event_handler_;
     blpapi::Session *session_ = nullptr;
     int subscription_counter_ = 0;
 };
 
 }
-
-// Utility functions
-
-/**
- * This function creates a new log message. It is used for different
- * components of the library when a message is prepared to notify 
- * any event.
- *
- * @param module_name The name of the module that generates the message.
- */
-json newLogMessage(const std::string& module_name);
-
-/**
- * Bloomberg API provides messages in an internal format. This function
- * parses the messages and convert them to JSON format.
- */
-void parseElement(const blpapi::Element& elem, json j);
 
 #endif // _BLPCONN_H

@@ -1,13 +1,13 @@
 #include <fstream>
-#include <nlohmann/json.hpp>
 #include <blpapi_authoptions.h>
 #include <blpapi_correlationid.h>
 #include <blpapi_identity.h>
 #include <blpapi_sessionoptions.h>
 #include <blpapi_tlsoptions.h>
+#include <nlohmann/json.hpp>
 #include "blpconn.h"
 
-
+using json = nlohmann::json;
 static const char *module_name = "ConnectionService";
 
 /**
@@ -91,63 +91,47 @@ static blpapi::SessionOptions defineSessionOptions(const json& config) {
 namespace BlpConn {
 
 bool Context::initializeService(std::string& config_path) {
-    json j = newLogMessage(module_name);
     if (!fileExists(config_path)) {
-        j["result"] = "error";
-        j["message"] = "Configuration file doesn't exist";
-        logger_.log(j.dump());  
+        log(module_name, "Configuration file doesn't exists");  
         return false;
     }
     json config;
     try {
         config = readConfiguration(config_path);
     } catch (const std::runtime_error& e) {
-        j["result"] = "error";
-        j["message"] = e.what();
-        logger_.log(j.dump());  
+        log(module_name, e.what());
         return false;
     }
     blpapi::SessionOptions session_options;
     try {
         session_options = defineSessionOptions(config);
     } catch (const std::exception& e) {
-        j["result"] = "error";
-        j["message"] = "Invalid configuration options: " + std::string(e.what());
-        logger_.log(j.dump());
+        log(module_name, e.what());
         return false;
     }
     service_ = config["default_service"];
     session_ = new blpapi::Session(session_options, new EventHandler());
     if (!session_->start()) {
-        j["result"] = "error";
-        j["message"] = "Failed to start session";
-        logger_.log(j.dump());
+        log(module_name, "Failed to start session");
         return false;
     }
     if (!session_->openService(session_options.defaultSubscriptionService())) {
-        j["result"] = "error";
-        j["message"] = "Failed to open service: " + std::string(session_options.defaultSubscriptionService());
-        logger_.log(j.dump());
+        log(module_name, "Failed to start service");
         return false;
     }
-    j["result"] = "success";
-    j["message"] = "Service initialized successfully";
+    log(module_name, "Service initialized successfully");
     return true;
 }
 
 void Context::shutdownService() {
-    json j = newLogMessage(module_name);
     if (session_) {
         session_->stop();
         delete session_;
         session_ = nullptr;
-        j["result"] = "success";
-        j["message"] = "Service shutdown successfully";
+        log(module_name, "Service shut down");
     } else {
-        j["result"] = "error";
-        j["message"] = "Service is not running";
+        log(module_name, "Service is not running");
     }
-    logger_.log(j.dump());
 }
 
 }

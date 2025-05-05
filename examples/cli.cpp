@@ -3,13 +3,17 @@
 #include <readline/readline.h>
 #include <boost/algorithm/string.hpp>
 #include <blpconn.h>
+#include <blpconn_message.h>
 #include <blpconn_fb_generated.h>
 
 using namespace BlpConn;
 
+enum {
+    SUBSCRIBE,
+    UNSUBSCRIBE
+};
 
 void observer(const uint8_t *buffer, size_t size) {
-    std::cout << ">>>> CLI observer" << std::endl;
     flatbuffers::Verifier verifier(buffer, size);
     if (!BlpConn::FB::VerifyMessageVector(verifier, nullptr, nullptr)) {
         std::cout << "Invalid message" << std::endl;
@@ -17,34 +21,30 @@ void observer(const uint8_t *buffer, size_t size) {
     }
     auto main = flatbuffers::GetRoot<BlpConn::FB::Main>(buffer);
     if (main->message_type() == BlpConn::FB::Message_HeadlineEconomicEvent) {
-        auto event = main->message_as_HeadlineEconomicEvent();
-        std::cout << "Received economic event: " << event->description()->str() << std::endl;
+        auto fb_event = main->message_as_HeadlineEconomicEvent();
+        auto event = toHeadlineEconomicEvent(fb_event);
+        std::cout << event << std::endl;
     } else if (main->message_type() == BlpConn::FB::Message_HeadlineCalendarEvent) {
-        auto event = main->message_as_HeadlineCalendarEvent();
-        std::cout << "Received calendar event: " << event->description()->str() << std::endl;
+        auto fb_event = main->message_as_HeadlineCalendarEvent();
+        auto event = toHeadlineCalendarEvent(fb_event);
+        std::cout << event << std::endl;
     } else if (main->message_type() == BlpConn::FB::Message_LogMessage) {
-        auto log_message = main->message_as_LogMessage();
-        std::cout << "Log message: " << log_message->message()->str() << std::endl;
-    } else {
-        std::cout << "Unknown message type" << std::endl;
+        auto fb_log_message = main->message_as_LogMessage();
+        auto log_message = toLogMessage(fb_log_message);
+        std::cout << log_message << std::endl;
     }
 }
 
-
-void processEventRequest(Context& ctx, SubscriptionType subscription_type, const std::string& rem) {
+void eventRequest(Context& ctx, SubscriptionType subscription_type, const std::string& rem, int action) {
     SubscriptionRequest request = {
         .topic = rem,
         .subscription_type = subscription_type
     };
-    ctx.subscribe(request);
-}
-
-void processCalendarEvent(Context& ctx, const std::string& rem) {
-    processEventRequest(ctx, SubscriptionType::ReleaseCalendar, rem); 
-}
-
-void processEconomicEvent(Context& ctx, const std::string& rem) {
-    processEventRequest(ctx, SubscriptionType::HeadLineActuals, rem);
+    if (action == SUBSCRIBE) {
+        ctx.subscribe(request);
+    } else {
+        ctx.unsubscribe(request);
+    }
 }
 
 void processCommand(Context& ctx, const std::string& line) {
@@ -55,21 +55,41 @@ void processCommand(Context& ctx, const std::string& line) {
     }
     std::string cmd = line.substr(0, pos);
     std::string rem = line.substr(pos);
+    boost::trim(rem);
+    pos = rem.find(' ');
+    if (pos == line.npos) {
+        std::cout << "Invalidad event" << std::endl;
+        return;
+    }
+    std::string evt = rem.substr(0, pos);
+    std::string par = rem.substr(pos);
     boost::algorithm::trim(cmd);
-    boost::algorithm::trim(rem);
-    if (cmd == "calendar") {
-        processCalendarEvent(ctx, rem);
-    } else if (cmd == "economic") {
-        processEconomicEvent(ctx, rem);
-    } else {
-        std::cout << "Not defined command" << std::endl;
+    boost::algorithm::trim(evt);
+    boost::algorithm::trim(par);
+    std::cout << cmd << ":" << evt << ":" << par << std::endl;
+    if (cmd == "subscribe") {
+        if (evt == "calendar") {
+            eventRequest(ctx, SubscriptionType::ReleaseCalendar, par, SUBSCRIBE); 
+        } else if (evt == "economic") {
+            eventRequest(ctx, SubscriptionType::HeadlineActuals, par, SUBSCRIBE); 
+        } else {
+            std::cout << "Not defined command" << std::endl;
+        }
+    } else if (cmd == "unsubscribe") {
+        if (evt == "calendar") {
+            eventRequest(ctx, SubscriptionType::ReleaseCalendar, par, UNSUBSCRIBE); 
+        } else if (evt == "economic") {
+            eventRequest(ctx, SubscriptionType::HeadlineActuals, par, UNSUBSCRIBE); 
+        } else {
+            std::cout << "Not defined command" << std::endl;
+        }
     }
     return;
 }
 
 void run(Context& ctx) {
     char *input;
-    // Seting line history parameters
+    // Setting line history parameters
     std::string history_path =
         std::string(std::getenv("HOME")) + "/.blpconn_history";
     using_history();
@@ -90,10 +110,14 @@ void run(Context& ctx) {
             break;
         }
         try {
+            // Clear the current input line
             processCommand(ctx, line);
         } catch (int e) {
+            // Clear the current input line
             std::cout << "Error processing line" << std::endl;
         }
+        // Redisplay the prompt after output
+        std::cout << "> " << std::flush;
     }
     write_history(history_path.c_str());
 }

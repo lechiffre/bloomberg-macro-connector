@@ -1,3 +1,6 @@
 - [X] Parsing messages in binary format (protobuffers or another alternative)
-- Use asynchronous open service
-- Review session status events (json vs binary messaging)
+- [X] Use asynchronous open service
+- Complete events for Calendar and LogMessage
+- Move to flatbufers straight
+- Go binding
+- Go message package

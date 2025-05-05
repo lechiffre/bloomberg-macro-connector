@@ -174,7 +174,6 @@ ValueType getValue(const blpapi::Element& elem, const blpapi::Name name) {
 
     blpapi::Element subElem = elem.getElement(name);
     blpapi::Element choice = subElem.getChoice();
-    std::cout << ">>> Single: " << choice << std::endl;
     if ((choice.name() == SINGLE)) {
         value.number = 1;
         value.value = getFloatFromStringElement(choice);

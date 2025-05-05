@@ -7,13 +7,13 @@ namespace BlpConn {
 std::string SubscriptionRequest::toUri() {
     std::string uri = "";
     switch (subscription_type) {
-        case SubscriptionType::HeadLineActuals:
+        case SubscriptionType::HeadlineActuals:
             uri += "/headline-actuals";
             break;
         case SubscriptionType::ReleaseCalendar:
             uri += "/release-calendar";
             break;
-        case SubscriptionType::HeadLineSurveys:
+        case SubscriptionType::HeadlineSurveys:
             uri += "/headline-surveys";
             break;
     }
@@ -42,17 +42,37 @@ int Context::subscribe(SubscriptionRequest& request) {
         return -1;
     }
     blpapi::SubscriptionList sub;
-    blpapi::CorrelationId corr_id(++subscription_counter_);
+    blpapi::CorrelationId corr_id(subscription_counter_);
     std::string reference = service_ + request.toUri();
     try {
-    sub.add(reference.c_str(), corr_id);
-    session_->subscribe(sub);
+        sub.add(reference.c_str(), corr_id);
+        session_->subscribe(sub);
     } catch (const blpapi::Exception& e) {
         log(module_name, "Error: Subscription failed");
         return -1;
     }
-    return 0;
+    return subscription_counter_++;
 
 }
 
+void Context::unsubscribe(SubscriptionRequest& request) {
+    if (!session_) {
+        log(module_name, "Error: Session not initialized");
+        return;
+    }
+    if (request.topic.empty()) {
+        log(module_name, "Error: Topic cannot be empty");
+        return;
+    }
+    blpapi::SubscriptionList sub;
+    std::string reference = service_ + request.toUri();
+    try {
+        sub.add(reference.c_str());
+        session_->unsubscribe(sub);
+    } catch (const blpapi::Exception& e) {
+        log(module_name, "Error: Subscription failed");
+        return;
+    }
 }
+
+} // namespace BlpConn

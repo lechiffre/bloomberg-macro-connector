@@ -1,7 +1,6 @@
 #ifndef ECONOMIC_EVENT_H
 #define ECONOMIC_EVENT_H
 
-#include <cstdint>
 #include <string>
 #include <cmath>
 #include <blpapi_datetime.h>
@@ -127,12 +126,12 @@ flatbuffers::Offset<FB::LogMessage> serializeLogMessage(
 
 // Deserialize functions
 HeadlineEconomicEvent toHeadlineEconomicEvent(const BlpConn::FB::HeadlineEconomicEvent* fb_event);
-
 HeadlineCalendarEvent toHeadlineCalendarEvent(const BlpConn::FB::HeadlineCalendarEvent* fb_event);
-
 LogMessage toLogMessage(const BlpConn::FB::LogMessage* fb_log_message);
 
 flatbuffers::FlatBufferBuilder buildBufferEconomicEvent(HeadlineEconomicEvent& event);
+flatbuffers::FlatBufferBuilder buildBufferCalendarEvent(HeadlineCalendarEvent& event);
+flatbuffers::FlatBufferBuilder buildBufferLogMessage(LogMessage& log_message);
 
 // Utility functions
 

@@ -16,6 +16,7 @@ static const char *module_name = "ConnectionService";
  * @return true if the file exists, false otherwise
  */
 static bool fileExists(const std::string& configPath) {
+    std::cout << configPath << std::endl;
     std::ifstream file(configPath);
     return file.good();
 }
@@ -110,8 +111,8 @@ bool Context::initializeService(std::string& config_path) {
         return false;
     }
     service_ = config["default_service"];
-    session_ = new blpapi::Session(session_options, new EventHandler());
-    if (!session_->start()) {
+    session_ = new blpapi::Session(session_options, &event_handler_);
+    if (!session_->startAsync()) {
         log(module_name, "Failed to start session");
         return false;
     }
@@ -125,7 +126,7 @@ bool Context::initializeService(std::string& config_path) {
 
 void Context::shutdownService() {
     if (session_) {
-        session_->stop();
+        session_->stopAsync();
         delete session_;
         session_ = nullptr;
         log(module_name, "Service shut down");

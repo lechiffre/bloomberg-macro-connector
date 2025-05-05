@@ -66,6 +66,7 @@ std::ostream& operator<<(std::ostream& os, const LogMessage& log_message) {
     os << log_message.log_dt << " : "
        << log_message.module_name << " : "
        << log_message.message;
+    return os;
 }
 
 } // namespace BlpConn

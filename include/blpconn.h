@@ -12,16 +12,13 @@
 #ifndef _BLPCONN_H
 #define _BLPCONN_H
 
+#include <cstdint>
 #include <string>
 #include <vector>
 #include <iostream>
 #include <blpapi_session.h>
-#include <blpconn_message.h>
-#include <blpconn_fb_generated.h>
 
 using namespace BloombergLP;
-
-
 
 /**
  * The namespace for classes and functions in this library is
@@ -52,9 +49,9 @@ typedef void (*ObserverFunc)(
  * event types when subscribing to a data feed.
  */
 enum class SubscriptionType {
-    HeadLineActuals,
+    HeadlineActuals,
     ReleaseCalendar,
-    HeadLineSurveys
+    HeadlineSurveys
 };
 
 /**
@@ -76,12 +73,14 @@ enum class TopicType {
 struct SubscriptionRequest {
     std::string topic;
     TopicType topic_type = TopicType::Ticker;
-    SubscriptionType subscription_type = SubscriptionType::HeadLineActuals;
+    SubscriptionType subscription_type = SubscriptionType::HeadlineActuals;
     std::string options = "";
+    int correlection_id = 0;
     std::string toUri();
 };
 
 class Context;
+
 /**
  * This class is responsible for logging messages. It can log messages
  * to a specified output stream (default is std::cout) or to the collection
@@ -112,7 +111,7 @@ public:
     void log(const std::string& module_name, const std::string& message);
 
     // void send_notification(Message message, MessageType msg_type);
-    void sendNotification(flatbuffers::FlatBufferBuilder& builder);
+    // void sendNotification(flatbuffers::FlatBufferBuilder& builder);
     /**
      * Notifies to all registered observer functions.
      */
@@ -145,15 +144,14 @@ class EventHandler: public blpapi::EventHandler {
          * the event and sends the formatted JSON message to the logger.
          * This method is call by the Bloomberg API when an event is received.
          */
-        bool processEvent(const blpapi::Event& event, blpapi::Session *session) override;
         friend Context;
+        bool processEvent(const blpapi::Event& event, blpapi::Session *session) override;
 
     private:
         void processEconomicEvent(const blpapi::Element& elem);
         bool processSubscriptionData(const blpapi::Event& event, blpapi::Session *session);
         bool processSessionStatus(const blpapi::Event& event, blpapi::Session *session);
         bool processSubscriptionStatus(const blpapi::Event& event, blpapi::Session *session);
-        // Logger *prt_logger_;
         Logger logger_;
 };
 
@@ -222,6 +220,8 @@ public:
      */
     int subscribe(SubscriptionRequest& request);
 
+    void unsubscribe(SubscriptionRequest& request);
+
     /**
      * To register observer functions. The client program can
      * register one or more observer functions. These functions
@@ -231,14 +231,14 @@ public:
      * @param fnc The observer function to register.
      */
     void addNotificationHandler(ObserverFunc fnc) noexcept {
-        std::cout << ">>> Context addNotificationHandler" << std::endl;
         event_handler_.logger_.addNotificationHandler(fnc);
     }
 
-
+    /*
     void sendNotification(flatbuffers::FlatBufferBuilder& builder) {
         event_handler_.logger_.sendNotification(builder);
     }
+    */
 
     /**
      * The client program can use this method to log own messages.

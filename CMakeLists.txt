@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project(blpconn VERSION 0.0.1 LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -fPIE")
 
@@ -71,6 +71,9 @@ foreach(example ${EXAMPLE_FILES})
     install(TARGETS ${binname} DESTINATION bin)
     add_dependencies(${binname} blpconn)
 endforeach(example ${EXAMPLE_FILES})
+
+# Find Qt6
+find_package(Qt6 COMPONENTS Core Widgets REQUIRED)
 
 enable_testing()
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})

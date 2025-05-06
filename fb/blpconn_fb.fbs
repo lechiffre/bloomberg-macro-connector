@@ -1,0 +1,94 @@
+namespace BlpConn.FB;
+
+enum ReleaseStatus: int {
+    Unknown = 0,
+    Released = 1,
+    Scheduled = 2,
+    Another = 99
+}
+
+enum EventSubType: int {
+    Unknown = 0,
+    New = 1,
+    Update = 2,
+    Unitpaint = 3,
+    Delete = 4,
+    Another = 99
+}
+
+enum EventType: int {
+    Unknown = 0,
+    Actual = 1,
+    Revision = 2,
+    Estimate = 3,
+    Calendar = 4,
+    Another = 99
+}
+
+table DateTime {
+    micros: ulong;
+    offset: short;
+}
+
+table Value {
+    number: float;
+    value: float;
+    low: float;
+    high: float;
+    median: float;
+    average: float;
+    standard_deviation: float;
+}
+
+table HeadlineEconomicEvent {
+    // Shared fields
+    id_bb_global: string (required);
+    parsekyable_des: string (required);
+    description: string;
+    event_type: EventType;
+    event_subtype: EventSubType;
+    event_id: int;
+    observation_period: string;
+    release_start_dt: DateTime;
+    release_end_dt: DateTime;
+
+    // Specific fields
+    value: Value;
+    prior_value: Value;
+    prior_event_id: int;
+    prior_observation_period: string;
+    prior_economic_release_start_dt: DateTime;
+    prior_economic_release_end_dt: DateTime;
+}
+
+table HeadlineCalendarEvent {
+    // Shared fields
+    id_bb_global: string (required);
+    parsekyable_des: string (required);
+    description: string;
+    event_type: EventType;
+    event_subtype: EventSubType;
+    event_id: int;
+    observation_period: string;
+    release_start_dt: DateTime;
+    release_end_dt: DateTime;
+
+    // Specific fields
+    release_status: ReleaseStatus;
+}
+
+table LogMessage {
+    log_dt: DateTime; // Timestamp of the log
+    module_name: string; // Module that generated the log
+    message: string; // Log message
+}
+
+union Message {
+    HeadlineEconomicEvent,
+    HeadlineCalendarEvent,
+    LogMessage,
+}
+
+table Main {
+    message: Message;
+}

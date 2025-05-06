@@ -1,0 +1,6 @@
+- [X] Parsing messages in binary format (protobuffers or another alternative)
+- [X] Use asynchronous open service
+- Complete events for Calendar and LogMessage
+- Move to flatbufers straight
+- Go binding
+- Go message package

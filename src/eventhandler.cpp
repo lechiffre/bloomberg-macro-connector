@@ -2,8 +2,8 @@
 #include <iostream>
 #include <flatbuffers/flatbuffer_builder.h>
 #include <boost/format.hpp>
-#include "blpconn.h"
-#include "blpconn_message.h"
+#include "blpconn_event.h"
+#include "blpconn_serialize.h"
 
 static const char* module_name = "EventHandler";
 

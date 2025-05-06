@@ -12,11 +12,7 @@
 #ifndef _BLPCONN_H
 #define _BLPCONN_H
 
-#include <cstdint>
-#include <string>
-#include <vector>
-#include <iostream>
-#include <blpapi_session.h>
+#include <blpconn_event.h>
 
 using namespace BloombergLP;
 
@@ -25,22 +21,6 @@ using namespace BloombergLP;
  * blpconn.
  */
 namespace BlpConn {
-
-/**
- * Definition for observer functions. A client program can provide one or more
- * observer functions to handle serialized values. These functions will receive
- * the type of object being received, a pointer to the serialized buffer, and
- * its size.  The client program is responsible for parsing and processing the
- * data. Data is serialized using FlatBuffers.
- *
- * @param type The type of the object being received.
- * @param buffer A pointer to the serialized buffer.
- * @param size The size of the serialized buffer.
- */
-typedef void (*ObserverFunc)(
-    const uint8_t *buffer,
-    size_t size
-);
 
 
 /**
@@ -65,10 +45,26 @@ enum class TopicType {
 };
 
 /**
- * This structure represents a subscription request. It includes
- * default values for the topic type and event type. The client program
- * can specify the topic, topic type, event type, and options when
- * creating a subscription request.
+ * This structure represents a subscription request. It includes default values
+ * for the topic type and event type. The client program can specify the topic,
+ * topic type, event type, and options when creating a subscription request.
+ *
+ * Fields:
+ *
+ * topic: Requested topic, generally a financial instrument. Example:
+ * "CATBTOTB Index"
+ *
+ * topic_type: It indicates the standard or form used to represent the
+ * topic.Check TopicType enum to see possible values subscription_type
+ *
+ * subscription_type: it indicates what kind of subscription you're
+ * requiring, for example a calender headline.
+ *
+ * options: additional parameters passed as options
+ *
+ * correlation_id: a integer representing an id for the subscription. This
+ * id can be set by the client. Once it is set, it can be used to cancel
+ * the subscritpion.
  */
 struct SubscriptionRequest {
     std::string topic;
@@ -76,83 +72,13 @@ struct SubscriptionRequest {
     SubscriptionType subscription_type = SubscriptionType::HeadlineActuals;
     std::string options = "";
     int correlection_id = 0;
-    std::string toUri();
-};
-
-class Context;
-
-/**
- * This class is responsible for logging messages. It can log messages
- * to a specified output stream (default is std::cout) or to the collection
- * of registered observer functions.
- */
-class Logger {
-public:
     /**
-     * The default output stream is std::cout. The client program can
-     * specify a different output stream if needed. The output stream
-     * is used when no observer functions are registered. Otherwise,
-     * notifications are sent only to the observer functions.
+     * Converts struct attributes to an URI following standard
+     * defined by Bloomberg. Example:
+     *
+     *   "//blpapi/economic-data/headline-actuals/ticker/CATBTOTB Index"
      */
-    Logger(std::ostream* out_stream = &std::cout): out_stream_(out_stream) {}
-
-    /**
-     * This method is the way to register observer functions.
-     * The client program can register one or more observer functions.
-     * These functions will receive JSON messages in string format.
-     */
-    void addNotificationHandler(ObserverFunc fnc) noexcept;
-
-    /**
-     * This method is used to log messages. It can be used to log
-     * messages to the output stream or to the registered observer
-     * functions.
-     */
-    void log(const std::string& module_name, const std::string& message);
-
-    // void send_notification(Message message, MessageType msg_type);
-    // void sendNotification(flatbuffers::FlatBufferBuilder& builder);
-    /**
-     * Notifies to all registered observer functions.
-     */
-    void notify(const uint8_t* buffer, size_t size);
-
-private:
-    std::ostream* out_stream_;
-    std::vector<ObserverFunc> callbacks_;
-    // TODO: check if it needs to have one or more buffers
-};
-
-/**
- * A class to handle Bloomberg events, as well as event generated
- * directly by this library. This class receives event notifications,
- * formats them as JSON messages, and by the logger object, sends
- * them to the registered observer functions or to the output stream.
- * Part of the notifications are heartbeats, which are generated
- * to keep the connection alive and report the status of the connection.
- */
-class EventHandler: public blpapi::EventHandler {
-    public:
-        /**
-         * It is possible to set a custom logger object.
-         */
-        // void setLogger(Logger *prt_logger) { prt_logger_ = prt_logger; }
-        // void setLogger2(Logger& logger) { logger_ = logger; }
-
-        /**
-         * This method is called when an event is received. It processes
-         * the event and sends the formatted JSON message to the logger.
-         * This method is call by the Bloomberg API when an event is received.
-         */
-        friend Context;
-        bool processEvent(const blpapi::Event& event, blpapi::Session *session) override;
-
-    private:
-        void processEconomicEvent(const blpapi::Element& elem);
-        bool processSubscriptionData(const blpapi::Event& event, blpapi::Session *session);
-        bool processSessionStatus(const blpapi::Event& event, blpapi::Session *session);
-        bool processSubscriptionStatus(const blpapi::Event& event, blpapi::Session *session);
-        Logger logger_;
+    const std::string toUri();
 };
 
 /**
@@ -164,12 +90,7 @@ class EventHandler: public blpapi::EventHandler {
  */
 class Context {
 public:
-    /**
-     * Constructor. It initializes the logger and event handler objects.
-     */
-    Context() {
-        // event_handler_.setLogger(&logger_);
-    }
+    Context() {}
 
     /**
      * In the case the service is still active, the destructor
@@ -182,22 +103,21 @@ public:
     }
 
     /**
-     * Authentication and connection to Bloomberg service.
-     * The configuration file contains connection parameters
-     * and authentication information. The client program should
-     * specify the path to the configuration file.
-     * The connection process is notified by the event handler.
-     * Therefore, in order to receive notifications by callback
-     * functions, those functions should be registered before
-     * calling this method.
+     * Authentication and connection to Bloomberg service.  The configuration
+     * file contains connection parameters and authentication information. The
+     * client program should specify the path to the configuration file.  The
+     * connection process is notified by the event handler.  Therefore, in
+     * order to receive notifications by callback functions, those functions
+     * should be registered before calling this method.
      *
      * @param config_path The path to the configuration file.
      * @return true if the connection is successful, false otherwise.
      */
-    bool initializeService(std::string& config_path);
+    bool initializeService(const std::string& config_path);
 
     /**
      * This method disconnects from the Bloomberg service.
+     * It is automatically called by the constructor.
      */
     void shutdownService();
 
@@ -220,6 +140,14 @@ public:
      */
     int subscribe(SubscriptionRequest& request);
 
+    /**
+     * To unscribe the session for a data feed. It should include a
+     * correlation id set during the subscription, in order to identify
+     * the subscription to be closed.
+     *
+     * @param request The subscription request. The correlation id should
+     * be the same used for the subscription.
+     */
     void unsubscribe(SubscriptionRequest& request);
 
     /**
@@ -233,12 +161,6 @@ public:
     void addNotificationHandler(ObserverFunc fnc) noexcept {
         event_handler_.logger_.addNotificationHandler(fnc);
     }
-
-    /*
-    void sendNotification(flatbuffers::FlatBufferBuilder& builder) {
-        event_handler_.logger_.sendNotification(builder);
-    }
-    */
 
     /**
      * The client program can use this method to log own messages.
@@ -255,6 +177,6 @@ private:
     int subscription_counter_ = 0;
 };
 
-}
+} // namespace BlpConn
 
 #endif // _BLPCONN_H

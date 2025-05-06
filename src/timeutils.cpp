@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <sstream>
 #include <blpconn_message.h>
+#include <blpconn_serialize.h>
 
 namespace BlpConn {
       DateTimeType currentTime() noexcept {

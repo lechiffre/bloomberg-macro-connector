@@ -1,4 +1,4 @@
-module blpconngo
+module gocli
 
 go 1.24.2
 

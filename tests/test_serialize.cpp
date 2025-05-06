@@ -1,8 +1,9 @@
+#include <vector>
 #include <gtest/gtest.h>
 #include <flatbuffers/flatbuffers.h>
 #include <blpconn_message.h>
+#include <blpconn_serialize.h>
 #include <blpconn_fb_generated.h>
-#include <vector>
 
 // Helper function to create test data for HeadlineEconomicEvent
 std::vector<BlpConn::HeadlineEconomicEvent> createEconomicEventTestData() {

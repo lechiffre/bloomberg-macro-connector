@@ -31,13 +31,13 @@ table DateTime {
 }
 
 table Value {
-    number: float;
-    value: float;
-    low: float;
-    high: float;
-    median: float;
-    average: float;
-    standard_deviation: float;
+    number: double;
+    value: double;
+    low: double;
+    high: double;
+    median: double;
+    average: double;
+    standard_deviation: double;
 }
 
 table HeadlineEconomicEvent {

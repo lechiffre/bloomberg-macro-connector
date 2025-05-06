@@ -4,6 +4,7 @@
 #include <boost/algorithm/string.hpp>
 #include <blpconn.h>
 #include <blpconn_message.h>
+#include <blpconn_serialize.h>
 #include <blpconn_fb_generated.h>
 
 using namespace BlpConn;

@@ -1,26 +1,41 @@
-# Bloomberg GECO Connector
+# BlpConn: B-PIPE Connector
 
-headline-actuals, release-calendar, headline-surveys"
+BlpConn is a C++/Go library to work with the Bloomberg Market Data Feed
+(B-PIPE).  At this moment, BlpConn is focused on retrieving data form the
+Bloomberg's economic data feed (//blp/economic-data).
 
-EconomicEvent = { HeadlineEconomicEvent = { ID_BB_GLOBAL = "BBG002SBJ964" PARSEKYABLE_DES = "CATBTOTB Index" DESCRIPTION = "STCA Canada Merchandise Trade Total Balance SA CAD" EVENT_TYPE = REVISION EVENT_SUBTYPE = INITPAINT EVENT_ID = 2167796 OBSERVATION_PERIOD = "Feb" ECO_RELEASE_DT = { DATETIME = 2025-04-03T12:30:00.000+00:00 } VALUE = { SINGLE = "3.130" } PRIOR_VALUE = { SINGLE = "3.970" } REVISION_METADATA = { PRIOR_EVENT_ID = 2167795 PRIOR_OBSERVATION_PERIOD = "Jan" PRIOR_ECO_RELEASE_DT = { DATETIME = 2025-03-06T13:30:00.000+00:00 } } } }
+## Subscription Request
 
+A subscription request is a structure that encapsules the required data to
+activate a subscription. Once the subscription has been activated, your
+application will start receiving updates and notifications about your request.
 
-    return true;
-SessionConnectionUp = { server = "gbr.cloudpoint.bloomberg.com:8194" serverId = "ba40046-apicszfb" encryptionStatus = "Encrypted" encryptionCipher = "TLS_AES_256_GCM_SHA384  TLSv1.3 Kx=any      Au=any  Enc=AESGCM(256) Mac=AEAD" compressionStatus = "Compressed" }
+A request contains:
 
-SessionStarted = { initialEndpoints[] = { initialEndpoints = { address = "gbr.cloudpoint.bloomberg.com:8194" } } }
+* `service`: One of the services offered by Bloombergs. At this moment, the only
+  service enabled is `economic-data`.
+* `subscription_type`: It is a category of information, like calendar of releases
+  or economic headlines.
+* `topic_type`: It is the standard to encode the entity or security you are
+  requiring information. The most used is "Ticker". Other types include CUSIP
+  and FIGI.
+* `topic`: This is the specefic identifier that represents the entity or security
+  you are requiring information.
+* `options`: Some requests may need complementary information, for example a period of time. This attribute has the purpose to encode those additional parameters.
+* `correlation_id`: A number to idetinfy the request. This number can be assigned by the user or automacatically assigned by the library.
 
-SessionConnectionUp = { server = "deu.cloudpoint.bloomberg.com:8194" serverId = "ba41068-apicszfb" encryptionStatus = "Encrypted" encryptionCipher = "TLS_AES_256_GCM_SHA384  TLSv1.3 Kx=any      Au=any  Enc=AESGCM(256) Mac=AEAD" compressionStatus = "Compressed" }
+For subscription and topic types, the library provides predefined enumerations
+with valid values.
 
-ServiceOpened = { serviceName = "//blp/economic-data" }
+## Observer functions
 
-SubscriptionStarted = { exceptions[] = { } streamIds[] = { "1" } receivedFrom = { address = "gbr.cloudpoint.bloomberg.com:8194" } reason = "Subscriber made a subscription" }
+To receive notifications, the library requires that you register a observer function.
+This function will be used as a callback: every time a new event occurs, a notification will be deliverated to the client program.
 
-SubscriptionStreamsActivated = { streams[] = { streams = { id = "1" endpoint = { address = "gbr.cloudpoint.bloomberg.com:8194" serverId = "ba40046-apicszfb" } } } reason = "Subscriber made a subscription" }
+Notifications are delivered as [FlatBuffers](https://flatbuffers.dev/) binary
+sequences. FlatBuffers is a high performant serialization format and library. The client
+program is responsible to implement mechanisms to deserialize the data. Examples of deserialization functions are provided for C++ and Go.
 
-Heartbeat
+## Usage process
 
-SessionConnectionDown = { server = "gbr.cloudpoint.bloomberg.com:8194" serverId = "ba40046-apicszfb" }
-
-SessionTerminated = { }
 

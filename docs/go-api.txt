@@ -1,0 +1,106 @@
+package blpconngo // import "."
+
+
+VARIABLES
+
+var Swig_escape_always_false bool
+var Swig_escape_val interface{}
+
+FUNCTIONS
+
+func DeleteContext(arg1 Context)
+func DeleteSubscriptionRequest(arg1 SubscriptionRequest)
+func Swig_free(arg1 uintptr)
+func Swig_malloc(arg1 int) (_swig_ret uintptr)
+
+TYPES
+
+type BlpConnSubscriptionType int
+
+var SubscriptionType_HeadlineActuals BlpConnSubscriptionType = _swig_getSubscriptionType_HeadlineActuals()
+var SubscriptionType_HeadlineSurveys BlpConnSubscriptionType = _swig_getSubscriptionType_HeadlineSurveys()
+var SubscriptionType_ReleaseCalendar BlpConnSubscriptionType = _swig_getSubscriptionType_ReleaseCalendar()
+type BlpConnTopicType int
+
+var TopicType_Cusip BlpConnTopicType = _swig_getTopicType_Cusip()
+var TopicType_Ticker BlpConnTopicType = _swig_getTopicType_Ticker()
+type Context interface {
+	Swigcptr() uintptr
+	SwigIsContext()
+	InitializeService(arg2 string) (_swig_ret bool)
+	ShutdownService()
+	IsConnected() (_swig_ret bool)
+	Subscribe(arg2 SubscriptionRequest) (_swig_ret int)
+	Unsubscribe(arg2 SubscriptionRequest)
+	AddNotificationHandler(arg2 _swig_fnptr)
+	Log(arg2 string, arg3 string)
+}
+
+func NewContext() (_swig_ret Context)
+
+type SubscriptionRequest interface {
+	Swigcptr() uintptr
+	SwigIsSubscriptionRequest()
+	SetTopic(arg2 string)
+	GetTopic() (_swig_ret string)
+	SetTopic_type(arg2 BlpConnTopicType)
+	GetTopic_type() (_swig_ret BlpConnTopicType)
+	SetSubscription_type(arg2 BlpConnSubscriptionType)
+	GetSubscription_type() (_swig_ret BlpConnSubscriptionType)
+	SetOptions(arg2 string)
+	GetOptions() (_swig_ret string)
+	SetCorrelection_id(arg2 int)
+	GetCorrelection_id() (_swig_ret int)
+	ToUri() (_swig_ret string)
+}
+
+func NewSubscriptionRequest() (_swig_ret SubscriptionRequest)
+
+type SwigcptrContext uintptr
+
+func (arg1 SwigcptrContext) AddNotificationHandler(arg2 _swig_fnptr)
+
+func (arg1 SwigcptrContext) InitializeService(arg2 string) (_swig_ret bool)
+
+func (arg1 SwigcptrContext) IsConnected() (_swig_ret bool)
+
+func (arg1 SwigcptrContext) Log(arg2 string, arg3 string)
+
+func (arg1 SwigcptrContext) ShutdownService()
+
+func (arg1 SwigcptrContext) Subscribe(arg2 SubscriptionRequest) (_swig_ret int)
+
+func (p SwigcptrContext) SwigIsContext()
+
+func (p SwigcptrContext) Swigcptr() uintptr
+
+func (arg1 SwigcptrContext) Unsubscribe(arg2 SubscriptionRequest)
+
+type SwigcptrSubscriptionRequest uintptr
+
+func (arg1 SwigcptrSubscriptionRequest) GetCorrelection_id() (_swig_ret int)
+
+func (arg1 SwigcptrSubscriptionRequest) GetOptions() (_swig_ret string)
+
+func (arg1 SwigcptrSubscriptionRequest) GetSubscription_type() (_swig_ret BlpConnSubscriptionType)
+
+func (arg1 SwigcptrSubscriptionRequest) GetTopic() (_swig_ret string)
+
+func (arg1 SwigcptrSubscriptionRequest) GetTopic_type() (_swig_ret BlpConnTopicType)
+
+func (arg1 SwigcptrSubscriptionRequest) SetCorrelection_id(arg2 int)
+
+func (arg1 SwigcptrSubscriptionRequest) SetOptions(arg2 string)
+
+func (arg1 SwigcptrSubscriptionRequest) SetSubscription_type(arg2 BlpConnSubscriptionType)
+
+func (arg1 SwigcptrSubscriptionRequest) SetTopic(arg2 string)
+
+func (arg1 SwigcptrSubscriptionRequest) SetTopic_type(arg2 BlpConnTopicType)
+
+func (p SwigcptrSubscriptionRequest) SwigIsSubscriptionRequest()
+
+func (p SwigcptrSubscriptionRequest) Swigcptr() uintptr
+
+func (arg1 SwigcptrSubscriptionRequest) ToUri() (_swig_ret string)
+

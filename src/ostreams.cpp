@@ -1,7 +1,9 @@
-#include "blpconn_message.h"
+// #include "blpconn_message.h"
 #include <ctime>
 #include <iomanip>
 #include <ostream>
+#include <blpconn_message.h>
+#include <blpconn_serialize.h>
 
 namespace BlpConn {
 

@@ -250,36 +250,36 @@ struct Value FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_AVERAGE = 14,
     VT_STANDARD_DEVIATION = 16
   };
-  float number() const {
-    return GetField<float>(VT_NUMBER, 0.0f);
+  double number() const {
+    return GetField<double>(VT_NUMBER, 0.0);
   }
-  float value() const {
-    return GetField<float>(VT_VALUE, 0.0f);
+  double value() const {
+    return GetField<double>(VT_VALUE, 0.0);
   }
-  float low() const {
-    return GetField<float>(VT_LOW, 0.0f);
+  double low() const {
+    return GetField<double>(VT_LOW, 0.0);
   }
-  float high() const {
-    return GetField<float>(VT_HIGH, 0.0f);
+  double high() const {
+    return GetField<double>(VT_HIGH, 0.0);
   }
-  float median() const {
-    return GetField<float>(VT_MEDIAN, 0.0f);
+  double median() const {
+    return GetField<double>(VT_MEDIAN, 0.0);
   }
-  float average() const {
-    return GetField<float>(VT_AVERAGE, 0.0f);
+  double average() const {
+    return GetField<double>(VT_AVERAGE, 0.0);
   }
-  float standard_deviation() const {
-    return GetField<float>(VT_STANDARD_DEVIATION, 0.0f);
+  double standard_deviation() const {
+    return GetField<double>(VT_STANDARD_DEVIATION, 0.0);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyField<float>(verifier, VT_NUMBER, 4) &&
-           VerifyField<float>(verifier, VT_VALUE, 4) &&
-           VerifyField<float>(verifier, VT_LOW, 4) &&
-           VerifyField<float>(verifier, VT_HIGH, 4) &&
-           VerifyField<float>(verifier, VT_MEDIAN, 4) &&
-           VerifyField<float>(verifier, VT_AVERAGE, 4) &&
-           VerifyField<float>(verifier, VT_STANDARD_DEVIATION, 4) &&
+           VerifyField<double>(verifier, VT_NUMBER, 8) &&
+           VerifyField<double>(verifier, VT_VALUE, 8) &&
+           VerifyField<double>(verifier, VT_LOW, 8) &&
+           VerifyField<double>(verifier, VT_HIGH, 8) &&
+           VerifyField<double>(verifier, VT_MEDIAN, 8) &&
+           VerifyField<double>(verifier, VT_AVERAGE, 8) &&
+           VerifyField<double>(verifier, VT_STANDARD_DEVIATION, 8) &&
            verifier.EndTable();
   }
 };
@@ -288,26 +288,26 @@ struct ValueBuilder {
   typedef Value Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_number(float number) {
-    fbb_.AddElement<float>(Value::VT_NUMBER, number, 0.0f);
+  void add_number(double number) {
+    fbb_.AddElement<double>(Value::VT_NUMBER, number, 0.0);
   }
-  void add_value(float value) {
-    fbb_.AddElement<float>(Value::VT_VALUE, value, 0.0f);
+  void add_value(double value) {
+    fbb_.AddElement<double>(Value::VT_VALUE, value, 0.0);
   }
-  void add_low(float low) {
-    fbb_.AddElement<float>(Value::VT_LOW, low, 0.0f);
+  void add_low(double low) {
+    fbb_.AddElement<double>(Value::VT_LOW, low, 0.0);
   }
-  void add_high(float high) {
-    fbb_.AddElement<float>(Value::VT_HIGH, high, 0.0f);
+  void add_high(double high) {
+    fbb_.AddElement<double>(Value::VT_HIGH, high, 0.0);
   }
-  void add_median(float median) {
-    fbb_.AddElement<float>(Value::VT_MEDIAN, median, 0.0f);
+  void add_median(double median) {
+    fbb_.AddElement<double>(Value::VT_MEDIAN, median, 0.0);
   }
-  void add_average(float average) {
-    fbb_.AddElement<float>(Value::VT_AVERAGE, average, 0.0f);
+  void add_average(double average) {
+    fbb_.AddElement<double>(Value::VT_AVERAGE, average, 0.0);
   }
-  void add_standard_deviation(float standard_deviation) {
-    fbb_.AddElement<float>(Value::VT_STANDARD_DEVIATION, standard_deviation, 0.0f);
+  void add_standard_deviation(double standard_deviation) {
+    fbb_.AddElement<double>(Value::VT_STANDARD_DEVIATION, standard_deviation, 0.0);
   }
   explicit ValueBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -322,13 +322,13 @@ struct ValueBuilder {
 
 inline ::flatbuffers::Offset<Value> CreateValue(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    float number = 0.0f,
-    float value = 0.0f,
-    float low = 0.0f,
-    float high = 0.0f,
-    float median = 0.0f,
-    float average = 0.0f,
-    float standard_deviation = 0.0f) {
+    double number = 0.0,
+    double value = 0.0,
+    double low = 0.0,
+    double high = 0.0,
+    double median = 0.0,
+    double average = 0.0,
+    double standard_deviation = 0.0) {
   ValueBuilder builder_(_fbb);
   builder_.add_standard_deviation(standard_deviation);
   builder_.add_average(average);

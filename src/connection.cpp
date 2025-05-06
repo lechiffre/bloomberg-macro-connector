@@ -10,18 +10,7 @@
 using json = nlohmann::json;
 static const char *module_name = "ConnectionService";
 
-/**
- * Check is configuration file exists
- * @param configPath Path to the configuration file
- * @return true if the file exists, false otherwise
- */
-static bool fileExists(const std::string& configPath) {
-    std::cout << configPath << std::endl;
-    std::ifstream file(configPath);
-    return file.good();
-}
-
-static json readConfiguration(std::string& config_path) {
+static json readConfiguration(const std::string& config_path) {
     std::ifstream file(config_path);
     if (!file.is_open()) {
         throw std::runtime_error("Failed to open file: " + config_path);
@@ -91,11 +80,7 @@ static blpapi::SessionOptions defineSessionOptions(const json& config) {
 
 namespace BlpConn {
 
-bool Context::initializeService(std::string& config_path) {
-    if (!fileExists(config_path)) {
-        log(module_name, "Configuration file doesn't exists");  
-        return false;
-    }
+bool Context::initializeService(const std::string& config_path) {
     json config;
     try {
         config = readConfiguration(config_path);
@@ -112,7 +97,7 @@ bool Context::initializeService(std::string& config_path) {
     }
     service_ = config["default_service"];
     session_ = new blpapi::Session(session_options, &event_handler_);
-    if (!session_->startAsync()) {
+    if (!session_->start()) {
         log(module_name, "Failed to start session");
         return false;
     }
@@ -126,7 +111,7 @@ bool Context::initializeService(std::string& config_path) {
 
 void Context::shutdownService() {
     if (session_) {
-        session_->stopAsync();
+        session_->stop();
         delete session_;
         session_ = nullptr;
         log(module_name, "Service shut down");

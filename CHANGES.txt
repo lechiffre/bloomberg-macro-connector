@@ -29,3 +29,7 @@
 
 - Go swig bindings
 - Go Simple example (in progress)
+
+0.0.8 - 2025-05-06
+
+- Header files reorganizaed. `blpconn.h` is the main header file.

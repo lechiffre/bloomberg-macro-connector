@@ -4,7 +4,7 @@ static const char *module_name = "SubscriptionService";
 
 namespace BlpConn {
 
-std::string SubscriptionRequest::toUri() {
+const std::string SubscriptionRequest::toUri() {
     std::string uri = "";
     switch (subscription_type) {
         case SubscriptionType::HeadlineActuals:

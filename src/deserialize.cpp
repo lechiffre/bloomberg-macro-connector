@@ -1,4 +1,5 @@
 #include "blpconn_message.h"
+#include <blpconn_fb_generated.h>
 
 namespace BlpConn {
 

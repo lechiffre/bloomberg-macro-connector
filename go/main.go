@@ -1,0 +1,29 @@
+package main
+
+/*
+#cgo LDFLAGS: -L../lib -lblpapi3_64 -lblpconngo -lblpconn -lstdc++
+#include <stdlib.h>
+*/
+import "C"
+
+import (
+	"gocli/blpconngo"
+	"log"
+	"time"
+)
+
+func main() {
+	ctx := blpconngo.NewContext()
+	ctx.AddNotificationHandler(Callback)
+	configPath := "./config.json"
+	res := ctx.InitializeService(configPath)
+	if !res {
+		log.Fatal("Failed to initialize service. Check the library and configuration.")
+	}
+	request := blpconngo.NewSubscriptionRequest()
+	request.SetTopic("CATBTOTB Index")
+	request.SetSubscription_type(blpconngo.SubscriptionType_ReleaseCalendar)
+	ctx.Subscribe(request)
+	time.Sleep(10 * time.Second)
+	ctx.ShutdownService()
+}

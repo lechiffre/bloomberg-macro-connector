@@ -5,9 +5,8 @@
 #include <cmath>
 #include <blpapi_datetime.h>
 #include <blpapi_element.h>
-#include <ostream>
 #include <flatbuffers/flatbuffers.h>
-#include "blpconn_fb_generated.h" // Generated FlatBuffers header
+// #include "blpconn_fb_generated.h"
 
 using namespace BloombergLP;
 
@@ -84,58 +83,6 @@ struct HeadlineCalendarEvent: public HeadlineBaseEvent {
     ReleaseStatus release_status = ReleaseStatus::Unknown;
 };
 
-
-enum class MessageType {
-    LogMessage = 0,
-    EconomicEvent,
-    CalendarEvent
-};
-
-
-
-HeadlineCalendarEvent parseHeadlineCalendarEvent(const blpapi::Element& elem);
-HeadlineEconomicEvent parseHeadlineEconomicEvent(const blpapi::Element& elem);
-
-DateTimeType convertToDateTime(const blpapi::Datetime& dt);
-
-EventType stringToEventType(const std::string& s);
-std::string eventTypeToString(EventType t);
-
-EventSubType stringToEventSubType(const std::string& s);
-std::string eventSubTypeToString(EventSubType t);
-
-ReleaseStatus stringToReleaseStatus(const std::string& s);
-std::string releaseStatusToString(ReleaseStatus status);
-
-std::ostream& operator<<(std::ostream& os, const DateTimeType& dt);
-std::ostream& operator<<(std::ostream& os, const ValueType& value);
-std::ostream& operator<<(std::ostream& os, const HeadlineBaseEvent& event);
-std::ostream& operator<<(std::ostream& os, const HeadlineEconomicEvent& event);
-std::ostream& operator<<(std::ostream& os, const HeadlineCalendarEvent& event);
-std::ostream& operator<<(std::ostream& os, const LogMessage& log_message);
-
-// Serialize functions
-flatbuffers::Offset<FB::HeadlineEconomicEvent> serializeHeadlineEconomicEvent(
-    flatbuffers::FlatBufferBuilder& builder, const HeadlineEconomicEvent& event);
-
-flatbuffers::Offset<FB::HeadlineCalendarEvent> serializeHeadlineCalendarEvent(
-    flatbuffers::FlatBufferBuilder& builder, const HeadlineCalendarEvent& event);
-
-flatbuffers::Offset<FB::LogMessage> serializeLogMessage(
-    flatbuffers::FlatBufferBuilder& builder, const LogMessage& log_message);
-
-// Deserialize functions
-HeadlineEconomicEvent toHeadlineEconomicEvent(const BlpConn::FB::HeadlineEconomicEvent* fb_event);
-HeadlineCalendarEvent toHeadlineCalendarEvent(const BlpConn::FB::HeadlineCalendarEvent* fb_event);
-LogMessage toLogMessage(const BlpConn::FB::LogMessage* fb_log_message);
-
-flatbuffers::FlatBufferBuilder buildBufferEconomicEvent(HeadlineEconomicEvent& event);
-flatbuffers::FlatBufferBuilder buildBufferCalendarEvent(HeadlineCalendarEvent& event);
-flatbuffers::FlatBufferBuilder buildBufferLogMessage(LogMessage& log_message);
-
-// Utility functions
-
-DateTimeType currentTime() noexcept;
 
 } // namespace BlpConn
 

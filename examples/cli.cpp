@@ -25,7 +25,7 @@ void observer(const uint8_t *buffer, size_t size) {
         auto fb_event = main->message_as_HeadlineEconomicEvent();
         auto event = toHeadlineEconomicEvent(fb_event);
         std::cout << event << std::endl;
-    } else if (main->message_type() == BlpConn::FB::Message_HeadlineCalendarEvent) {
+    } else if (main->message_type() == FB::Message_HeadlineCalendarEvent) {
         auto fb_event = main->message_as_HeadlineCalendarEvent();
         auto event = toHeadlineCalendarEvent(fb_event);
         std::cout << event << std::endl;
@@ -127,6 +127,6 @@ int main() {
     Context ctx;
     ctx.addNotificationHandler(observer);
     std::string config_path = "./config.json";
-    ctx.initializeService(config_path);
+    ctx.initializeSession(config_path);
     run(ctx);      
 }

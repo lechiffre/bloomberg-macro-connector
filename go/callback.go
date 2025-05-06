@@ -21,14 +21,12 @@ func NotificationHandler(buffer *C.uchar, len C.size_t) {
 		fmt.Println("Invalid buffer or length")
 		return
 	}
-
 	bufferSlice := C.GoBytes(unsafe.Pointer(buffer), C.int(len))
 	main := FB.GetRootAsMain(bufferSlice, 0)
 	if main == nil {
 		fmt.Println("Failed to parse FlatBuffers main object")
 		return
 	}
-
 	switch main.MessageType() {
 	case FB.MessageHeadlineEconomicEvent:
 		var fbEvent = FB.GetRootAsHeadlineEconomicEvent(bufferSlice, 0)

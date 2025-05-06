@@ -27,7 +27,7 @@ var TopicType_Ticker BlpConnTopicType = _swig_getTopicType_Ticker()
 type Context interface {
 	Swigcptr() uintptr
 	SwigIsContext()
-	InitializeService(arg2 string) (_swig_ret bool)
+	InitializeSession(arg2 string) (_swig_ret bool)
 	ShutdownService()
 	IsConnected() (_swig_ret bool)
 	Subscribe(arg2 SubscriptionRequest) (_swig_ret int)
@@ -60,7 +60,7 @@ type SwigcptrContext uintptr
 
 func (arg1 SwigcptrContext) AddNotificationHandler(arg2 _swig_fnptr)
 
-func (arg1 SwigcptrContext) InitializeService(arg2 string) (_swig_ret bool)
+func (arg1 SwigcptrContext) InitializeSession(arg2 string) (_swig_ret bool)
 
 func (arg1 SwigcptrContext) IsConnected() (_swig_ret bool)
 

@@ -7,7 +7,7 @@ using namespace BlpConn;
 int main() {
     Context ctx;
     std::string config_path = "./config.json";
-    ctx.initializeService(config_path);
+    ctx.initializeSession(config_path);
     SubscriptionRequest request1 = {.topic = "CATBTOTB Index"};
     ctx.subscribe(request1);
     SubscriptionRequest request2 = {

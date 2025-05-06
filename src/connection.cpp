@@ -80,7 +80,7 @@ static blpapi::SessionOptions defineSessionOptions(const json& config) {
 
 namespace BlpConn {
 
-bool Context::initializeService(const std::string& config_path) {
+bool Context::initializeSession(const std::string& config_path) {
     json config;
     try {
         config = readConfiguration(config_path);

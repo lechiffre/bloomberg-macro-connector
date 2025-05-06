@@ -113,7 +113,7 @@ public:
      * @param config_path The path to the configuration file.
      * @return true if the connection is successful, false otherwise.
      */
-    bool initializeService(const std::string& config_path);
+    bool initializeSession(const std::string& config_path);
 
     /**
      * This method disconnects from the Bloomberg service.

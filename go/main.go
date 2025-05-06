@@ -16,14 +16,14 @@ func main() {
 	ctx := blpconngo.NewContext()
 	ctx.AddNotificationHandler(Callback)
 	configPath := "./config.json"
-	res := ctx.InitializeService(configPath)
+	res := ctx.InitializeSession(configPath)
 	if !res {
-		log.Fatal("Failed to initialize service. Check the library and configuration.")
+		log.Fatal("Failed to initialize service")
 	}
+	defer ctx.ShutdownService()
 	request := blpconngo.NewSubscriptionRequest()
 	request.SetTopic("CATBTOTB Index")
 	request.SetSubscription_type(blpconngo.SubscriptionType_ReleaseCalendar)
 	ctx.Subscribe(request)
 	time.Sleep(10 * time.Second)
-	ctx.ShutdownService()
 }

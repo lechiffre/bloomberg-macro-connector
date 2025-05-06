@@ -83,10 +83,14 @@ table LogMessage {
     message: string; // Log message
 }
 
+table Heartbeat {
+}
+
 union Message {
     HeadlineEconomicEvent,
     HeadlineCalendarEvent,
     LogMessage,
+    HeartBeat,
 }
 
 table Main {

@@ -71,7 +71,7 @@ struct SubscriptionRequest {
     TopicType topic_type = TopicType::Ticker;
     SubscriptionType subscription_type = SubscriptionType::HeadlineActuals;
     std::string options = "";
-    int correlection_id = 0;
+    uint64_t correlation_id = 0;
     /**
      * Converts struct attributes to an URI following standard
      * defined by Bloomberg. Example:
@@ -166,8 +166,9 @@ public:
      * The client program can use this method to log own messages.
      * Message should be in JSON format and be passed as strings.
      */
-    void log(int module, int status, const std::string& message) {
-        event_handler_.logger_.log(module, status, message);
+    void log(uint8_t module, uint8_t status, uint64_t correlation_id,
+        const std::string& message) {
+        event_handler_.logger_.log(module, status, correlation_id, message);
     }
 
 private:

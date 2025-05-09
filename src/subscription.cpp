@@ -4,8 +4,6 @@
 
 namespace BlpConn {
 
-static const int module = ModuleSystem;
-
 const std::string SubscriptionRequest::toUri() {
     std::string uri = "";
     switch (subscription_type) {
@@ -35,44 +33,73 @@ const std::string SubscriptionRequest::toUri() {
 }
 
 int Context::subscribe(SubscriptionRequest& request) {
+    blpapi::CorrelationId corr_id(request.correlation_id);
     if (!session_) {
-        log(module, 0, "Error: Session not initialized");
+        log(
+            static_cast<uint8_t>(Module::Session),
+            static_cast<uint8_t>(SessionStatus::ConnectionDown),
+            corr_id.asInteger(),
+            "Session not initialized");
         return -1;
     }
     if (request.topic.empty()) {
-        log(module, 0, "Error: Topic cannot be empty");
+        log(
+            static_cast<uint8_t>(Module::Subscription),
+            static_cast<uint8_t>(SubscriptionStatus::Failure),
+            corr_id.asInteger(),
+            "Topic cannot be empty");
         return -1;
     }
     blpapi::SubscriptionList sub;
-    blpapi::CorrelationId corr_id(subscription_counter_);
     std::string reference = service_ + request.toUri();
     try {
         sub.add(reference.c_str(), corr_id);
         session_->subscribe(sub);
     } catch (const blpapi::Exception& e) {
-        log(module, 0, "Error: Subscription failed");
+        log(
+            static_cast<uint8_t>(Module::Subscription),
+            static_cast<uint8_t>(SubscriptionStatus::Failure),
+            corr_id.asInteger(),
+            "Error: Subscription failed");
         return -1;
     }
+    log(
+        static_cast<uint8_t>(Module::Subscription),
+        static_cast<uint8_t>(SubscriptionStatus::Success),
+        corr_id.asInteger(),
+        "Subscription successful");
     return subscription_counter_++;
-
 }
 
 void Context::unsubscribe(SubscriptionRequest& request) {
+    blpapi::CorrelationId corr_id(request.correlation_id);
     if (!session_) {
-        log(module, 0, "Error: Session not initialized");
+        log(
+            static_cast<uint8_t>(Module::Session),
+            static_cast<uint8_t>(SessionStatus::ConnectionDown),
+            corr_id.asInteger(),
+            "Session not initialized");
         return;
     }
     if (request.topic.empty()) {
-        log(module, 0, "Error: Topic cannot be empty");
+        log(
+            static_cast<uint8_t>(Module::Subscription),
+            static_cast<uint8_t>(SubscriptionStatus::Failure),
+            corr_id.asInteger(),
+            "Topic cannot be empty");
         return;
     }
     blpapi::SubscriptionList sub;
     std::string reference = service_ + request.toUri();
     try {
-        sub.add(reference.c_str());
+        sub.add(reference.c_str(), corr_id);
         session_->unsubscribe(sub);
     } catch (const blpapi::Exception& e) {
-        log(module, 0, "Error: Subscription failed");
+        log(
+            static_cast<uint8_t>(Module::Subscription),
+            static_cast<uint8_t>(SubscriptionStatus::Failure),
+            corr_id.asInteger(),
+            "Error: Unsubscription failed");
         return;
     }
 }

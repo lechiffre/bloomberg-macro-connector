@@ -34,7 +34,7 @@ struct LogMessageBuilder;
 struct Main;
 struct MainBuilder;
 
-enum ReleaseStatus : int32_t {
+enum ReleaseStatus : uint8_t {
   ReleaseStatus_Unknown = 0,
   ReleaseStatus_Released = 1,
   ReleaseStatus_Scheduled = 2,
@@ -63,7 +63,7 @@ inline const char *EnumNameReleaseStatus(ReleaseStatus e) {
   }
 }
 
-enum ModuleType : int32_t {
+enum ModuleType : uint8_t {
   ModuleType_ModuleUnknown = 0,
   ModuleType_ModuleSystem = 1,
   ModuleType_ModuleSession = 2,
@@ -101,7 +101,7 @@ inline const char *EnumNameModuleType(ModuleType e) {
   }
 }
 
-enum SessionStatusType : int32_t {
+enum SessionStatusType : uint8_t {
   SessionStatusType_SessionUnknown = 0,
   SessionStatusType_SessionConnectionUp = 1,
   SessionStatusType_SessionStarted = 2,
@@ -136,7 +136,7 @@ inline const char *EnumNameSessionStatusType(SessionStatusType e) {
   }
 }
 
-enum EventSubType : int32_t {
+enum EventSubType : uint8_t {
   EventSubType_Unknown = 0,
   EventSubType_New = 1,
   EventSubType_Update = 2,
@@ -171,7 +171,7 @@ inline const char *EnumNameEventSubType(EventSubType e) {
   }
 }
 
-enum EventType : int32_t {
+enum EventType : uint8_t {
   EventType_Unknown = 0,
   EventType_Actual = 1,
   EventType_Revision = 2,
@@ -206,7 +206,7 @@ inline const char *EnumNameEventType(EventType e) {
   }
 }
 
-enum SessionType : int32_t {
+enum SessionType : uint8_t {
   SessionType_Unknowk = 0,
   SessionType_SessionConnectionUp = 1,
   SessionType_SessionStarted = 2,
@@ -477,13 +477,13 @@ struct HeadlineEconomicEvent FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Ta
     return GetPointer<const ::flatbuffers::String *>(VT_DESCRIPTION);
   }
   BlpConn::FB::EventType event_type() const {
-    return static_cast<BlpConn::FB::EventType>(GetField<int32_t>(VT_EVENT_TYPE, 0));
+    return static_cast<BlpConn::FB::EventType>(GetField<uint8_t>(VT_EVENT_TYPE, 0));
   }
   BlpConn::FB::EventSubType event_subtype() const {
-    return static_cast<BlpConn::FB::EventSubType>(GetField<int32_t>(VT_EVENT_SUBTYPE, 0));
+    return static_cast<BlpConn::FB::EventSubType>(GetField<uint8_t>(VT_EVENT_SUBTYPE, 0));
   }
-  int32_t event_id() const {
-    return GetField<int32_t>(VT_EVENT_ID, 0);
+  uint64_t event_id() const {
+    return GetField<uint64_t>(VT_EVENT_ID, 0);
   }
   const ::flatbuffers::String *observation_period() const {
     return GetPointer<const ::flatbuffers::String *>(VT_OBSERVATION_PERIOD);
@@ -520,9 +520,9 @@ struct HeadlineEconomicEvent FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Ta
            verifier.VerifyString(parsekyable_des()) &&
            VerifyOffset(verifier, VT_DESCRIPTION) &&
            verifier.VerifyString(description()) &&
-           VerifyField<int32_t>(verifier, VT_EVENT_TYPE, 4) &&
-           VerifyField<int32_t>(verifier, VT_EVENT_SUBTYPE, 4) &&
-           VerifyField<int32_t>(verifier, VT_EVENT_ID, 4) &&
+           VerifyField<uint8_t>(verifier, VT_EVENT_TYPE, 1) &&
+           VerifyField<uint8_t>(verifier, VT_EVENT_SUBTYPE, 1) &&
+           VerifyField<uint64_t>(verifier, VT_EVENT_ID, 8) &&
            VerifyOffset(verifier, VT_OBSERVATION_PERIOD) &&
            verifier.VerifyString(observation_period()) &&
            VerifyOffset(verifier, VT_RELEASE_START_DT) &&
@@ -558,13 +558,13 @@ struct HeadlineEconomicEventBuilder {
     fbb_.AddOffset(HeadlineEconomicEvent::VT_DESCRIPTION, description);
   }
   void add_event_type(BlpConn::FB::EventType event_type) {
-    fbb_.AddElement<int32_t>(HeadlineEconomicEvent::VT_EVENT_TYPE, static_cast<int32_t>(event_type), 0);
+    fbb_.AddElement<uint8_t>(HeadlineEconomicEvent::VT_EVENT_TYPE, static_cast<uint8_t>(event_type), 0);
   }
   void add_event_subtype(BlpConn::FB::EventSubType event_subtype) {
-    fbb_.AddElement<int32_t>(HeadlineEconomicEvent::VT_EVENT_SUBTYPE, static_cast<int32_t>(event_subtype), 0);
+    fbb_.AddElement<uint8_t>(HeadlineEconomicEvent::VT_EVENT_SUBTYPE, static_cast<uint8_t>(event_subtype), 0);
   }
-  void add_event_id(int32_t event_id) {
-    fbb_.AddElement<int32_t>(HeadlineEconomicEvent::VT_EVENT_ID, event_id, 0);
+  void add_event_id(uint64_t event_id) {
+    fbb_.AddElement<uint64_t>(HeadlineEconomicEvent::VT_EVENT_ID, event_id, 0);
   }
   void add_observation_period(::flatbuffers::Offset<::flatbuffers::String> observation_period) {
     fbb_.AddOffset(HeadlineEconomicEvent::VT_OBSERVATION_PERIOD, observation_period);
@@ -613,7 +613,7 @@ inline ::flatbuffers::Offset<HeadlineEconomicEvent> CreateHeadlineEconomicEvent(
     ::flatbuffers::Offset<::flatbuffers::String> description = 0,
     BlpConn::FB::EventType event_type = BlpConn::FB::EventType_Unknown,
     BlpConn::FB::EventSubType event_subtype = BlpConn::FB::EventSubType_Unknown,
-    int32_t event_id = 0,
+    uint64_t event_id = 0,
     ::flatbuffers::Offset<::flatbuffers::String> observation_period = 0,
     ::flatbuffers::Offset<BlpConn::FB::DateTime> release_start_dt = 0,
     ::flatbuffers::Offset<BlpConn::FB::DateTime> release_end_dt = 0,
@@ -624,6 +624,7 @@ inline ::flatbuffers::Offset<HeadlineEconomicEvent> CreateHeadlineEconomicEvent(
     ::flatbuffers::Offset<BlpConn::FB::DateTime> prior_economic_release_start_dt = 0,
     ::flatbuffers::Offset<BlpConn::FB::DateTime> prior_economic_release_end_dt = 0) {
   HeadlineEconomicEventBuilder builder_(_fbb);
+  builder_.add_event_id(event_id);
   builder_.add_prior_economic_release_end_dt(prior_economic_release_end_dt);
   builder_.add_prior_economic_release_start_dt(prior_economic_release_start_dt);
   builder_.add_prior_observation_period(prior_observation_period);
@@ -633,12 +634,11 @@ inline ::flatbuffers::Offset<HeadlineEconomicEvent> CreateHeadlineEconomicEvent(
   builder_.add_release_end_dt(release_end_dt);
   builder_.add_release_start_dt(release_start_dt);
   builder_.add_observation_period(observation_period);
-  builder_.add_event_id(event_id);
-  builder_.add_event_subtype(event_subtype);
-  builder_.add_event_type(event_type);
   builder_.add_description(description);
   builder_.add_parsekyable_des(parsekyable_des);
   builder_.add_id_bb_global(id_bb_global);
+  builder_.add_event_subtype(event_subtype);
+  builder_.add_event_type(event_type);
   return builder_.Finish();
 }
 
@@ -649,7 +649,7 @@ inline ::flatbuffers::Offset<HeadlineEconomicEvent> CreateHeadlineEconomicEventD
     const char *description = nullptr,
     BlpConn::FB::EventType event_type = BlpConn::FB::EventType_Unknown,
     BlpConn::FB::EventSubType event_subtype = BlpConn::FB::EventSubType_Unknown,
-    int32_t event_id = 0,
+    uint64_t event_id = 0,
     const char *observation_period = nullptr,
     ::flatbuffers::Offset<BlpConn::FB::DateTime> release_start_dt = 0,
     ::flatbuffers::Offset<BlpConn::FB::DateTime> release_end_dt = 0,
@@ -707,10 +707,10 @@ struct HeadlineCalendarEvent FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Ta
     return GetPointer<const ::flatbuffers::String *>(VT_DESCRIPTION);
   }
   BlpConn::FB::EventType event_type() const {
-    return static_cast<BlpConn::FB::EventType>(GetField<int32_t>(VT_EVENT_TYPE, 0));
+    return static_cast<BlpConn::FB::EventType>(GetField<uint8_t>(VT_EVENT_TYPE, 0));
   }
   BlpConn::FB::EventSubType event_subtype() const {
-    return static_cast<BlpConn::FB::EventSubType>(GetField<int32_t>(VT_EVENT_SUBTYPE, 0));
+    return static_cast<BlpConn::FB::EventSubType>(GetField<uint8_t>(VT_EVENT_SUBTYPE, 0));
   }
   int32_t event_id() const {
     return GetField<int32_t>(VT_EVENT_ID, 0);
@@ -725,7 +725,7 @@ struct HeadlineCalendarEvent FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Ta
     return GetPointer<const BlpConn::FB::DateTime *>(VT_RELEASE_END_DT);
   }
   BlpConn::FB::ReleaseStatus release_status() const {
-    return static_cast<BlpConn::FB::ReleaseStatus>(GetField<int32_t>(VT_RELEASE_STATUS, 0));
+    return static_cast<BlpConn::FB::ReleaseStatus>(GetField<uint8_t>(VT_RELEASE_STATUS, 0));
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -735,8 +735,8 @@ struct HeadlineCalendarEvent FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Ta
            verifier.VerifyString(parsekyable_des()) &&
            VerifyOffset(verifier, VT_DESCRIPTION) &&
            verifier.VerifyString(description()) &&
-           VerifyField<int32_t>(verifier, VT_EVENT_TYPE, 4) &&
-           VerifyField<int32_t>(verifier, VT_EVENT_SUBTYPE, 4) &&
+           VerifyField<uint8_t>(verifier, VT_EVENT_TYPE, 1) &&
+           VerifyField<uint8_t>(verifier, VT_EVENT_SUBTYPE, 1) &&
            VerifyField<int32_t>(verifier, VT_EVENT_ID, 4) &&
            VerifyOffset(verifier, VT_OBSERVATION_PERIOD) &&
            verifier.VerifyString(observation_period()) &&
@@ -744,7 +744,7 @@ struct HeadlineCalendarEvent FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Ta
            verifier.VerifyTable(release_start_dt()) &&
            VerifyOffset(verifier, VT_RELEASE_END_DT) &&
            verifier.VerifyTable(release_end_dt()) &&
-           VerifyField<int32_t>(verifier, VT_RELEASE_STATUS, 4) &&
+           VerifyField<uint8_t>(verifier, VT_RELEASE_STATUS, 1) &&
            verifier.EndTable();
   }
 };
@@ -763,10 +763,10 @@ struct HeadlineCalendarEventBuilder {
     fbb_.AddOffset(HeadlineCalendarEvent::VT_DESCRIPTION, description);
   }
   void add_event_type(BlpConn::FB::EventType event_type) {
-    fbb_.AddElement<int32_t>(HeadlineCalendarEvent::VT_EVENT_TYPE, static_cast<int32_t>(event_type), 0);
+    fbb_.AddElement<uint8_t>(HeadlineCalendarEvent::VT_EVENT_TYPE, static_cast<uint8_t>(event_type), 0);
   }
   void add_event_subtype(BlpConn::FB::EventSubType event_subtype) {
-    fbb_.AddElement<int32_t>(HeadlineCalendarEvent::VT_EVENT_SUBTYPE, static_cast<int32_t>(event_subtype), 0);
+    fbb_.AddElement<uint8_t>(HeadlineCalendarEvent::VT_EVENT_SUBTYPE, static_cast<uint8_t>(event_subtype), 0);
   }
   void add_event_id(int32_t event_id) {
     fbb_.AddElement<int32_t>(HeadlineCalendarEvent::VT_EVENT_ID, event_id, 0);
@@ -781,7 +781,7 @@ struct HeadlineCalendarEventBuilder {
     fbb_.AddOffset(HeadlineCalendarEvent::VT_RELEASE_END_DT, release_end_dt);
   }
   void add_release_status(BlpConn::FB::ReleaseStatus release_status) {
-    fbb_.AddElement<int32_t>(HeadlineCalendarEvent::VT_RELEASE_STATUS, static_cast<int32_t>(release_status), 0);
+    fbb_.AddElement<uint8_t>(HeadlineCalendarEvent::VT_RELEASE_STATUS, static_cast<uint8_t>(release_status), 0);
   }
   explicit HeadlineCalendarEventBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -809,16 +809,16 @@ inline ::flatbuffers::Offset<HeadlineCalendarEvent> CreateHeadlineCalendarEvent(
     ::flatbuffers::Offset<BlpConn::FB::DateTime> release_end_dt = 0,
     BlpConn::FB::ReleaseStatus release_status = BlpConn::FB::ReleaseStatus_Unknown) {
   HeadlineCalendarEventBuilder builder_(_fbb);
-  builder_.add_release_status(release_status);
   builder_.add_release_end_dt(release_end_dt);
   builder_.add_release_start_dt(release_start_dt);
   builder_.add_observation_period(observation_period);
   builder_.add_event_id(event_id);
-  builder_.add_event_subtype(event_subtype);
-  builder_.add_event_type(event_type);
   builder_.add_description(description);
   builder_.add_parsekyable_des(parsekyable_des);
   builder_.add_id_bb_global(id_bb_global);
+  builder_.add_release_status(release_status);
+  builder_.add_event_subtype(event_subtype);
+  builder_.add_event_type(event_type);
   return builder_.Finish();
 }
 
@@ -858,16 +858,20 @@ struct LogMessage FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_LOG_DT = 4,
     VT_MODULE_ = 6,
     VT_STATUS = 8,
-    VT_MESSAGE = 10
+    VT_CORRELATION_ID = 10,
+    VT_MESSAGE = 12
   };
   const BlpConn::FB::DateTime *log_dt() const {
     return GetPointer<const BlpConn::FB::DateTime *>(VT_LOG_DT);
   }
-  int32_t module_() const {
-    return GetField<int32_t>(VT_MODULE_, 0);
+  uint8_t module_() const {
+    return GetField<uint8_t>(VT_MODULE_, 0);
   }
-  int32_t status() const {
-    return GetField<int32_t>(VT_STATUS, 0);
+  uint8_t status() const {
+    return GetField<uint8_t>(VT_STATUS, 0);
+  }
+  uint64_t correlation_id() const {
+    return GetField<uint64_t>(VT_CORRELATION_ID, 0);
   }
   const ::flatbuffers::String *message() const {
     return GetPointer<const ::flatbuffers::String *>(VT_MESSAGE);
@@ -876,8 +880,9 @@ struct LogMessage FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_LOG_DT) &&
            verifier.VerifyTable(log_dt()) &&
-           VerifyField<int32_t>(verifier, VT_MODULE_, 4) &&
-           VerifyField<int32_t>(verifier, VT_STATUS, 4) &&
+           VerifyField<uint8_t>(verifier, VT_MODULE_, 1) &&
+           VerifyField<uint8_t>(verifier, VT_STATUS, 1) &&
+           VerifyField<uint64_t>(verifier, VT_CORRELATION_ID, 8) &&
            VerifyOffset(verifier, VT_MESSAGE) &&
            verifier.VerifyString(message()) &&
            verifier.EndTable();
@@ -891,11 +896,14 @@ struct LogMessageBuilder {
   void add_log_dt(::flatbuffers::Offset<BlpConn::FB::DateTime> log_dt) {
     fbb_.AddOffset(LogMessage::VT_LOG_DT, log_dt);
   }
-  void add_module_(int32_t module_) {
-    fbb_.AddElement<int32_t>(LogMessage::VT_MODULE_, module_, 0);
+  void add_module_(uint8_t module_) {
+    fbb_.AddElement<uint8_t>(LogMessage::VT_MODULE_, module_, 0);
   }
-  void add_status(int32_t status) {
-    fbb_.AddElement<int32_t>(LogMessage::VT_STATUS, status, 0);
+  void add_status(uint8_t status) {
+    fbb_.AddElement<uint8_t>(LogMessage::VT_STATUS, status, 0);
+  }
+  void add_correlation_id(uint64_t correlation_id) {
+    fbb_.AddElement<uint64_t>(LogMessage::VT_CORRELATION_ID, correlation_id, 0);
   }
   void add_message(::flatbuffers::Offset<::flatbuffers::String> message) {
     fbb_.AddOffset(LogMessage::VT_MESSAGE, message);
@@ -914,22 +922,25 @@ struct LogMessageBuilder {
 inline ::flatbuffers::Offset<LogMessage> CreateLogMessage(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     ::flatbuffers::Offset<BlpConn::FB::DateTime> log_dt = 0,
-    int32_t module_ = 0,
-    int32_t status = 0,
+    uint8_t module_ = 0,
+    uint8_t status = 0,
+    uint64_t correlation_id = 0,
     ::flatbuffers::Offset<::flatbuffers::String> message = 0) {
   LogMessageBuilder builder_(_fbb);
+  builder_.add_correlation_id(correlation_id);
   builder_.add_message(message);
+  builder_.add_log_dt(log_dt);
   builder_.add_status(status);
   builder_.add_module_(module_);
-  builder_.add_log_dt(log_dt);
   return builder_.Finish();
 }
 
 inline ::flatbuffers::Offset<LogMessage> CreateLogMessageDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     ::flatbuffers::Offset<BlpConn::FB::DateTime> log_dt = 0,
-    int32_t module_ = 0,
-    int32_t status = 0,
+    uint8_t module_ = 0,
+    uint8_t status = 0,
+    uint64_t correlation_id = 0,
     const char *message = nullptr) {
   auto message__ = message ? _fbb.CreateString(message) : 0;
   return BlpConn::FB::CreateLogMessage(
@@ -937,6 +948,7 @@ inline ::flatbuffers::Offset<LogMessage> CreateLogMessageDirect(
       log_dt,
       module_,
       status,
+      correlation_id,
       message__);
 }
 

@@ -36,10 +36,6 @@ class EventHandler: public blpapi::EventHandler {
         bool processEvent(const blpapi::Event& event, blpapi::Session *session) override;
 
     private:
-        void processEconomicEvent(const blpapi::Element& elem);
-        bool processSubscriptionData(const blpapi::Event& event, blpapi::Session *session);
-        bool processSessionStatus(const blpapi::Event& event, blpapi::Session *session);
-        bool processSubscriptionStatus(const blpapi::Event& event, blpapi::Session *session);
         Logger logger_;
 };
 

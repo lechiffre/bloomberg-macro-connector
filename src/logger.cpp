@@ -12,12 +12,14 @@ void Logger::addNotificationHandler(ObserverFunc fnc) noexcept {
 
 void Logger::notify(const uint8_t* buffer, size_t size) {
     for (const auto& callback : callbacks_) {
-        std::cout << ">>> Calling Callback <<<<" << std::endl;
         callback(buffer, size);
     }
 }
 
-void Logger::log(int  module, int status, const std::string& message) {
+void Logger::log(uint8_t  module, uint8_t status, uint64_t correlation_id,
+    const std::string& message)
+{
+    if (module == 0) return;
     LogMessage log_message;
     log_message.log_dt = currentTime();
     log_message.module = module;

@@ -60,8 +60,9 @@ BlpConn::HeadlineCalendarEvent toHeadlineCalendarEvent(const BlpConn::FB::Headli
 LogMessage toLogMessage(const BlpConn::FB::LogMessage* fb_log_message) {
     BlpConn::LogMessage log_message;
     log_message.log_dt = deserializeDateTime(fb_log_message->log_dt());
-    // TODO: log_message.module = fb_log_message->module();
+    log_message.module = fb_log_message->module_(); // Fix: Use correct field name 'module_'
     log_message.status = fb_log_message->status();
+    log_message.correlation_id = fb_log_message->correlation_id();
     log_message.message = fb_log_message->message()->str();
     return log_message;
 }

@@ -71,6 +71,31 @@ std::vector<HeadlineCalendarEvent> createCalendarEventTestData() {
     return events;
 }
 
+std::vector<LogMessage> createLogMessageTestData() {
+    std::vector<LogMessage> messages;
+
+    // Valid case
+    LogMessage valid_message;
+    valid_message.log_dt = {1743701400000000, 0};
+    valid_message.module = 1;
+    valid_message.status = 0;
+    valid_message.correlation_id = 12345;
+    valid_message.message = "Valid log message";
+    messages.push_back(valid_message);
+
+    // Failure case: Empty message
+    LogMessage empty_message = valid_message;
+    empty_message.message = "";
+    messages.push_back(empty_message);
+
+    // Failure case: Invalid module
+    LogMessage invalid_module_message = valid_message;
+    invalid_module_message.module = -1; // Invalid module
+    messages.push_back(invalid_module_message);
+
+    return messages;
+}
+
 // Parameterized test for HeadlineEconomicEvent
 class EconomicEventTest : public ::testing::TestWithParam<HeadlineEconomicEvent> {};
 
@@ -138,9 +163,34 @@ TEST_P(CalendarEventTest, SerializeAndDeserialize) {
     EXPECT_EQ(deserialized_event.release_status, original_event.release_status);
 }
 
+// Parameterized test for LogMessage
+class LogMessageTest : public ::testing::TestWithParam<LogMessage> {};
+
+TEST_P(LogMessageTest, SerializeAndDeserialize) {
+    const auto& original_message = GetParam();
+
+    // Serialize the object
+    flatbuffers::FlatBufferBuilder builder;
+    auto serialized_message = serializeLogMessage(builder, original_message);
+    builder.Finish(serialized_message);
+
+    // Deserialize the object
+    auto fb_message = flatbuffers::GetRoot<FB::LogMessage>(builder.GetBufferPointer());
+    LogMessage deserialized_message = toLogMessage(fb_message);
+
+    // Validate the deserialized object
+    EXPECT_EQ(deserialized_message.log_dt.microseconds, original_message.log_dt.microseconds);
+    EXPECT_EQ(deserialized_message.log_dt.offset, original_message.log_dt.offset);
+    EXPECT_EQ(deserialized_message.module, original_message.module); // Fix: Validate module field
+    EXPECT_EQ(deserialized_message.status, original_message.status);
+    EXPECT_EQ(deserialized_message.correlation_id, original_message.correlation_id); // Fix: Validate correlation_id field
+    EXPECT_EQ(deserialized_message.message, original_message.message);
+}
+
 // Instantiate tests with test data
 INSTANTIATE_TEST_SUITE_P(EconomicEventTests, EconomicEventTest, ::testing::ValuesIn(createEconomicEventTestData()));
 INSTANTIATE_TEST_SUITE_P(CalendarEventTests, CalendarEventTest, ::testing::ValuesIn(createCalendarEventTestData()));
+INSTANTIATE_TEST_SUITE_P(LogMessageTests, LogMessageTest, ::testing::ValuesIn(createLogMessageTestData()));
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);

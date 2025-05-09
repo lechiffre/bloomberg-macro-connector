@@ -1,5 +1,6 @@
 #include <unistd.h>
 #include <iostream>
+#include <sstream>
 #include <flatbuffers/flatbuffer_builder.h>
 #include <boost/format.hpp>
 #include "blpconn_event.h"
@@ -9,9 +10,17 @@
 
 namespace BlpConn {
 
+static const uint8_t module = static_cast<uint8_t>(Module::System);
 
-static const int module = ModuleSystem;;
-
+static const blpapi::Name SESSION_CONNECTION_UP("SessionConnectionUp");
+static const blpapi::Name SESSION_STARTED("SessionStarted");
+static const blpapi::Name SESSION_CONNECTION_DOWN("SessionConnectionDown");
+static const blpapi::Name SESSION_TERMINATED("SessionTerminated");
+static const blpapi::Name SERVICE_OPENED("ServiceOpened");
+static const blpapi::Name SUBSCRIPTION_STARTED("SubscriptionStarted");
+static const blpapi::Name SUBSCRIPTION_STREAMS_ACTIVATED("SubscriptionStreamsActivated");
+static const blpapi::Name SUBSCRIPTION_TERMINATED("SubscriptionTerminated");
+static const blpapi::Name SUBSCRIPTION_FAILURE("SubscriptionFailure");
 static const blpapi::Name ECONOMIC_EVENT("EconomicEvent");
 static const blpapi::Name HEADLINE_ECONOMIC_EVENT("HeadlineEconomicEvent");
 static const blpapi::Name HEADLINE_CALENDAR_EVENT("HeadlineCalendarEvent");
@@ -22,82 +31,133 @@ static void sendNotification(flatbuffers::FlatBufferBuilder& builder, Logger *lo
     logger->notify(buffer, size);
 }
 
-void EventHandler::processEconomicEvent(const blpapi::Element& elem) {
+void processEconomicEvent(const blpapi::Element& elem, Logger& logger) {
     if (elem.name() == HEADLINE_ECONOMIC_EVENT) {
         HeadlineEconomicEvent event = parseHeadlineEconomicEvent(elem);
         flatbuffers::FlatBufferBuilder builder = buildBufferEconomicEvent(event);
-        sendNotification(builder, &logger_);
+        sendNotification(builder, &logger);
     } else if (elem.name() == HEADLINE_CALENDAR_EVENT) {
         HeadlineCalendarEvent event = parseHeadlineCalendarEvent(elem);
         flatbuffers::FlatBufferBuilder builder = buildBufferCalendarEvent(event);
-        sendNotification(builder, &logger_);
+        sendNotification(builder, &logger);
     } else {
         std::string e = "Unknown event type: ";
         e += elem.name().string();
-        logger_.log(module, 0, e);
+        logger.log(module, 0, 0, e);
     }
 }
 
-bool EventHandler::processSubscriptionData(const blpapi::Event& event, blpapi::Session *session) {
+bool processSubscriptionData(const blpapi::Event& event, blpapi::Session *session, Logger& logger) {
     blpapi::MessageIterator msgIter(event);
     while (msgIter.next()) {
         blpapi::Message msg = msgIter.message();
-        std::cout << "### Message " << msg << std::endl;
         blpapi::Element elem = msg.asElement();
         if (elem.name() == ECONOMIC_EVENT) {
             for (std::size_t i = 0; i < elem.numValues(); ++i) {
                 blpapi::Element sub_elem = elem.getElement(i);
-                processEconomicEvent(sub_elem);
-                std::cout << elem << std::endl;
+                processEconomicEvent(sub_elem, logger);
             }
         } else {
-            std::cout << "### Not processed subscription data: " << elem << std::endl;
+            uint64_t correlation_id = msg.correlationId().asInteger();
+            logger.log(
+                static_cast<uint8_t>(Module::Heartbeat),
+                0,
+                correlation_id,
+                "Subscription Heartbeat");
         }
     }
     return true;
 }
 
-bool EventHandler::processSessionStatus(const blpapi::Event& event, blpapi::Session *session) {
+bool processSessionStatus(const blpapi::Event& event, blpapi::Session *session, Logger& logger) {
     blpapi::MessageIterator msgIter(event);
+    const uint8_t module = static_cast<uint8_t>(Module::Session);
     while (msgIter.next()) {
         blpapi::Message msg = msgIter.message();
-        std::cout << msg << std::endl;
         blpapi::Element elem = msg.asElement();
-        std::cout << "### " << elem << std::endl;
+        std::ostringstream oss;
+        oss << elem;
+        if (elem.name() == SESSION_CONNECTION_UP) {
+            logger.log(module, static_cast<uint8_t>(SessionStatus::ConnectionUp), 0, oss.str());
+        } else if (elem.name() == SESSION_STARTED) {
+            logger.log(module, static_cast<uint8_t>(SessionStatus::Started), 0, oss.str());
+        } else if (elem.name() == SESSION_CONNECTION_DOWN) {
+            logger.log(module, static_cast<uint8_t>(SessionStatus::ConnectionDown), 0, oss.str());
+        } else if (elem.name() == SESSION_TERMINATED) {
+            logger.log(module, static_cast<uint8_t>(SessionStatus::Terminated), 0, oss.str());
+        } else {
+            logger.log(module, static_cast<uint8_t>(SessionStatus::Unknown), 0, oss.str());
+        }
     }
     return true;
 }
 
-bool EventHandler::processSubscriptionStatus(const blpapi::Event& event, blpapi::Session *session) {
+bool processServiceStatus(const blpapi::Event& event, blpapi::Session *session, Logger& logger) {
     blpapi::MessageIterator msgIter(event);
+    const uint8_t module = static_cast<uint8_t>(Module::Service);
     while (msgIter.next()) {
         blpapi::Message msg = msgIter.message();
         blpapi::Element elem = msg.asElement();
-        std::cout << "### " << elem << std::endl;
+        std::ostringstream oss;
+        oss << elem;
+        if (elem.name() == SERVICE_OPENED) {
+            logger.log(module, static_cast<uint8_t>(ServiceStatus::Opened), 0, oss.str());
+        } else {
+            logger.log(module, static_cast<uint8_t>(ServiceStatus::Unknown), 0, oss.str());
+        }
+    }
+    return true;
+}
+
+bool processSubscriptionStatus(const blpapi::Event& event, blpapi::Session *session, Logger& logger) {
+    blpapi::MessageIterator msgIter(event);
+    const uint8_t module = static_cast<uint8_t>(Module::Subscription);
+    while (msgIter.next()) {
+        blpapi::Message msg = msgIter.message();
+        uint64_t correlation_id = msg.correlationId().asInteger();
+        blpapi::Element elem = msg.asElement();
+        std::ostringstream oss;
+        oss << elem;
+        if (elem.name() == SUBSCRIPTION_STARTED) {
+            logger.log(module, static_cast<uint8_t>(SubscriptionStatus::Started), correlation_id, oss.str());
+        } else if (elem.name() == SUBSCRIPTION_STREAMS_ACTIVATED) {
+            logger.log(module, static_cast<uint8_t>(SubscriptionStatus::StreamsActivated), correlation_id, oss.str());
+        } else if (elem.name() == SUBSCRIPTION_TERMINATED) {
+            logger.log(module, static_cast<uint8_t>(SubscriptionStatus::Terminated), correlation_id, oss.str());
+        } else if (elem.name() == SUBSCRIPTION_FAILURE) {
+            logger.log(module, static_cast<uint8_t>(SubscriptionStatus::Failure), correlation_id, oss.str());
+        } else {
+            logger.log(module, static_cast<uint8_t>(SubscriptionStatus::Unknown), correlation_id, oss.str());
+        }
     }
     return true;
 }
 
 bool EventHandler::processEvent(const blpapi::Event& event, blpapi::Session *session) {
     switch(event.eventType()) {
-        case blpapi::Event::SUBSCRIPTION_STATUS:
-            return processSubscriptionStatus(event, session);
         case blpapi::Event::SUBSCRIPTION_DATA:
-            return processSubscriptionData(event, session);
-        case blpapi::Event::RESPONSE:
-            return processSessionStatus(event, session);
+            return processSubscriptionData(event, session, logger_);
+        case blpapi::Event::SESSION_STATUS:
+            return processSessionStatus(event, session, logger_);
+        case blpapi::Event::SERVICE_STATUS:
+            return processServiceStatus(event, session, logger_);
+        case blpapi::Event::SUBSCRIPTION_STATUS:
+            return processSubscriptionStatus(event, session, logger_);
         default:
             std::cout << "#### Unhandled event type: " << event.eventType() << std::endl;
             blpapi::MessageIterator msg_iter(event);
             while (msg_iter.next()) {
                 blpapi::Message msg = msg_iter.message();
-                std::cout << "### Message " << msg << std::endl;
-                blpapi::Element elem = msg.asElement();
-                std::cout << elem << std::endl;
+                std::ostringstream oss;
+                oss << msg;
+                logger_.log(
+                    static_cast<uint8_t>(Module::Heartbeat),
+                    0,
+                    0,
+                    oss.str());
             }
-            
             return false;
     }
 }
 
-}
+} // namespace BlpConn

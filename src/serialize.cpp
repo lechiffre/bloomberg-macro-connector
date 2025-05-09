@@ -8,8 +8,17 @@
 #define DEBUG_DIR "./debug"
 #endif
 
+#include <ctime>
 #include "blpconn_serialize.h"
 
+static const blpapi::Name SINGLE("SINGLE");
+static const blpapi::Name NUMBER("NUMBER");
+static const blpapi::Name DISTRIBUTION("DISTRIBUTION");
+static const blpapi::Name AVERAGE("AVERAGE");
+static const blpapi::Name LOW("LOW");
+static const blpapi::Name HIGH("HIGH");
+static const blpapi::Name MEDIAN("MEDIAN");
+static const blpapi::Name STANDARD_DEVIATION("STANDARD_DEVIATION");
 namespace BlpConn {
 
 flatbuffers::Offset<FB::DateTime> serializeDateTime(
@@ -17,10 +26,93 @@ flatbuffers::Offset<FB::DateTime> serializeDateTime(
     return FB::CreateDateTime(builder, dt.microseconds, dt.offset);
 }
 
+flatbuffers::Offset<FB::DateTime> extractDateTime(
+    flatbuffers::FlatBufferBuilder& builder, const blpapi::Datetime& blpDatetime) {
+    // Validate the year
+    if (blpDatetime.year() == 0) {
+        throw std::invalid_argument("Year is not set in blpapi::Datetime.");
+    }
+
+    // Validate the month
+    if (blpDatetime.month() < 1 || blpDatetime.month() > 12) {
+        throw std::invalid_argument("Month is out of range in blpapi::Datetime.");
+    }
+
+    // Validate the day
+    static const int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    int maxDays = daysInMonth[blpDatetime.month() - 1];
+
+    // Check for leap year in February
+    if (blpDatetime.month() == 2 && ((blpDatetime.year() % 4 == 0 && blpDatetime.year() % 100 != 0) || (blpDatetime.year() % 400 == 0))) {
+        maxDays = 29;
+    }
+
+    if (blpDatetime.day() < 1 || blpDatetime.day() > static_cast<unsigned int>(maxDays)) {
+        throw std::invalid_argument("Day is out of range in blpapi::Datetime.");
+    }
+
+    // Calculate microseconds since Unix epoch
+    std::tm timeStruct = {};
+    timeStruct.tm_year = blpDatetime.year() - 1900;
+    timeStruct.tm_mon = blpDatetime.month() - 1;   // tm_mon is 0-based
+    timeStruct.tm_mday = blpDatetime.day();
+    timeStruct.tm_hour = blpDatetime.hours();
+    timeStruct.tm_min = blpDatetime.minutes();
+    timeStruct.tm_sec = blpDatetime.seconds();
+
+    std::time_t timeSinceEpoch = std::mktime(&timeStruct);
+    uint64_t microseconds = static_cast<uint64_t>(timeSinceEpoch) * 1000000 + blpDatetime.microseconds();
+
+    // Create and return the FlatBuffers DateTime object
+    return FB::CreateDateTime(builder, microseconds, static_cast<int16_t>(blpDatetime.offset()));
+}
+
 flatbuffers::Offset<FB::Value> serializeValue(
     flatbuffers::FlatBufferBuilder& builder, const ValueType& value) {
     return FB::CreateValue(builder, value.number, value.value, value.low,
-                                    value.high, value.median, value.average, value.standard_deviation);
+        value.high, value.median, value.average, value.standard_deviation);
+}
+
+static double getFloatFromElement(const blpapi::Element& elem) {
+    std::string valueStr = elem.getValueAsString();
+    try {
+        return std::stod(valueStr);
+    } catch (const std::invalid_argument&) {
+        return std::nan("");
+    } catch (const std::out_of_range&) {
+        return std::nan("");
+    }
+}
+
+static int getIntFromElement(const blpapi::Element& elem) {
+    std::string valueStr = elem.getValueAsString();
+    return std::stoi(valueStr);
+}
+
+flatbuffers::Offset<FB::Value> extractValue(
+    flatbuffers::FlatBufferBuilder& builder, const blpapi::Element& elem, const blpapi::Name name) {
+    if (!elem.hasElement(name)) {
+        return FB::CreateValue(builder, 0, std::nan(""), std::nan(""), std::nan(""), std::nan(""), std::nan(""), std::nan(""));
+    }
+
+    const blpapi::Element subElem = elem.getElement(name);
+    const blpapi::Element choice = subElem.getChoice();
+
+    if (choice.name() == SINGLE) {
+        double value = getFloatFromElement(choice);
+        return FB::CreateValue(builder, 1, value, std::nan(""), std::nan(""), std::nan(""), std::nan(""), std::nan(""));
+    } else if (choice.name() == DISTRIBUTION) {
+        int number = choice.hasElement(NUMBER) ? getIntFromElement(choice.getElement(NUMBER)) : 0;
+        double average = choice.hasElement(AVERAGE) ? getFloatFromElement(choice.getElement(AVERAGE)) : std::nan("");
+        double low = choice.hasElement(LOW) ? getFloatFromElement(choice.getElement(LOW)) : std::nan("");
+        double high = choice.hasElement(HIGH) ? getFloatFromElement(choice.getElement(HIGH)) : std::nan("");
+        double median = choice.hasElement(MEDIAN) ? getFloatFromElement(choice.getElement(MEDIAN)) : std::nan("");
+        double stdDev = choice.hasElement(STANDARD_DEVIATION) ? getFloatFromElement(choice.getElement(STANDARD_DEVIATION)) : std::nan("");
+
+        return FB::CreateValue(builder, number, std::nan(""), low, high, median, average, stdDev);
+    }
+
+    throw std::runtime_error("Unexpected choice type in extractValue.");
 }
 
 flatbuffers::Offset<FB::HeadlineEconomicEvent> serializeHeadlineEconomicEvent(
@@ -84,9 +176,9 @@ flatbuffers::Offset<FB::HeadlineCalendarEvent> serializeHeadlineCalendarEvent(
 flatbuffers::Offset<FB::LogMessage> serializeLogMessage(
     flatbuffers::FlatBufferBuilder& builder, const LogMessage& log_message) {
     auto message = builder.CreateString(log_message.message);
-    // auto module = builder.CreateString(log_message.module);
     auto log_dt = serializeDateTime(builder, log_message.log_dt);
-    return FB::CreateLogMessage(builder, log_dt, log_message.module, log_message.status, message);
+    return FB::CreateLogMessage(builder, log_dt, log_message.module, // Fix: Serialize the module field
+        log_message.status, log_message.correlation_id, message); // Fix: Serialize the correlation_id field
 }
 
 flatbuffers::FlatBufferBuilder buildBufferEconomicEvent(HeadlineEconomicEvent& event) {

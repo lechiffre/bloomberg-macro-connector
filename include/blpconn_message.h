@@ -12,33 +12,53 @@ using namespace BloombergLP;
 
 namespace BlpConn {
 
-enum Modules {
-    ModuleUnknown = 0,
-    ModuleSystem,
-    ModuleSession,
-    ModuleSubscription,
-    ModuleService,
-    ModuleHearbeat,
-    ModuleAnother = 99,
+enum class Module: uint8_t {
+    Unknown = 0,
+    System,
+    Session,
+    Subscription,
+    Service,
+    Heartbeat,
+    Another = 99,
 };
 
-enum SessionStatus {
-    SessionUnknown = 0,
-    SessionConnectionUp,
-    SessionStarted,
-    SessionConnectionDown,
-    SessionTerminated,
-    SessionAnother = 99,
+enum class SessionStatus: uint8_t {
+    Unknown = 0,
+    ConnectionUp,
+    Started,
+    ConnectionDown,
+    Terminated,
+    InvalidOptions,
+    Failure,
+    Another = 99,
 };
 
-enum class ReleaseStatus {
+enum class SubscriptionStatus: uint8_t {
+    Unknown = 0,
+    Started,
+    StreamsActivated,
+    Terminated,
+    Success,
+    Failure,
+    Another = 99,
+};
+
+enum class ServiceStatus: uint8_t {
+    Unknown = 0,
+    Opened,
+    Closed,
+    Failure,
+    Another = 99,
+};
+
+enum class ReleaseStatus: uint8_t {
     Unknown = 0,
     Released,
     Scheduled,
     Another = 99,
 };
 
-enum class EventSubType {
+enum class EventSubType: uint8_t {
     Unknown = 0,
     New,
     Update,
@@ -47,7 +67,7 @@ enum class EventSubType {
     Another = 99,
 };
 
-enum class EventType {
+enum class EventType: uint8_t {
     Unknown = 0,
     Actual,
     Revision,
@@ -63,8 +83,9 @@ struct DateTimeType {
 
 struct LogMessage {
     DateTimeType log_dt;
-    int module = 0;
-    int status = 0;
+    uint8_t module = 0;
+    uint8_t status = 0;
+    uint64_t correlation_id = 0;
     std::string message;
 };
 
@@ -84,7 +105,7 @@ struct HeadlineBaseEvent {
     std::string description = "";
     EventType event_type = EventType::Unknown;
     EventSubType event_subtype = EventSubType::Unknown;
-    int event_id = 0;
+    uint64_t event_id = 0;
     std::string observation_period = "";
     DateTimeType release_start_dt;
     DateTimeType release_end_dt;
@@ -93,7 +114,7 @@ struct HeadlineBaseEvent {
 struct HeadlineEconomicEvent: public HeadlineBaseEvent {
     ValueType value;
     ValueType prior_value;
-    int prior_event_id = 0;
+    uint64_t prior_event_id = 0;
     std::string prior_observation_period = "";
     DateTimeType prior_economic_release_start_dt;
     DateTimeType prior_economic_release_end_dt;

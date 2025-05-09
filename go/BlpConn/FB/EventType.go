@@ -4,7 +4,7 @@ package FB
 
 import "strconv"
 
-type EventType int32
+type EventType byte
 
 const (
 	EventTypeUnknown  EventType = 0

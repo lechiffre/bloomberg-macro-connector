@@ -54,32 +54,44 @@ func (rcv *LogMessage) LogDt(obj *DateTime) *DateTime {
 	return nil
 }
 
-func (rcv *LogMessage) Module() int32 {
+func (rcv *LogMessage) Module() byte {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(6))
 	if o != 0 {
-		return rcv._tab.GetInt32(o + rcv._tab.Pos)
+		return rcv._tab.GetByte(o + rcv._tab.Pos)
 	}
 	return 0
 }
 
-func (rcv *LogMessage) MutateModule(n int32) bool {
-	return rcv._tab.MutateInt32Slot(6, n)
+func (rcv *LogMessage) MutateModule(n byte) bool {
+	return rcv._tab.MutateByteSlot(6, n)
 }
 
-func (rcv *LogMessage) Status() int32 {
+func (rcv *LogMessage) Status() byte {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(8))
 	if o != 0 {
-		return rcv._tab.GetInt32(o + rcv._tab.Pos)
+		return rcv._tab.GetByte(o + rcv._tab.Pos)
 	}
 	return 0
 }
 
-func (rcv *LogMessage) MutateStatus(n int32) bool {
-	return rcv._tab.MutateInt32Slot(8, n)
+func (rcv *LogMessage) MutateStatus(n byte) bool {
+	return rcv._tab.MutateByteSlot(8, n)
+}
+
+func (rcv *LogMessage) CorrelationId() uint64 {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(10))
+	if o != 0 {
+		return rcv._tab.GetUint64(o + rcv._tab.Pos)
+	}
+	return 0
+}
+
+func (rcv *LogMessage) MutateCorrelationId(n uint64) bool {
+	return rcv._tab.MutateUint64Slot(10, n)
 }
 
 func (rcv *LogMessage) Message() []byte {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(10))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(12))
 	if o != 0 {
 		return rcv._tab.ByteVector(o + rcv._tab.Pos)
 	}
@@ -87,19 +99,22 @@ func (rcv *LogMessage) Message() []byte {
 }
 
 func LogMessageStart(builder *flatbuffers.Builder) {
-	builder.StartObject(4)
+	builder.StartObject(5)
 }
 func LogMessageAddLogDt(builder *flatbuffers.Builder, logDt flatbuffers.UOffsetT) {
 	builder.PrependUOffsetTSlot(0, flatbuffers.UOffsetT(logDt), 0)
 }
-func LogMessageAddModule(builder *flatbuffers.Builder, module int32) {
-	builder.PrependInt32Slot(1, module, 0)
+func LogMessageAddModule(builder *flatbuffers.Builder, module byte) {
+	builder.PrependByteSlot(1, module, 0)
 }
-func LogMessageAddStatus(builder *flatbuffers.Builder, status int32) {
-	builder.PrependInt32Slot(2, status, 0)
+func LogMessageAddStatus(builder *flatbuffers.Builder, status byte) {
+	builder.PrependByteSlot(2, status, 0)
+}
+func LogMessageAddCorrelationId(builder *flatbuffers.Builder, correlationId uint64) {
+	builder.PrependUint64Slot(3, correlationId, 0)
 }
 func LogMessageAddMessage(builder *flatbuffers.Builder, message flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(3, flatbuffers.UOffsetT(message), 0)
+	builder.PrependUOffsetTSlot(4, flatbuffers.UOffsetT(message), 0)
 }
 func LogMessageEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	return builder.EndObject()

@@ -1,13 +1,13 @@
 namespace BlpConn.FB;
 
-enum ReleaseStatus: int {
+enum ReleaseStatus: uint8 {
     Unknown = 0,
     Released = 1,
     Scheduled = 2,
     Another = 99
 }
 
-enum ModuleType: int {
+enum ModuleType: uint8 {
     ModuleUnknown = 0,
     ModuleSystem = 1,
     ModuleSession = 2,
@@ -17,7 +17,7 @@ enum ModuleType: int {
     ModuleAnother = 99
 }
 
-enum SessionStatusType: int {
+enum SessionStatusType: uint8 {
     SessionUnknown = 0,
     SessionConnectionUp = 1,
     SessionStarted = 2,
@@ -26,7 +26,7 @@ enum SessionStatusType: int {
     SessionAnother = 99,
 }
 
-enum EventSubType: int {
+enum EventSubType: uint8 {
     Unknown = 0,
     New = 1,
     Update = 2,
@@ -35,7 +35,7 @@ enum EventSubType: int {
     Another = 99
 }
 
-enum EventType: int {
+enum EventType: uint8 {
     Unknown = 0,
     Actual = 1,
     Revision = 2,
@@ -44,7 +44,7 @@ enum EventType: int {
     Another = 99
 }
 
-enum SessionType: int {
+enum SessionType: uint8 {
     Unknowk = 0,
     SessionConnectionUp = 1,
     SessionStarted = 2,
@@ -75,7 +75,7 @@ table HeadlineEconomicEvent {
     description: string;
     event_type: EventType;
     event_subtype: EventSubType;
-    event_id: int;
+    event_id: uint64;
     observation_period: string;
     release_start_dt: DateTime;
     release_end_dt: DateTime;
@@ -107,8 +107,9 @@ table HeadlineCalendarEvent {
 
 table LogMessage {
     log_dt: DateTime; // Timestamp of the log
-    module: int; // Module that generated the log
-    status: int;
+    module: uint8; // Module that generated the log
+    status: uint8;
+    correlation_id: uint64;
     message: string; // Log message
 }
 

@@ -68,25 +68,25 @@ func (rcv *HeadlineCalendarEvent) Description() []byte {
 func (rcv *HeadlineCalendarEvent) EventType() EventType {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(10))
 	if o != 0 {
-		return EventType(rcv._tab.GetInt32(o + rcv._tab.Pos))
+		return EventType(rcv._tab.GetByte(o + rcv._tab.Pos))
 	}
 	return 0
 }
 
 func (rcv *HeadlineCalendarEvent) MutateEventType(n EventType) bool {
-	return rcv._tab.MutateInt32Slot(10, int32(n))
+	return rcv._tab.MutateByteSlot(10, byte(n))
 }
 
 func (rcv *HeadlineCalendarEvent) EventSubtype() EventSubType {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(12))
 	if o != 0 {
-		return EventSubType(rcv._tab.GetInt32(o + rcv._tab.Pos))
+		return EventSubType(rcv._tab.GetByte(o + rcv._tab.Pos))
 	}
 	return 0
 }
 
 func (rcv *HeadlineCalendarEvent) MutateEventSubtype(n EventSubType) bool {
-	return rcv._tab.MutateInt32Slot(12, int32(n))
+	return rcv._tab.MutateByteSlot(12, byte(n))
 }
 
 func (rcv *HeadlineCalendarEvent) EventId() int32 {
@@ -138,13 +138,13 @@ func (rcv *HeadlineCalendarEvent) ReleaseEndDt(obj *DateTime) *DateTime {
 func (rcv *HeadlineCalendarEvent) ReleaseStatus() ReleaseStatus {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(22))
 	if o != 0 {
-		return ReleaseStatus(rcv._tab.GetInt32(o + rcv._tab.Pos))
+		return ReleaseStatus(rcv._tab.GetByte(o + rcv._tab.Pos))
 	}
 	return 0
 }
 
 func (rcv *HeadlineCalendarEvent) MutateReleaseStatus(n ReleaseStatus) bool {
-	return rcv._tab.MutateInt32Slot(22, int32(n))
+	return rcv._tab.MutateByteSlot(22, byte(n))
 }
 
 func HeadlineCalendarEventStart(builder *flatbuffers.Builder) {
@@ -160,10 +160,10 @@ func HeadlineCalendarEventAddDescription(builder *flatbuffers.Builder, descripti
 	builder.PrependUOffsetTSlot(2, flatbuffers.UOffsetT(description), 0)
 }
 func HeadlineCalendarEventAddEventType(builder *flatbuffers.Builder, eventType EventType) {
-	builder.PrependInt32Slot(3, int32(eventType), 0)
+	builder.PrependByteSlot(3, byte(eventType), 0)
 }
 func HeadlineCalendarEventAddEventSubtype(builder *flatbuffers.Builder, eventSubtype EventSubType) {
-	builder.PrependInt32Slot(4, int32(eventSubtype), 0)
+	builder.PrependByteSlot(4, byte(eventSubtype), 0)
 }
 func HeadlineCalendarEventAddEventId(builder *flatbuffers.Builder, eventId int32) {
 	builder.PrependInt32Slot(5, eventId, 0)
@@ -178,7 +178,7 @@ func HeadlineCalendarEventAddReleaseEndDt(builder *flatbuffers.Builder, releaseE
 	builder.PrependUOffsetTSlot(8, flatbuffers.UOffsetT(releaseEndDt), 0)
 }
 func HeadlineCalendarEventAddReleaseStatus(builder *flatbuffers.Builder, releaseStatus ReleaseStatus) {
-	builder.PrependInt32Slot(9, int32(releaseStatus), 0)
+	builder.PrependByteSlot(9, byte(releaseStatus), 0)
 }
 func HeadlineCalendarEventEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	return builder.EndObject()

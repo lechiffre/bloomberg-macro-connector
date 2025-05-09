@@ -7,6 +7,79 @@
 
 namespace BlpConn {
 
+std::string toString(const Module module) {
+    switch (module) {
+        case Module::System:
+            return "System";
+        case Module::Session:
+            return "Session";
+        case Module::Subscription:
+            return "Subscription";
+        case Module::Service:
+            return "Service";
+        case Module::Heartbeat:
+            return "Heartbeat";
+        case Module::Another:
+            return "Another";
+        default:
+            return "Unknown";
+    }
+}
+
+std::string toString(const SessionStatus status) {
+    switch (status) {
+        case SessionStatus::ConnectionUp:
+            return "ConnectionUp";
+        case SessionStatus::Started:
+            return "Started";
+        case SessionStatus::ConnectionDown:
+            return "ConnectionDown";
+        case SessionStatus::Terminated:
+            return "Terminated";
+        case SessionStatus::Another:
+            return "Another";
+        default:
+#ifdef DEBUG
+            std::cerr << "Unknown session status: " << static_cast<int>(status) << std::endl;
+#endif
+            return "Unknown";
+    }
+}
+
+std::string toString(const SubscriptionStatus status) {
+    switch (status) {
+        case SubscriptionStatus::Started:
+            return "Started";
+        case SubscriptionStatus::StreamsActivated:
+            return "StreamsActivated";
+        case SubscriptionStatus::Terminated:
+            return "Terminated";
+        case SubscriptionStatus::Failure:
+            return "Failure";
+        case SubscriptionStatus::Success:
+            return "Success";
+        case SubscriptionStatus::Another:
+            return "Another";
+        default:
+            return "Unknown";
+    }
+}
+
+std::string toString(const ServiceStatus status) {
+    switch (status) {
+        case ServiceStatus::Opened:
+            return "Opened";
+        case ServiceStatus::Closed:
+            return "Closed";
+        case ServiceStatus::Failure:
+            return "Failure";
+        case ServiceStatus::Another:
+            return "Another";
+        default:
+            return "Unknown";
+    }
+}
+
 std::ostream& operator<<(std::ostream& os, const ValueType& value) {
     os << "ValueType { number: " << value.number
        << ", value: " << value.value
@@ -65,10 +138,33 @@ std::ostream& operator<<(std::ostream& os, const DateTimeType& dt) {
 }
 
 std::ostream& operator<<(std::ostream& os, const LogMessage& log_message) {
-    os << log_message.log_dt << " : "
-       << log_message.module << " : "
-       << log_message.status << " : "
-       << log_message.message;
+    Module module = static_cast<Module>(log_message.module);
+    os << log_message.log_dt << "|"
+       << toString(module) << "|";
+
+    switch (module) {
+        case Module::Session: {
+            const SessionStatus status = static_cast<SessionStatus>(log_message.status);
+            os << toString(status);
+            break;
+        }
+        case Module::Service: {
+            const ServiceStatus status = static_cast<ServiceStatus>(log_message.status);
+            os << toString(status);
+            break;
+        }
+        case Module::Subscription: {
+            const SubscriptionStatus status = static_cast<SubscriptionStatus>(log_message.status);
+            os << toString(status);
+            break;
+        }
+        default:
+            os << "Unknown";
+            break;
+    }
+
+    os << "|CorrelationID(" << log_message.correlation_id << ")"
+       << "|" << log_message.message;
     return os;
 }
 

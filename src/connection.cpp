@@ -80,34 +80,45 @@ static blpapi::SessionOptions defineSessionOptions(const json& config) {
 
 namespace BlpConn {
 
-static const int module = ModuleSystem;
+static const int module = static_cast<int>(Module::Session);
 
 bool Context::initializeSession(const std::string& config_path) {
     json config;
     try {
         config = readConfiguration(config_path);
     } catch (const std::runtime_error& e) {
-        log(module, 0, e.what());
+        log(module, 0, 0, e.what());
         return false;
     }
     blpapi::SessionOptions session_options;
     try {
         session_options = defineSessionOptions(config);
     } catch (const std::exception& e) {
-        log(module, 0, e.what());
+        log(
+            module, 
+            static_cast<int>(SessionStatus::InvalidOptions),
+            0,
+            e.what());
         return false;
     }
     service_ = config["default_service"];
     session_ = new blpapi::Session(session_options, &event_handler_);
     if (!session_->start()) {
-        log(module, 0, "Failed to start session");
+        log(
+            module, 
+            static_cast<int>(SessionStatus::Failure),
+            0,
+            "Failed to start session");
         return false;
     }
     if (!session_->openService(session_options.defaultSubscriptionService())) {
-        log(module, 7, "Failed to start service");
+        log(
+            static_cast<int>(Module::Service),
+            static_cast<int>(ServiceStatus::Failure),
+            0,
+            "Failed to open service: " + service_);
         return false;
     }
-    log(module, 0, "Service initialized successfully");
     return true;
 }
 
@@ -116,10 +127,7 @@ void Context::shutdownSession() {
         session_->stop();
         delete session_;
         session_ = nullptr;
-        log(module, 0, "Service shut down");
-    } else {
-        log(module, 0, "Service is not running");
     }
 }
 
-}
+} // namespace BlpConn

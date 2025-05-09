@@ -12,10 +12,11 @@ enum {
     UNSUBSCRIBE
 };
 
-void eventRequest(Context& ctx, SubscriptionType subscription_type, const std::string& rem, int action) {
+void eventRequest(Context& ctx, SubscriptionType subscription_type, uint64_t corr, const std::string& rem, int action) {
     SubscriptionRequest request = {
         .topic = rem,
-        .subscription_type = subscription_type
+        .subscription_type = subscription_type,
+        .correlation_id = corr,
     };
     if (action == SUBSCRIBE) {
         ctx.subscribe(request);
@@ -39,24 +40,33 @@ void processCommand(Context& ctx, const std::string& line) {
         return;
     }
     std::string evt = rem.substr(0, pos);
+    rem = rem.substr(pos);
+    boost::trim(rem);
+    pos = rem.find(' ');
+    if (pos == line.npos) {
+        std::cout << "Invalidad event" << std::endl;
+        return;
+    }
+    std::string corr = rem.substr(0, pos);
     std::string par = rem.substr(pos);
     boost::algorithm::trim(cmd);
     boost::algorithm::trim(evt);
+    boost::algorithm::trim(corr);
     boost::algorithm::trim(par);
     std::cout << cmd << ":" << evt << ":" << par << std::endl;
     if (cmd == "subscribe") {
         if (evt == "calendar") {
-            eventRequest(ctx, SubscriptionType::ReleaseCalendar, par, SUBSCRIBE); 
+            eventRequest(ctx, SubscriptionType::ReleaseCalendar, std::stoi(corr), par, SUBSCRIBE); 
         } else if (evt == "economic") {
-            eventRequest(ctx, SubscriptionType::HeadlineActuals, par, SUBSCRIBE); 
+            eventRequest(ctx, SubscriptionType::HeadlineActuals, std::stoi(corr), par, SUBSCRIBE); 
         } else {
             std::cout << "Not defined command" << std::endl;
         }
     } else if (cmd == "unsubscribe") {
         if (evt == "calendar") {
-            eventRequest(ctx, SubscriptionType::ReleaseCalendar, par, UNSUBSCRIBE); 
+            eventRequest(ctx, SubscriptionType::ReleaseCalendar, std::stoi(corr), par, UNSUBSCRIBE); 
         } else if (evt == "economic") {
-            eventRequest(ctx, SubscriptionType::HeadlineActuals, par, UNSUBSCRIBE); 
+            eventRequest(ctx, SubscriptionType::HeadlineActuals, std::stoi(corr), par, UNSUBSCRIBE); 
         } else {
             std::cout << "Not defined command" << std::endl;
         }
@@ -104,5 +114,5 @@ int main() {
     ctx.addNotificationHandler(defaultObserver);
     std::string config_path = "./config.json";
     ctx.initializeSession(config_path);
-    run(ctx);      
+    run(ctx);     
 }

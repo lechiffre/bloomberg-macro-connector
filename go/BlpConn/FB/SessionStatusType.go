@@ -4,7 +4,7 @@ package FB
 
 import "strconv"
 
-type SessionStatusType int32
+type SessionStatusType byte
 
 const (
 	SessionStatusTypeSessionUnknown        SessionStatusType = 0

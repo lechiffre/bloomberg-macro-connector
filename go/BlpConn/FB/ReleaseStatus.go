@@ -4,7 +4,7 @@ package FB
 
 import "strconv"
 
-type ReleaseStatus int32
+type ReleaseStatus byte
 
 const (
 	ReleaseStatusUnknown   ReleaseStatus = 0

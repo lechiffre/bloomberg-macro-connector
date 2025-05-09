@@ -4,7 +4,7 @@ package FB
 
 import "strconv"
 
-type ModuleType int32
+type ModuleType byte
 
 const (
 	ModuleTypeModuleUnknown      ModuleType = 0

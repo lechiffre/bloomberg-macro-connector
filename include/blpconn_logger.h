@@ -35,7 +35,7 @@ public:
      * messages to the output stream or to the registered observer
      * functions.
      */
-    void log(int module, int status, const std::string& message);
+    void log(uint8_t module, uint8_t status, uint64_t correlation_id, const std::string& message);
 
     // void send_notification(Message message, MessageType msg_type);
     // void sendNotification(flatbuffers::FlatBufferBuilder& builder);

@@ -49,10 +49,11 @@ const (
 )
 
 type LogMessageType struct {
-	LogDT      time.Time
-	Module int32
-	Status	   int32
-	Message    string
+	LogDT      		time.Time
+	Module 			uint8
+	Status	   		uint8
+	CorrelationID 	uint64
+	Message    		string
 }
 
 type ValueType struct {

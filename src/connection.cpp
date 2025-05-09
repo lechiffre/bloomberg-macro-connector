@@ -6,9 +6,9 @@
 #include <blpapi_tlsoptions.h>
 #include <nlohmann/json.hpp>
 #include "blpconn.h"
+#include "blpconn_message.h"
 
 using json = nlohmann::json;
-static const char *module_name = "ConnectionService";
 
 static json readConfiguration(const std::string& config_path) {
     std::ifstream file(config_path);
@@ -80,43 +80,45 @@ static blpapi::SessionOptions defineSessionOptions(const json& config) {
 
 namespace BlpConn {
 
+static const int module = ModuleSystem;
+
 bool Context::initializeSession(const std::string& config_path) {
     json config;
     try {
         config = readConfiguration(config_path);
     } catch (const std::runtime_error& e) {
-        log(module_name, e.what());
+        log(module, 0, e.what());
         return false;
     }
     blpapi::SessionOptions session_options;
     try {
         session_options = defineSessionOptions(config);
     } catch (const std::exception& e) {
-        log(module_name, e.what());
+        log(module, 0, e.what());
         return false;
     }
     service_ = config["default_service"];
     session_ = new blpapi::Session(session_options, &event_handler_);
     if (!session_->start()) {
-        log(module_name, "Failed to start session");
+        log(module, 0, "Failed to start session");
         return false;
     }
     if (!session_->openService(session_options.defaultSubscriptionService())) {
-        log(module_name, "Failed to start service");
+        log(module, 7, "Failed to start service");
         return false;
     }
-    log(module_name, "Service initialized successfully");
+    log(module, 0, "Service initialized successfully");
     return true;
 }
 
-void Context::shutdownService() {
+void Context::shutdownSession() {
     if (session_) {
         session_->stop();
         delete session_;
         session_ = nullptr;
-        log(module_name, "Service shut down");
+        log(module, 0, "Service shut down");
     } else {
-        log(module_name, "Service is not running");
+        log(module, 0, "Service is not running");
     }
 }
 

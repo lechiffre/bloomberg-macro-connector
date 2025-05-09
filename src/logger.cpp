@@ -2,7 +2,7 @@
 #include <string>
 #include "blpconn_logger.h"
 #include "blpconn_message.h"
-#include "blpconn_serialize.h"
+#include "blpconn_deserialize.h"
 
 namespace BlpConn {
 
@@ -17,10 +17,11 @@ void Logger::notify(const uint8_t* buffer, size_t size) {
     }
 }
 
-void Logger::log(const std::string& module_name, const std::string& message) {
+void Logger::log(int  module, int status, const std::string& message) {
     LogMessage log_message;
     log_message.log_dt = currentTime();
-    log_message.module_name = module_name;
+    log_message.module = module;
+    log_message.status = status;
     log_message.message = message;
     std::cout << log_message << std::endl;
     if (!out_stream_) {

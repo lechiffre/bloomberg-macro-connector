@@ -1,14 +1,14 @@
-package main
+package blpconngo
 
 import (
-	"gocli/BlpConn/FB"
+	"blpconngo/BlpConn/FB"
 	"time"
 )
 
 func DeserializeDateTime(fbDateTime *FB.DateTime) time.Time {
 	// fmt.Println(fbDateTime.Micros())
-	// return ToNativeTime(fbDateTime.Micros(), fbDateTime.Offset())
-	return time.Time{}
+	return ToNativeTime(fbDateTime.Micros(), fbDateTime.Offset())
+	// return time.Time{}
 }
 
 func DeserializeValue(fbValue *FB.Value) ValueType {
@@ -65,7 +65,8 @@ func DeserializeHeadlineCalendarEvent(fbEvent *FB.HeadlineCalendarEvent) Headlin
 func DeserializeLogMessage(fbLogMessage *FB.LogMessage) LogMessageType {
 	return LogMessageType{
 		LogDT:      DeserializeDateTime(fbLogMessage.LogDt(nil)),
-		ModuleName: string(fbLogMessage.ModuleName()),
+		Module: fbLogMessage.Module(),
+		Status: fbLogMessage.Status(),
 		Message:    string(fbLogMessage.Message()),
 	}
 }

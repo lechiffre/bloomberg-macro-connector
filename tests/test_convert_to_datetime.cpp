@@ -1,7 +1,8 @@
 #include <blpapi_datetime.h>
 #include <gtest/gtest.h>
 #include <ctime>
-#include "blpconn_serialize.h"
+#include "blpconn_message.h"
+#include "blpconn_deserialize.h"
 
 using namespace BloombergLP;
 using namespace BlpConn;

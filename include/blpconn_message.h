@@ -12,6 +12,25 @@ using namespace BloombergLP;
 
 namespace BlpConn {
 
+enum Modules {
+    ModuleUnknown = 0,
+    ModuleSystem,
+    ModuleSession,
+    ModuleSubscription,
+    ModuleService,
+    ModuleHearbeat,
+    ModuleAnother = 99,
+};
+
+enum SessionStatus {
+    SessionUnknown = 0,
+    SessionConnectionUp,
+    SessionStarted,
+    SessionConnectionDown,
+    SessionTerminated,
+    SessionAnother = 99,
+};
+
 enum class ReleaseStatus {
     Unknown = 0,
     Released,
@@ -44,7 +63,8 @@ struct DateTimeType {
 
 struct LogMessage {
     DateTimeType log_dt;
-    std::string module_name;
+    int module = 0;
+    int status = 0;
     std::string message;
 };
 

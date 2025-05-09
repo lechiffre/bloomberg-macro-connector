@@ -3,13 +3,14 @@
 #include <flatbuffers/flatbuffer_builder.h>
 #include <boost/format.hpp>
 #include "blpconn_event.h"
-#include "blpconn_serialize.h"
+#include "blpconn_message.h"
+#include "blpconn_deserialize.h"
 
-static const char* module_name = "EventHandler";
 
 namespace BlpConn {
 
 
+static const int module = ModuleSystem;;
 
 static const blpapi::Name ECONOMIC_EVENT("EconomicEvent");
 static const blpapi::Name HEADLINE_ECONOMIC_EVENT("HeadlineEconomicEvent");
@@ -33,7 +34,7 @@ void EventHandler::processEconomicEvent(const blpapi::Element& elem) {
     } else {
         std::string e = "Unknown event type: ";
         e += elem.name().string();
-        logger_.log(module_name, e);
+        logger_.log(module, 0, e);
     }
 }
 

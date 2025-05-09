@@ -63,6 +63,79 @@ inline const char *EnumNameReleaseStatus(ReleaseStatus e) {
   }
 }
 
+enum ModuleType : int32_t {
+  ModuleType_ModuleUnknown = 0,
+  ModuleType_ModuleSystem = 1,
+  ModuleType_ModuleSession = 2,
+  ModuleType_ModuleSubscription = 3,
+  ModuleType_ModuleService = 4,
+  ModuleType_ModuleHearbeat = 5,
+  ModuleType_ModuleAnother = 99,
+  ModuleType_MIN = ModuleType_ModuleUnknown,
+  ModuleType_MAX = ModuleType_ModuleAnother
+};
+
+inline const ModuleType (&EnumValuesModuleType())[7] {
+  static const ModuleType values[] = {
+    ModuleType_ModuleUnknown,
+    ModuleType_ModuleSystem,
+    ModuleType_ModuleSession,
+    ModuleType_ModuleSubscription,
+    ModuleType_ModuleService,
+    ModuleType_ModuleHearbeat,
+    ModuleType_ModuleAnother
+  };
+  return values;
+}
+
+inline const char *EnumNameModuleType(ModuleType e) {
+  switch (e) {
+    case ModuleType_ModuleUnknown: return "ModuleUnknown";
+    case ModuleType_ModuleSystem: return "ModuleSystem";
+    case ModuleType_ModuleSession: return "ModuleSession";
+    case ModuleType_ModuleSubscription: return "ModuleSubscription";
+    case ModuleType_ModuleService: return "ModuleService";
+    case ModuleType_ModuleHearbeat: return "ModuleHearbeat";
+    case ModuleType_ModuleAnother: return "ModuleAnother";
+    default: return "";
+  }
+}
+
+enum SessionStatusType : int32_t {
+  SessionStatusType_SessionUnknown = 0,
+  SessionStatusType_SessionConnectionUp = 1,
+  SessionStatusType_SessionStarted = 2,
+  SessionStatusType_SessionConnectionDown = 3,
+  SessionStatusType_SessionTerminated = 4,
+  SessionStatusType_SessionAnother = 99,
+  SessionStatusType_MIN = SessionStatusType_SessionUnknown,
+  SessionStatusType_MAX = SessionStatusType_SessionAnother
+};
+
+inline const SessionStatusType (&EnumValuesSessionStatusType())[6] {
+  static const SessionStatusType values[] = {
+    SessionStatusType_SessionUnknown,
+    SessionStatusType_SessionConnectionUp,
+    SessionStatusType_SessionStarted,
+    SessionStatusType_SessionConnectionDown,
+    SessionStatusType_SessionTerminated,
+    SessionStatusType_SessionAnother
+  };
+  return values;
+}
+
+inline const char *EnumNameSessionStatusType(SessionStatusType e) {
+  switch (e) {
+    case SessionStatusType_SessionUnknown: return "SessionUnknown";
+    case SessionStatusType_SessionConnectionUp: return "SessionConnectionUp";
+    case SessionStatusType_SessionStarted: return "SessionStarted";
+    case SessionStatusType_SessionConnectionDown: return "SessionConnectionDown";
+    case SessionStatusType_SessionTerminated: return "SessionTerminated";
+    case SessionStatusType_SessionAnother: return "SessionAnother";
+    default: return "";
+  }
+}
+
 enum EventSubType : int32_t {
   EventSubType_Unknown = 0,
   EventSubType_New = 1,
@@ -129,6 +202,41 @@ inline const char *EnumNameEventType(EventType e) {
     case EventType_Estimate: return "Estimate";
     case EventType_Calendar: return "Calendar";
     case EventType_Another: return "Another";
+    default: return "";
+  }
+}
+
+enum SessionType : int32_t {
+  SessionType_Unknowk = 0,
+  SessionType_SessionConnectionUp = 1,
+  SessionType_SessionStarted = 2,
+  SessionType_SessionConnectionDown = 3,
+  SessionType_SessionTerminated = 4,
+  SessionType_Another = 99,
+  SessionType_MIN = SessionType_Unknowk,
+  SessionType_MAX = SessionType_Another
+};
+
+inline const SessionType (&EnumValuesSessionType())[6] {
+  static const SessionType values[] = {
+    SessionType_Unknowk,
+    SessionType_SessionConnectionUp,
+    SessionType_SessionStarted,
+    SessionType_SessionConnectionDown,
+    SessionType_SessionTerminated,
+    SessionType_Another
+  };
+  return values;
+}
+
+inline const char *EnumNameSessionType(SessionType e) {
+  switch (e) {
+    case SessionType_Unknowk: return "Unknowk";
+    case SessionType_SessionConnectionUp: return "SessionConnectionUp";
+    case SessionType_SessionStarted: return "SessionStarted";
+    case SessionType_SessionConnectionDown: return "SessionConnectionDown";
+    case SessionType_SessionTerminated: return "SessionTerminated";
+    case SessionType_Another: return "Another";
     default: return "";
   }
 }
@@ -748,14 +856,18 @@ struct LogMessage FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef LogMessageBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_LOG_DT = 4,
-    VT_MODULE_NAME = 6,
-    VT_MESSAGE = 8
+    VT_MODULE_ = 6,
+    VT_STATUS = 8,
+    VT_MESSAGE = 10
   };
   const BlpConn::FB::DateTime *log_dt() const {
     return GetPointer<const BlpConn::FB::DateTime *>(VT_LOG_DT);
   }
-  const ::flatbuffers::String *module_name() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_MODULE_NAME);
+  int32_t module_() const {
+    return GetField<int32_t>(VT_MODULE_, 0);
+  }
+  int32_t status() const {
+    return GetField<int32_t>(VT_STATUS, 0);
   }
   const ::flatbuffers::String *message() const {
     return GetPointer<const ::flatbuffers::String *>(VT_MESSAGE);
@@ -764,8 +876,8 @@ struct LogMessage FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_LOG_DT) &&
            verifier.VerifyTable(log_dt()) &&
-           VerifyOffset(verifier, VT_MODULE_NAME) &&
-           verifier.VerifyString(module_name()) &&
+           VerifyField<int32_t>(verifier, VT_MODULE_, 4) &&
+           VerifyField<int32_t>(verifier, VT_STATUS, 4) &&
            VerifyOffset(verifier, VT_MESSAGE) &&
            verifier.VerifyString(message()) &&
            verifier.EndTable();
@@ -779,8 +891,11 @@ struct LogMessageBuilder {
   void add_log_dt(::flatbuffers::Offset<BlpConn::FB::DateTime> log_dt) {
     fbb_.AddOffset(LogMessage::VT_LOG_DT, log_dt);
   }
-  void add_module_name(::flatbuffers::Offset<::flatbuffers::String> module_name) {
-    fbb_.AddOffset(LogMessage::VT_MODULE_NAME, module_name);
+  void add_module_(int32_t module_) {
+    fbb_.AddElement<int32_t>(LogMessage::VT_MODULE_, module_, 0);
+  }
+  void add_status(int32_t status) {
+    fbb_.AddElement<int32_t>(LogMessage::VT_STATUS, status, 0);
   }
   void add_message(::flatbuffers::Offset<::flatbuffers::String> message) {
     fbb_.AddOffset(LogMessage::VT_MESSAGE, message);
@@ -799,11 +914,13 @@ struct LogMessageBuilder {
 inline ::flatbuffers::Offset<LogMessage> CreateLogMessage(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     ::flatbuffers::Offset<BlpConn::FB::DateTime> log_dt = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> module_name = 0,
+    int32_t module_ = 0,
+    int32_t status = 0,
     ::flatbuffers::Offset<::flatbuffers::String> message = 0) {
   LogMessageBuilder builder_(_fbb);
   builder_.add_message(message);
-  builder_.add_module_name(module_name);
+  builder_.add_status(status);
+  builder_.add_module_(module_);
   builder_.add_log_dt(log_dt);
   return builder_.Finish();
 }
@@ -811,14 +928,15 @@ inline ::flatbuffers::Offset<LogMessage> CreateLogMessage(
 inline ::flatbuffers::Offset<LogMessage> CreateLogMessageDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     ::flatbuffers::Offset<BlpConn::FB::DateTime> log_dt = 0,
-    const char *module_name = nullptr,
+    int32_t module_ = 0,
+    int32_t status = 0,
     const char *message = nullptr) {
-  auto module_name__ = module_name ? _fbb.CreateString(module_name) : 0;
   auto message__ = message ? _fbb.CreateString(message) : 0;
   return BlpConn::FB::CreateLogMessage(
       _fbb,
       log_dt,
-      module_name__,
+      module_,
+      status,
       message__);
 }
 

@@ -1,8 +1,10 @@
 #include "blpconn.h"
+#include "blpconn_message.h"
 
-static const char *module_name = "SubscriptionService";
 
 namespace BlpConn {
+
+static const int module = ModuleSystem;
 
 const std::string SubscriptionRequest::toUri() {
     std::string uri = "";
@@ -34,11 +36,11 @@ const std::string SubscriptionRequest::toUri() {
 
 int Context::subscribe(SubscriptionRequest& request) {
     if (!session_) {
-        log(module_name, "Error: Session not initialized");
+        log(module, 0, "Error: Session not initialized");
         return -1;
     }
     if (request.topic.empty()) {
-        log(module_name, "Error: Topic cannot be empty");
+        log(module, 0, "Error: Topic cannot be empty");
         return -1;
     }
     blpapi::SubscriptionList sub;
@@ -48,7 +50,7 @@ int Context::subscribe(SubscriptionRequest& request) {
         sub.add(reference.c_str(), corr_id);
         session_->subscribe(sub);
     } catch (const blpapi::Exception& e) {
-        log(module_name, "Error: Subscription failed");
+        log(module, 0, "Error: Subscription failed");
         return -1;
     }
     return subscription_counter_++;
@@ -57,11 +59,11 @@ int Context::subscribe(SubscriptionRequest& request) {
 
 void Context::unsubscribe(SubscriptionRequest& request) {
     if (!session_) {
-        log(module_name, "Error: Session not initialized");
+        log(module, 0, "Error: Session not initialized");
         return;
     }
     if (request.topic.empty()) {
-        log(module_name, "Error: Topic cannot be empty");
+        log(module, 0, "Error: Topic cannot be empty");
         return;
     }
     blpapi::SubscriptionList sub;
@@ -70,7 +72,7 @@ void Context::unsubscribe(SubscriptionRequest& request) {
         sub.add(reference.c_str());
         session_->unsubscribe(sub);
     } catch (const blpapi::Exception& e) {
-        log(module_name, "Error: Subscription failed");
+        log(module, 0, "Error: Subscription failed");
         return;
     }
 }

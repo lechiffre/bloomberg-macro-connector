@@ -8,7 +8,7 @@ all:
 	ar rcs lib$(NAME).a $(NAME)_wrap.o
 	go doc -all > ../docs/go-api.txt
 	mv lib$(NAME).a ../lib
-	mv $(NAME).go ../go/blpconngo
+	mv $(NAME).go ../go
 
 clean:
 	rm -f *.o *.a

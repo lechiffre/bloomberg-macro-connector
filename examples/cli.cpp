@@ -2,10 +2,8 @@
 #include <readline/history.h>
 #include <readline/readline.h>
 #include <boost/algorithm/string.hpp>
-#include <blpconn.h>
-#include <blpconn_message.h>
-#include <blpconn_serialize.h>
-#include <blpconn_fb_generated.h>
+#include "blpconn.h"
+#include "blpconn_deserialize.h"
 
 using namespace BlpConn;
 
@@ -13,28 +11,6 @@ enum {
     SUBSCRIBE,
     UNSUBSCRIBE
 };
-
-void observer(const uint8_t *buffer, size_t size) {
-    flatbuffers::Verifier verifier(buffer, size);
-    if (!BlpConn::FB::VerifyMessageVector(verifier, nullptr, nullptr)) {
-        std::cout << "Invalid message" << std::endl;
-        return;
-    }
-    auto main = flatbuffers::GetRoot<BlpConn::FB::Main>(buffer);
-    if (main->message_type() == BlpConn::FB::Message_HeadlineEconomicEvent) {
-        auto fb_event = main->message_as_HeadlineEconomicEvent();
-        auto event = toHeadlineEconomicEvent(fb_event);
-        std::cout << event << std::endl;
-    } else if (main->message_type() == FB::Message_HeadlineCalendarEvent) {
-        auto fb_event = main->message_as_HeadlineCalendarEvent();
-        auto event = toHeadlineCalendarEvent(fb_event);
-        std::cout << event << std::endl;
-    } else if (main->message_type() == BlpConn::FB::Message_LogMessage) {
-        auto fb_log_message = main->message_as_LogMessage();
-        auto log_message = toLogMessage(fb_log_message);
-        std::cout << log_message << std::endl;
-    }
-}
 
 void eventRequest(Context& ctx, SubscriptionType subscription_type, const std::string& rem, int action) {
     SubscriptionRequest request = {
@@ -125,7 +101,7 @@ void run(Context& ctx) {
 
 int main() {
     Context ctx;
-    ctx.addNotificationHandler(observer);
+    ctx.addNotificationHandler(defaultObserver);
     std::string config_path = "./config.json";
     ctx.initializeSession(config_path);
     run(ctx);      

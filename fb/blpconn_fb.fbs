@@ -7,6 +7,25 @@ enum ReleaseStatus: int {
     Another = 99
 }
 
+enum ModuleType: int {
+    ModuleUnknown = 0,
+    ModuleSystem = 1,
+    ModuleSession = 2,
+    ModuleSubscription = 3,
+    ModuleService = 4,
+    ModuleHearbeat = 5,
+    ModuleAnother = 99
+}
+
+enum SessionStatusType: int {
+    SessionUnknown = 0,
+    SessionConnectionUp = 1,
+    SessionStarted = 2,
+    SessionConnectionDown = 3,
+    SessionTerminated = 4,
+    SessionAnother = 99,
+}
+
 enum EventSubType: int {
     Unknown = 0,
     New = 1,
@@ -23,6 +42,15 @@ enum EventType: int {
     Estimate = 3,
     Calendar = 4,
     Another = 99
+}
+
+enum SessionType: int {
+    Unknowk = 0,
+    SessionConnectionUp = 1,
+    SessionStarted = 2,
+    SessionConnectionDown = 3,
+    SessionTerminated = 4,
+    Another = 99,
 }
 
 table DateTime {
@@ -79,18 +107,15 @@ table HeadlineCalendarEvent {
 
 table LogMessage {
     log_dt: DateTime; // Timestamp of the log
-    module_name: string; // Module that generated the log
+    module: int; // Module that generated the log
+    status: int;
     message: string; // Log message
-}
-
-table Heartbeat {
 }
 
 union Message {
     HeadlineEconomicEvent,
     HeadlineCalendarEvent,
     LogMessage,
-    HeartBeat,
 }
 
 table Main {

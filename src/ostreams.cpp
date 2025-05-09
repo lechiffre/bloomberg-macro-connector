@@ -2,8 +2,8 @@
 #include <ctime>
 #include <iomanip>
 #include <ostream>
-#include <blpconn_message.h>
-#include <blpconn_serialize.h>
+#include "blpconn_message.h"
+#include "blpconn_deserialize.h"
 
 namespace BlpConn {
 
@@ -66,7 +66,8 @@ std::ostream& operator<<(std::ostream& os, const DateTimeType& dt) {
 
 std::ostream& operator<<(std::ostream& os, const LogMessage& log_message) {
     os << log_message.log_dt << " : "
-       << log_message.module_name << " : "
+       << log_message.module << " : "
+       << log_message.status << " : "
        << log_message.message;
     return os;
 }

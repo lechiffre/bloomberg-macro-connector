@@ -16,5 +16,6 @@ int main() {
     };
     ctx.subscribe(request2);
     std::this_thread::sleep_for(std::chrono::seconds(10));
-    ctx.shutdownService();
+    ctx.shutdownSession();
+    std::this_thread::sleep_for(std::chrono::seconds(10));
 }

@@ -98,7 +98,7 @@ public:
      */
     ~Context() {
         if (session_) {
-            shutdownService();
+            shutdownSession();
         }
     }
 
@@ -119,7 +119,7 @@ public:
      * This method disconnects from the Bloomberg service.
      * It is automatically called by the constructor.
      */
-    void shutdownService();
+    void shutdownSession();
 
     /**
      * To report if the connection with Bloomberg service is
@@ -166,8 +166,8 @@ public:
      * The client program can use this method to log own messages.
      * Message should be in JSON format and be passed as strings.
      */
-    void log(const std::string& module_name, const std::string& message) {
-        event_handler_.logger_.log(module_name, message);
+    void log(int module, int status, const std::string& message) {
+        event_handler_.logger_.log(module, status, message);
     }
 
 private:

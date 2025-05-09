@@ -1,21 +1,21 @@
 #include <vector>
 #include <gtest/gtest.h>
 #include <flatbuffers/flatbuffers.h>
-#include <blpconn_message.h>
 #include <blpconn_serialize.h>
-#include <blpconn_fb_generated.h>
+#include <blpconn_deserialize.h>
 
-// Helper function to create test data for HeadlineEconomicEvent
-std::vector<BlpConn::HeadlineEconomicEvent> createEconomicEventTestData() {
-    std::vector<BlpConn::HeadlineEconomicEvent> events;
+using namespace BlpConn;
+
+std::vector<HeadlineEconomicEvent> createEconomicEventTestData() {
+    std::vector<HeadlineEconomicEvent> events;
 
     // Valid case
-    BlpConn::HeadlineEconomicEvent valid_event;
+    HeadlineEconomicEvent valid_event;
     valid_event.id_bb_global = "BBG002SBJ900";
     valid_event.parsekyable_des = "TEST_INDEX_0";
     valid_event.description = "Valid Description";
-    valid_event.event_type = BlpConn::EventType::Actual;
-    valid_event.event_subtype = BlpConn::EventSubType::New;
+    valid_event.event_type = EventType::Actual;
+    valid_event.event_subtype = EventSubType::New;
     valid_event.event_id = 1000;
     valid_event.observation_period = "Valid Period";
     valid_event.release_start_dt = {1743701400000000, 0};
@@ -29,51 +29,50 @@ std::vector<BlpConn::HeadlineEconomicEvent> createEconomicEventTestData() {
     events.push_back(valid_event);
 
     // Failure case: Missing id_bb_global
-    BlpConn::HeadlineEconomicEvent missing_id_event = valid_event;
+    HeadlineEconomicEvent missing_id_event = valid_event;
     missing_id_event.id_bb_global = "";
     events.push_back(missing_id_event);
 
     // Failure case: Invalid event_type
-    BlpConn::HeadlineEconomicEvent invalid_type_event = valid_event;
-    invalid_type_event.event_type = static_cast<BlpConn::EventType>(999); // Invalid enum value
+    HeadlineEconomicEvent invalid_type_event = valid_event;
+    invalid_type_event.event_type = static_cast<EventType>(999); // Invalid enum value
     events.push_back(invalid_type_event);
 
     return events;
 }
 
-// Helper function to create test data for HeadlineCalendarEvent
-std::vector<BlpConn::HeadlineCalendarEvent> createCalendarEventTestData() {
-    std::vector<BlpConn::HeadlineCalendarEvent> events;
+std::vector<HeadlineCalendarEvent> createCalendarEventTestData() {
+    std::vector<HeadlineCalendarEvent> events;
 
     // Valid case
-    BlpConn::HeadlineCalendarEvent valid_event;
+    HeadlineCalendarEvent valid_event;
     valid_event.id_bb_global = "BBG002SBQ800";
     valid_event.parsekyable_des = "CALENDAR_INDEX_0";
     valid_event.description = "Valid Calendar Description";
-    valid_event.event_type = BlpConn::EventType::Calendar;
-    valid_event.event_subtype = BlpConn::EventSubType::Update;
+    valid_event.event_type = EventType::Calendar;
+    valid_event.event_subtype = EventSubType::Update;
     valid_event.event_id = 2000;
     valid_event.observation_period = "Calendar Period";
     valid_event.release_start_dt = {1773941400000000, 0};
     valid_event.release_end_dt = {1773941400000000, 0};
-    valid_event.release_status = BlpConn::ReleaseStatus::Scheduled;
+    valid_event.release_status = ReleaseStatus::Scheduled;
     events.push_back(valid_event);
 
     // Failure case: Missing parsekyable_des
-    BlpConn::HeadlineCalendarEvent missing_parsekyable_event = valid_event;
+    HeadlineCalendarEvent missing_parsekyable_event = valid_event;
     missing_parsekyable_event.parsekyable_des = "";
     events.push_back(missing_parsekyable_event);
 
     // Failure case: Invalid release_status
-    BlpConn::HeadlineCalendarEvent invalid_status_event = valid_event;
-    invalid_status_event.release_status = static_cast<BlpConn::ReleaseStatus>(999); // Invalid enum value
+    HeadlineCalendarEvent invalid_status_event = valid_event;
+    invalid_status_event.release_status = static_cast<ReleaseStatus>(999); // Invalid enum value
     events.push_back(invalid_status_event);
 
     return events;
 }
 
 // Parameterized test for HeadlineEconomicEvent
-class EconomicEventTest : public ::testing::TestWithParam<BlpConn::HeadlineEconomicEvent> {};
+class EconomicEventTest : public ::testing::TestWithParam<HeadlineEconomicEvent> {};
 
 TEST_P(EconomicEventTest, SerializeAndDeserialize) {
     const auto& original_event = GetParam();
@@ -84,8 +83,8 @@ TEST_P(EconomicEventTest, SerializeAndDeserialize) {
     builder.Finish(serialized_event);
 
     // Deserialize the object
-    auto fb_event = flatbuffers::GetRoot<BlpConn::FB::HeadlineEconomicEvent>(builder.GetBufferPointer());
-    BlpConn::HeadlineEconomicEvent deserialized_event = BlpConn::toHeadlineEconomicEvent(fb_event);
+    auto fb_event = flatbuffers::GetRoot<FB::HeadlineEconomicEvent>(builder.GetBufferPointer());
+    HeadlineEconomicEvent deserialized_event = toHeadlineEconomicEvent(fb_event);
 
     // Validate the deserialized object
     EXPECT_EQ(deserialized_event.id_bb_global, original_event.id_bb_global);
@@ -110,7 +109,7 @@ TEST_P(EconomicEventTest, SerializeAndDeserialize) {
 }
 
 // Parameterized test for HeadlineCalendarEvent
-class CalendarEventTest : public ::testing::TestWithParam<BlpConn::HeadlineCalendarEvent> {};
+class CalendarEventTest : public ::testing::TestWithParam<HeadlineCalendarEvent> {};
 
 TEST_P(CalendarEventTest, SerializeAndDeserialize) {
     const auto& original_event = GetParam();
@@ -121,8 +120,8 @@ TEST_P(CalendarEventTest, SerializeAndDeserialize) {
     builder.Finish(serialized_event);
 
     // Deserialize the object
-    auto fb_event = flatbuffers::GetRoot<BlpConn::FB::HeadlineCalendarEvent>(builder.GetBufferPointer());
-    BlpConn::HeadlineCalendarEvent deserialized_event = BlpConn::toHeadlineCalendarEvent(fb_event);
+    auto fb_event = flatbuffers::GetRoot<FB::HeadlineCalendarEvent>(builder.GetBufferPointer());
+    HeadlineCalendarEvent deserialized_event = toHeadlineCalendarEvent(fb_event);
 
     // Validate the deserialized object
     EXPECT_EQ(deserialized_event.id_bb_global, original_event.id_bb_global);

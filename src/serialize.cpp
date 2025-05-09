@@ -4,8 +4,11 @@
  * namespace FB.
  */
 
-#include <blpconn_message.h>
-#include <blpconn_fb_generated.h>
+#ifdef DEBUG
+#define DEBUG_DIR "./debug"
+#endif
+
+#include "blpconn_serialize.h"
 
 namespace BlpConn {
 
@@ -81,9 +84,9 @@ flatbuffers::Offset<FB::HeadlineCalendarEvent> serializeHeadlineCalendarEvent(
 flatbuffers::Offset<FB::LogMessage> serializeLogMessage(
     flatbuffers::FlatBufferBuilder& builder, const LogMessage& log_message) {
     auto message = builder.CreateString(log_message.message);
-    auto module_name = builder.CreateString(log_message.module_name);
+    // auto module = builder.CreateString(log_message.module);
     auto log_dt = serializeDateTime(builder, log_message.log_dt);
-    return FB::CreateLogMessage(builder, log_dt, module_name, message);
+    return FB::CreateLogMessage(builder, log_dt, log_message.module, log_message.status, message);
 }
 
 flatbuffers::FlatBufferBuilder buildBufferEconomicEvent(HeadlineEconomicEvent& event) {
@@ -92,6 +95,10 @@ flatbuffers::FlatBufferBuilder buildBufferEconomicEvent(HeadlineEconomicEvent& e
     auto fb_main = FB::CreateMain(builder, 
         FB::Message::Message_HeadlineEconomicEvent, fb_economic_event);
     builder.Finish(fb_main);
+#ifdef DEBUG
+    const std::string filename = fbGetNextFileName(DEBUG_DIR);
+    fbBuilderToFile(builder, filename);
+#endif
     return builder;
 }
 
@@ -101,6 +108,10 @@ flatbuffers::FlatBufferBuilder buildBufferCalendarEvent(HeadlineCalendarEvent& e
     auto fb_main = FB::CreateMain(builder,
         FB::Message::Message_HeadlineCalendarEvent, fb_calendar_event);
     builder.Finish(fb_main);
+#ifdef DEBUG
+    const std::string filename = fbGetNextFileName(DEBUG_DIR);
+    fbBuilderToFile(builder, filename);
+#endif
     return builder;
 }
 
@@ -109,6 +120,10 @@ flatbuffers::FlatBufferBuilder buildBufferLogMessage(LogMessage& log_message) {
     auto fb_log_message = serializeLogMessage(builder, log_message).Union();
     auto fb_main = FB::CreateMain(builder, FB::Message::Message_LogMessage, fb_log_message);
     builder.Finish(fb_main);
+#ifdef DEBUG
+    const std::string filename = fbGetNextFileName(DEBUG_DIR);
+    fbBuilderToFile(builder, filename);
+#endif
     return builder;
 }
 

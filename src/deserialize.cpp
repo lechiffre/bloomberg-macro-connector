@@ -1,5 +1,5 @@
-#include "blpconn_message.h"
-#include <blpconn_fb_generated.h>
+#include "blpconn_fb_generated.h"
+#include "blpconn_deserialize.h"
 
 namespace BlpConn {
 
@@ -60,9 +60,34 @@ BlpConn::HeadlineCalendarEvent toHeadlineCalendarEvent(const BlpConn::FB::Headli
 LogMessage toLogMessage(const BlpConn::FB::LogMessage* fb_log_message) {
     BlpConn::LogMessage log_message;
     log_message.log_dt = deserializeDateTime(fb_log_message->log_dt());
-    log_message.module_name = fb_log_message->module_name()->str();
+    // TODO: log_message.module = fb_log_message->module();
+    log_message.status = fb_log_message->status();
     log_message.message = fb_log_message->message()->str();
     return log_message;
 }
+
+void defaultObserver(const uint8_t *buffer, size_t size) {
+    flatbuffers::Verifier verifier(buffer, size);
+    if (!BlpConn::FB::VerifyMessageVector(verifier, nullptr, nullptr)) {
+        std::cout << "Invalid message" << std::endl;
+        return;
+    }
+    auto main = flatbuffers::GetRoot<BlpConn::FB::Main>(buffer);
+    if (main->message_type() == BlpConn::FB::Message_HeadlineEconomicEvent) {
+        auto fb_event = main->message_as_HeadlineEconomicEvent();
+        auto event = toHeadlineEconomicEvent(fb_event);
+        std::cout << event << std::endl;
+    } else if (main->message_type() == FB::Message_HeadlineCalendarEvent) {
+        auto fb_event = main->message_as_HeadlineCalendarEvent();
+        auto event = toHeadlineCalendarEvent(fb_event);
+        std::cout << event << std::endl;
+    } else if (main->message_type() == BlpConn::FB::Message_LogMessage) {
+        auto fb_log_message = main->message_as_LogMessage();
+        auto log_message = toLogMessage(fb_log_message);
+        std::cout << log_message << std::endl;
+    }
+}
+
+
 
 } // namespace BlpConn

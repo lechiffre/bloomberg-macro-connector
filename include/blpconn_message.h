@@ -1,12 +1,12 @@
 #ifndef ECONOMIC_EVENT_H
 #define ECONOMIC_EVENT_H
 
+#include <cstdint>
 #include <string>
 #include <cmath>
 #include <blpapi_datetime.h>
 #include <blpapi_element.h>
-#include <flatbuffers/flatbuffers.h>
-// #include "blpconn_fb_generated.h"
+// #include <flatbuffers/flatbuffers.h>
 
 using namespace BloombergLP;
 
@@ -78,7 +78,7 @@ enum class EventType: uint8_t {
 
 struct DateTimeType {
     uint64_t microseconds = 0;
-    short offset = 0;
+    uint16_t offset = 0;
 };
 
 struct LogMessage {

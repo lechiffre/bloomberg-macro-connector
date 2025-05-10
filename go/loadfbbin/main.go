@@ -1,17 +1,13 @@
 package main
 
 import (
-	"os"
-	"io"
-	"fmt"
 	root "blpconngo"
+	"fmt"
+	"io"
+	"os"
 )
-func main() {
-	if len(os.Args) < 2 {
-		fmt.Println("Usage: go run main.go <path_to_flatbuffer_file>")
-		return
-	}
-	filePath := os.Args[1]
+
+func deserializeFromFile(filePath string) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		fmt.Printf("Error opening file: %v\n", err)
@@ -23,6 +19,14 @@ func main() {
 		fmt.Printf("Error reading file: %v\n", err)
 		return
 	}
-	// Pass data to NativeHandler
 	root.NativeHandler(data)
+}
+
+func main() {
+	if len(os.Args) < 2 {
+		fmt.Println("Please provide a file path as an argument.")
+		return
+	}
+	filePath := os.Args[1]
+	deserializeFromFile(filePath)
 }

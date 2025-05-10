@@ -2,6 +2,7 @@
 #define _BLPCONN_OBSERVER_H
 
 #include <cstdint>
+#include <cstddef>
 
 namespace BlpConn {
 
@@ -21,6 +22,7 @@ typedef void (*ObserverFunc)(
     size_t size
 );
 
+void defaultObserver(const uint8_t *buffer, size_t size);
 } // namespace BlpConn
 
 #endif // _BLPCONN_OBSERVER_H

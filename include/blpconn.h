@@ -41,6 +41,7 @@ enum class SubscriptionType {
 enum class TopicType {
     Ticker,
     Cusip,
+    // Figi,
     // TODO: Add more types
 };
 
@@ -67,11 +68,13 @@ enum class TopicType {
  * the subscritpion.
  */
 struct SubscriptionRequest {
+    std::string service;
     std::string topic;
     TopicType topic_type = TopicType::Ticker;
     SubscriptionType subscription_type = SubscriptionType::HeadlineActuals;
     std::string options = "";
     uint64_t correlation_id = 0;
+
     /**
      * Converts struct attributes to an URI following standard
      * defined by Bloomberg. Example:

@@ -8,6 +8,7 @@ var Swig_escape_val interface{}
 
 FUNCTIONS
 
+func DefaultObserver(arg1 *byte, arg2 int64)
 func DeleteContext(arg1 Context)
 func DeleteSubscriptionRequest(arg1 SubscriptionRequest)
 func Swig_free(arg1 uintptr)
@@ -33,7 +34,7 @@ type Context interface {
 	Subscribe(arg2 SubscriptionRequest) (_swig_ret int)
 	Unsubscribe(arg2 SubscriptionRequest)
 	AddNotificationHandler(arg2 _swig_fnptr)
-	Log(arg2 string, arg3 string)
+	Log(arg2 byte, arg3 byte, arg4 uint64, arg5 string)
 }
 
 func NewContext() (_swig_ret Context)
@@ -49,8 +50,8 @@ type SubscriptionRequest interface {
 	GetSubscription_type() (_swig_ret BlpConnSubscriptionType)
 	SetOptions(arg2 string)
 	GetOptions() (_swig_ret string)
-	SetCorrelection_id(arg2 int)
-	GetCorrelection_id() (_swig_ret int)
+	SetCorrelation_id(arg2 uint64)
+	GetCorrelation_id() (_swig_ret uint64)
 	ToUri() (_swig_ret string)
 }
 
@@ -64,7 +65,7 @@ func (arg1 SwigcptrContext) InitializeSession(arg2 string) (_swig_ret bool)
 
 func (arg1 SwigcptrContext) IsConnected() (_swig_ret bool)
 
-func (arg1 SwigcptrContext) Log(arg2 string, arg3 string)
+func (arg1 SwigcptrContext) Log(arg2 byte, arg3 byte, arg4 uint64, arg5 string)
 
 func (arg1 SwigcptrContext) ShutdownSession()
 
@@ -78,7 +79,7 @@ func (arg1 SwigcptrContext) Unsubscribe(arg2 SubscriptionRequest)
 
 type SwigcptrSubscriptionRequest uintptr
 
-func (arg1 SwigcptrSubscriptionRequest) GetCorrelection_id() (_swig_ret int)
+func (arg1 SwigcptrSubscriptionRequest) GetCorrelation_id() (_swig_ret uint64)
 
 func (arg1 SwigcptrSubscriptionRequest) GetOptions() (_swig_ret string)
 
@@ -88,7 +89,7 @@ func (arg1 SwigcptrSubscriptionRequest) GetTopic() (_swig_ret string)
 
 func (arg1 SwigcptrSubscriptionRequest) GetTopic_type() (_swig_ret BlpConnTopicType)
 
-func (arg1 SwigcptrSubscriptionRequest) SetCorrelection_id(arg2 int)
+func (arg1 SwigcptrSubscriptionRequest) SetCorrelation_id(arg2 uint64)
 
 func (arg1 SwigcptrSubscriptionRequest) SetOptions(arg2 string)
 

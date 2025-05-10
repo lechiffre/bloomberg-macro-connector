@@ -39,7 +39,6 @@ namespace BlpConn {
     DateTimeType currentTime() noexcept;
 
 
-    void defaultObserver(const uint8_t *buffer, size_t size);
 } // namespace BlpConn
 
 #endif // _BLPCONN_DESERIALIZE_H_

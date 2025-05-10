@@ -18,6 +18,8 @@ func main() {
 	request := blpconngo.NewSubscriptionRequest()
 	request.SetTopic("INJCJC Index")
 	request.SetSubscription_type(blpconngo.SubscriptionType_ReleaseCalendar)
+	request.SetCorrelation_id(4)
 	ctx.Subscribe(request)
 	time.Sleep(10 * time.Second)
+	ctx.Unsubscribe(request)
 }

@@ -1,3 +1,4 @@
+#include "blpconn_observer.h"
 #include "blpconn_fb_generated.h"
 #include "blpconn_deserialize.h"
 

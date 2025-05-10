@@ -3,11 +3,13 @@
 %{
 // #include <string>
 // #include <vector>
+#include <stdint.h>
 #include "blpconn_observer.h"
 #include "blpconn.h"
 %}
 
 %include "exception.i"
+%include "stdint.i"
 %include "std_string.i"
 %include "std_vector.i"
 

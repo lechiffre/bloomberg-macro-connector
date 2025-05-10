@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <blpconn_deserialize.h>
+#include <blpconn_observer.h>
 
 using namespace BlpConn;
 

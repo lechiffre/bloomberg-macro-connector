@@ -6,9 +6,7 @@ import (
 )
 
 func DeserializeDateTime(fbDateTime *FB.DateTime) time.Time {
-	// fmt.Println(fbDateTime.Micros())
 	return ToNativeTime(fbDateTime.Micros(), fbDateTime.Offset())
-	// return time.Time{}
 }
 
 func DeserializeValue(fbValue *FB.Value) ValueType {
@@ -29,16 +27,16 @@ func DeserializeHeadlineEconomicEvent(fbEvent *FB.HeadlineEconomicEvent) Headlin
 			IDBBGlobal:        string(fbEvent.IdBbGlobal()),
 			ParsekyableDes:    string(fbEvent.ParsekyableDes()),
 			Description:       string(fbEvent.Description()),
-			EventType:         int(fbEvent.EventType()),
-			EventSubType:      int(fbEvent.EventSubtype()),
-			EventID:           int(fbEvent.EventId()),
+			EventType:         uint8(fbEvent.EventType()),
+			EventSubType:      uint8(fbEvent.EventSubtype()),
+			EventID:           uint64(fbEvent.EventId()),
 			ObservationPeriod: string(fbEvent.ObservationPeriod()),
 			ReleaseStartDT:    DeserializeDateTime(fbEvent.ReleaseStartDt(nil)),
 			ReleaseEndDT:      DeserializeDateTime(fbEvent.ReleaseEndDt(nil)),
 		},
 		Value:                       DeserializeValue(fbEvent.Value(nil)),
 		PriorValue:                  DeserializeValue(fbEvent.PriorValue(nil)),
-		PriorEventID:                int(fbEvent.PriorEventId()),
+		PriorEventID:                uint64(fbEvent.PriorEventId()),
 		PriorObservationPeriod:      string(fbEvent.PriorObservationPeriod()),
 		PriorEconomicReleaseStartDT: DeserializeDateTime(fbEvent.PriorEconomicReleaseStartDt(nil)),
 		PriorEconomicReleaseEndDT:   DeserializeDateTime(fbEvent.PriorEconomicReleaseEndDt(nil)),
@@ -51,14 +49,14 @@ func DeserializeHeadlineCalendarEvent(fbEvent *FB.HeadlineCalendarEvent) Headlin
 			IDBBGlobal:        string(fbEvent.IdBbGlobal()),
 			ParsekyableDes:    string(fbEvent.ParsekyableDes()),
 			Description:       string(fbEvent.Description()),
-			EventType:         int(fbEvent.EventType()),
-			EventSubType:      int(fbEvent.EventSubtype()),
-			EventID:           int(fbEvent.EventId()),
+			EventType:         uint8(fbEvent.EventType()),
+			EventSubType:      uint8(fbEvent.EventSubtype()),
+			EventID:           uint64(fbEvent.EventId()),
 			ObservationPeriod: string(fbEvent.ObservationPeriod()),
 			ReleaseStartDT:    DeserializeDateTime(fbEvent.ReleaseStartDt(nil)),
 			ReleaseEndDT:      DeserializeDateTime(fbEvent.ReleaseEndDt(nil)),
 		},
-		Status: int(fbEvent.ReleaseStatus()),
+		ReleaseStatus: uint8(fbEvent.ReleaseStatus()),
 	}
 }
 

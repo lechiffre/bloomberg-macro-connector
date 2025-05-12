@@ -72,9 +72,6 @@ foreach(example ${EXAMPLE_FILES})
     add_dependencies(${binname} blpconn)
 endforeach(example ${EXAMPLE_FILES})
 
-# Find Qt6
-find_package(Qt6 COMPONENTS Core Widgets REQUIRED)
-
 enable_testing()
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 include_directories(${gtest_SOURCE_DIR}/googletest/include ${gtest_SOURCE_DIR}/googlemock/include)

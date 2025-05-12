@@ -443,6 +443,7 @@ To compile the library, the following requirements are needed:
 - Swig 4.3
 - Go 1.24
 - FlatBuffers 25.2
+- CMake
 
 The compilation process has several steps:
 

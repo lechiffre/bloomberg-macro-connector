@@ -32,7 +32,9 @@ namespace BlpConn {
     LogMessage toLogMessage(const FB::LogMessage* fb_log_message);
 
     flatbuffers::FlatBufferBuilder buildBufferEconomicEvent(HeadlineEconomicEvent& event);
+    flatbuffers::FlatBufferBuilder buildBufferEconomicEvent(const blpapi::Element& elem);
     flatbuffers::FlatBufferBuilder buildBufferCalendarEvent(HeadlineCalendarEvent& event);
+    flatbuffers::FlatBufferBuilder buildBufferCalendarEvent(const blpapi::Element& elem);
     flatbuffers::FlatBufferBuilder buildBufferLogMessage(LogMessage& log_message);
 
     // Utility functions

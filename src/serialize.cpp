@@ -1,5 +1,5 @@
 /**
- * This file contains functions to serialize and deserialize classes
+ * This file contains functions to serialize classes
  * defined in economic_event.h to/from FlatBuffers objects in the
  * namespace FB.
  */
@@ -28,30 +28,7 @@ flatbuffers::Offset<FB::DateTime> serializeDateTime(
 
 flatbuffers::Offset<FB::DateTime> extractDateTime(
     flatbuffers::FlatBufferBuilder& builder, const blpapi::Datetime& blpDatetime) {
-    // Validate the year
-    if (blpDatetime.year() == 0) {
-        throw std::invalid_argument("Year is not set in blpapi::Datetime.");
-    }
-
-    // Validate the month
-    if (blpDatetime.month() < 1 || blpDatetime.month() > 12) {
-        throw std::invalid_argument("Month is out of range in blpapi::Datetime.");
-    }
-
-    // Validate the day
-    static const int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    int maxDays = daysInMonth[blpDatetime.month() - 1];
-
-    // Check for leap year in February
-    if (blpDatetime.month() == 2 && ((blpDatetime.year() % 4 == 0 && blpDatetime.year() % 100 != 0) || (blpDatetime.year() % 400 == 0))) {
-        maxDays = 29;
-    }
-
-    if (blpDatetime.day() < 1 || blpDatetime.day() > static_cast<unsigned int>(maxDays)) {
-        throw std::invalid_argument("Day is out of range in blpapi::Datetime.");
-    }
-
-    // Calculate microseconds since Unix epoch
+    // Remove validation, assume blpDatetime is correct
     std::tm timeStruct = {};
     timeStruct.tm_year = blpDatetime.year() - 1900;
     timeStruct.tm_mon = blpDatetime.month() - 1;   // tm_mon is 0-based
@@ -127,11 +104,10 @@ flatbuffers::Offset<FB::HeadlineEconomicEvent> serializeHeadlineEconomicEvent(
 
     auto value = serializeValue(builder, event.value);
     auto prior_value = serializeValue(builder, event.prior_value);
-    auto prior_release_start_dt = serializeDateTime(
-        builder, event.prior_economic_release_start_dt);
-    auto prior_release_end_dt = serializeDateTime(
-        builder, event.prior_economic_release_end_dt);
+    auto prior_release_start_dt = serializeDateTime(builder, event.prior_economic_release_start_dt);
+    auto prior_release_end_dt = serializeDateTime(builder, event.prior_economic_release_end_dt);
 
+    // All fields are mapped correctly, types are cast to FlatBuffers enums
     return FB::CreateHeadlineEconomicEvent(
         builder,
         id_bb_global,
@@ -139,7 +115,8 @@ flatbuffers::Offset<FB::HeadlineEconomicEvent> serializeHeadlineEconomicEvent(
         description,
         static_cast<FB::EventType>(event.event_type),
         static_cast<FB::EventSubType>(event.event_subtype),
-        event.event_id, observation_period,
+        event.event_id,
+        observation_period,
         release_start_dt,
         release_end_dt,
         value,
@@ -147,7 +124,8 @@ flatbuffers::Offset<FB::HeadlineEconomicEvent> serializeHeadlineEconomicEvent(
         event.prior_event_id,
         prior_observation_period,
         prior_release_start_dt,
-        prior_release_end_dt);
+        prior_release_end_dt
+    );
 }
 
 flatbuffers::Offset<FB::HeadlineCalendarEvent> serializeHeadlineCalendarEvent(

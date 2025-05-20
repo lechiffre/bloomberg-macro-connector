@@ -33,12 +33,20 @@ static void sendNotification(flatbuffers::FlatBufferBuilder& builder, Logger *lo
 
 void processEconomicEvent(const blpapi::Element& elem, Logger& logger) {
     if (elem.name() == HEADLINE_ECONOMIC_EVENT) {
+        /*
         HeadlineEconomicEvent event = parseHeadlineEconomicEvent(elem);
         flatbuffers::FlatBufferBuilder builder = buildBufferEconomicEvent(event);
+        */
+        flatbuffers::FlatBufferBuilder builder = buildBufferEconomicEvent(elem);
+        std::cout << elem << std::endl;
         sendNotification(builder, &logger);
     } else if (elem.name() == HEADLINE_CALENDAR_EVENT) {
+        /*
         HeadlineCalendarEvent event = parseHeadlineCalendarEvent(elem);
         flatbuffers::FlatBufferBuilder builder = buildBufferCalendarEvent(event);
+        */
+        flatbuffers::FlatBufferBuilder builder = buildBufferCalendarEvent(elem);
+        std::cout << elem << std::endl;
         sendNotification(builder, &logger);
     } else {
         std::string e = "Unknown event type: ";

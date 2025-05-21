@@ -2,6 +2,7 @@ package blpconngo
 
 /*
 #include <callback.h>
+#cgo CFLAGS: -g
 #cgo LDFLAGS: -L../lib -lblpapi3_64 -lblpconngo -lblpconn -lstdc++
 */
 import "C"

@@ -39,12 +39,9 @@ void processEconomicEvent(const blpapi::Element& elem, Logger& logger) {
             event_id = logger.profiler_.push("EventHandler", "processEconomicEvent", "HeadlineEconomicEvent");
         }
 #endif
-        /*
         HeadlineEconomicEvent event = parseHeadlineEconomicEvent(elem);
         flatbuffers::FlatBufferBuilder builder = buildBufferEconomicEvent(event);
-        */
-        flatbuffers::FlatBufferBuilder builder = buildBufferEconomicEvent(elem);
-        std::cout << elem << std::endl;
+        // flatbuffers::FlatBufferBuilder builder = buildBufferEconomicEvent(elem);
         sendNotification(builder, &logger);
 #ifdef DEBUG
         if (logger.testing_) {
@@ -58,12 +55,9 @@ void processEconomicEvent(const blpapi::Element& elem, Logger& logger) {
             event_id = logger.profiler_.push("EventHandler", "processEconomicEvent", "HeadlineCalendarEvent");
         }
 #endif
-        /*
         HeadlineCalendarEvent event = parseHeadlineCalendarEvent(elem);
         flatbuffers::FlatBufferBuilder builder = buildBufferCalendarEvent(event);
-        */
-        flatbuffers::FlatBufferBuilder builder = buildBufferCalendarEvent(elem);
-        std::cout << elem << std::endl;
+        // flatbuffers::FlatBufferBuilder builder = buildBufferCalendarEvent(elem);
         sendNotification(builder, &logger);
 #ifdef DEBUG
         if (logger.testing_) {

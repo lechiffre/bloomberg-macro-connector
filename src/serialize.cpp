@@ -165,10 +165,12 @@ flatbuffers::FlatBufferBuilder buildBufferEconomicEvent(HeadlineEconomicEvent& e
     auto fb_main = FB::CreateMain(builder, 
         FB::Message::Message_HeadlineEconomicEvent, fb_economic_event);
     builder.Finish(fb_main);
+/*
 #ifdef DEBUG
     const std::string filename = fbGetNextFileName(DEBUG_DIR);
     fbBuilderToFile(builder, filename);
 #endif
+*/
     return builder;
 }
 
@@ -178,10 +180,12 @@ flatbuffers::FlatBufferBuilder buildBufferCalendarEvent(HeadlineCalendarEvent& e
     auto fb_main = FB::CreateMain(builder,
         FB::Message::Message_HeadlineCalendarEvent, fb_calendar_event);
     builder.Finish(fb_main);
+/*
 #ifdef DEBUG
     const std::string filename = fbGetNextFileName(DEBUG_DIR);
     fbBuilderToFile(builder, filename);
 #endif
+*/
     return builder;
 }
 
@@ -190,10 +194,12 @@ flatbuffers::FlatBufferBuilder buildBufferLogMessage(LogMessage& log_message) {
     auto fb_log_message = serializeLogMessage(builder, log_message).Union();
     auto fb_main = FB::CreateMain(builder, FB::Message::Message_LogMessage, fb_log_message);
     builder.Finish(fb_main);
+/*
 #ifdef DEBUG
     const std::string filename = fbGetNextFileName(DEBUG_DIR);
     fbBuilderToFile(builder, filename);
 #endif
+*/
     return builder;
 }
 

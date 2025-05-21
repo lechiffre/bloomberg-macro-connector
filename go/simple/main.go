@@ -4,6 +4,7 @@ import (
 	"blpconngo"
 	"log"
 	"time"
+	"fmt"
 )
 
 func main() {
@@ -22,4 +23,5 @@ func main() {
 	ctx.Subscribe(request)
 	time.Sleep(10 * time.Second)
 	ctx.Unsubscribe(request)
+	time.Sleep(3 * time.Second)
 }

@@ -49,6 +49,12 @@ extern swig_intgo _wrap_SubscriptionType_ReleaseCalendar_blpconngo_952fca452fa5a
 extern swig_intgo _wrap_SubscriptionType_HeadlineSurveys_blpconngo_952fca452fa5a6d6(void);
 extern swig_intgo _wrap_TopicType_Ticker_blpconngo_952fca452fa5a6d6(void);
 extern swig_intgo _wrap_TopicType_Cusip_blpconngo_952fca452fa5a6d6(void);
+extern swig_intgo _wrap_TopicType_Sedol_blpconngo_952fca452fa5a6d6(void);
+extern swig_intgo _wrap_TopicType_Isin_blpconngo_952fca452fa5a6d6(void);
+extern swig_intgo _wrap_TopicType_Bsid_blpconngo_952fca452fa5a6d6(void);
+extern swig_intgo _wrap_TopicType_Buid_blpconngo_952fca452fa5a6d6(void);
+extern swig_intgo _wrap_TopicType_Eid_blpconngo_952fca452fa5a6d6(void);
+extern swig_intgo _wrap_TopicType_Figi_blpconngo_952fca452fa5a6d6(void);
 extern void _wrap_SubscriptionRequest_service_set_blpconngo_952fca452fa5a6d6(uintptr_t arg1, swig_type_2 arg2);
 extern swig_type_3 _wrap_SubscriptionRequest_service_get_blpconngo_952fca452fa5a6d6(uintptr_t arg1);
 extern void _wrap_SubscriptionRequest_topic_set_blpconngo_952fca452fa5a6d6(uintptr_t arg1, swig_type_4 arg2);
@@ -179,6 +185,48 @@ func _swig_getTopicType_Cusip() (_swig_ret BlpConnTopicType) {
 }
 
 var TopicType_Cusip BlpConnTopicType = _swig_getTopicType_Cusip()
+func _swig_getTopicType_Sedol() (_swig_ret BlpConnTopicType) {
+	var swig_r BlpConnTopicType
+	swig_r = (BlpConnTopicType)(C._wrap_TopicType_Sedol_blpconngo_952fca452fa5a6d6())
+	return swig_r
+}
+
+var TopicType_Sedol BlpConnTopicType = _swig_getTopicType_Sedol()
+func _swig_getTopicType_Isin() (_swig_ret BlpConnTopicType) {
+	var swig_r BlpConnTopicType
+	swig_r = (BlpConnTopicType)(C._wrap_TopicType_Isin_blpconngo_952fca452fa5a6d6())
+	return swig_r
+}
+
+var TopicType_Isin BlpConnTopicType = _swig_getTopicType_Isin()
+func _swig_getTopicType_Bsid() (_swig_ret BlpConnTopicType) {
+	var swig_r BlpConnTopicType
+	swig_r = (BlpConnTopicType)(C._wrap_TopicType_Bsid_blpconngo_952fca452fa5a6d6())
+	return swig_r
+}
+
+var TopicType_Bsid BlpConnTopicType = _swig_getTopicType_Bsid()
+func _swig_getTopicType_Buid() (_swig_ret BlpConnTopicType) {
+	var swig_r BlpConnTopicType
+	swig_r = (BlpConnTopicType)(C._wrap_TopicType_Buid_blpconngo_952fca452fa5a6d6())
+	return swig_r
+}
+
+var TopicType_Buid BlpConnTopicType = _swig_getTopicType_Buid()
+func _swig_getTopicType_Eid() (_swig_ret BlpConnTopicType) {
+	var swig_r BlpConnTopicType
+	swig_r = (BlpConnTopicType)(C._wrap_TopicType_Eid_blpconngo_952fca452fa5a6d6())
+	return swig_r
+}
+
+var TopicType_Eid BlpConnTopicType = _swig_getTopicType_Eid()
+func _swig_getTopicType_Figi() (_swig_ret BlpConnTopicType) {
+	var swig_r BlpConnTopicType
+	swig_r = (BlpConnTopicType)(C._wrap_TopicType_Figi_blpconngo_952fca452fa5a6d6())
+	return swig_r
+}
+
+var TopicType_Figi BlpConnTopicType = _swig_getTopicType_Figi()
 type SwigcptrSubscriptionRequest uintptr
 
 func (p SwigcptrSubscriptionRequest) Swigcptr() uintptr {

@@ -2,11 +2,11 @@
  * blpconn Library
  *
  * This library provides a C++ interface to connect to Bloomberg's services.
- * It is based on the Bloomberg C++ API and provides functionality to subscribe to
- * various Bloomberg data feeds, handle events, and log messages.
- * This library is focused on the Economic Data service. It provides an interface
- * to open an mantain a connection to the Bloomberg service, subscribe to data feeds,
- * and handle incoming events by user defined callback functions.
+ * It is based on the Bloomberg C++ API and provides functionality to subscribe
+ * to various Bloomberg data feeds, handle events, and log messages. This
+ * library is focused on the Economic Data service. It provides an interface to
+ * open an mantain a connection to the Bloomberg service, subscribe to data
+ * feeds, and handle incoming events by user defined callback functions.
  */
 
 #ifndef _BLPCONN_H
@@ -21,7 +21,6 @@ using namespace BloombergLP;
  * blpconn.
  */
 namespace BlpConn {
-
 
 /**
  * The EventType enum defines the types of events that can be
@@ -39,10 +38,14 @@ enum class SubscriptionType {
  * different identification standards.
  */
 enum class TopicType {
-    Ticker,
-    Cusip,
-    // Figi,
-    // TODO: Add more types
+    Ticker,  // Generic identifier
+    Cusip,   // Request by CUSIP
+    Sedol,   // Request by SEDOL
+    Isin,    // Request by ISIN
+    Bsid,    // Request by Bloomberg Security Identifier
+    Buid,    // Request by Bloomberg Unique Identifier
+    Eid,     // Request by Entitlement ID
+    Figi,    // Request by Financial Instrument Global Identifier
 };
 
 /**
@@ -92,7 +95,7 @@ struct SubscriptionRequest {
  * to log messages.
  */
 class Context {
-public:
+   public:
     Context() {}
 
     /**
@@ -170,17 +173,17 @@ public:
      * Message should be in JSON format and be passed as strings.
      */
     void log(uint8_t module, uint8_t status, uint64_t correlation_id,
-        const std::string& message) {
+             const std::string& message) {
         event_handler_.logger_.log(module, status, correlation_id, message);
     }
 
-private:
+  private:
     std::string service_ = "//blp/economic-data";
     EventHandler event_handler_;
-    blpapi::Session *session_ = nullptr;
+    blpapi::Session* session_ = nullptr;
     int subscription_counter_ = 0;
 };
 
-} // namespace BlpConn
+}  // namespace BlpConn
 
-#endif // _BLPCONN_H
+#endif  // _BLPCONN_H

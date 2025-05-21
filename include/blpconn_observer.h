@@ -1,8 +1,8 @@
 #ifndef _BLPCONN_OBSERVER_H
 #define _BLPCONN_OBSERVER_H
 
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 namespace BlpConn {
 
@@ -17,12 +17,9 @@ namespace BlpConn {
  * @param buffer A pointer to the serialized buffer.
  * @param size The size of the serialized buffer.
  */
-typedef void (*ObserverFunc)(
-    const uint8_t *buffer,
-    size_t size
-);
+typedef void (*ObserverFunc)(const uint8_t *buffer, size_t size);
 
 void defaultObserver(const uint8_t *buffer, size_t size);
-} // namespace BlpConn
+}  // namespace BlpConn
 
-#endif // _BLPCONN_OBSERVER_H
+#endif  // _BLPCONN_OBSERVER_H

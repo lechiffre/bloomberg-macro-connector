@@ -94,7 +94,8 @@ This is an example of a configuration file:
   "secondary_host": "bloomberg-server2",
   "port": 8194,
   "default_service": "//blp/economic-data",
-  "app_name": "TraderApp:MarketData"
+  "app_name": "TraderApp:MarketData",
+  "mode": "prod"
 }
 ```
 
@@ -111,6 +112,7 @@ Parameters to define are:
 * `port`: Server port to access the services
 * `default_service`: Default service identification
 * `app_name`: Bloomberg's designated application name
+* `mode`: Mode of operation. It can be `prod` or `test`
 
 ## Subscription Request
 

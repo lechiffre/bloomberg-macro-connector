@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project(blpconn VERSION 0.0.1 LANGUAGES CXX)
 
+add_definitions(-DDEBUG)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -O3 -fPIE")
 if(NOT DEFINED CMAKE_CXX_COMPILER)
@@ -17,6 +18,7 @@ set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR})
 set(BLPAPI3_64_URL "https://blpapi.bloomberg.com/download/releases/raw/files/blpapi_cpp_3.25.3.1-linux.tar.gz")
 set(BLPAPI3_64_DIR "${CMAKE_SOURCE_DIR}/blpapi3_64")
 set(BLPAPI3_64_TAR "${CMAKE_SOURCE_DIR}/blpapi3_64.tar.gz")
+
 
 # Check if blpapi3_64 directory exists
 if(NOT EXISTS ${BLPAPI3_64_TAR})

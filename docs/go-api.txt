@@ -23,7 +23,13 @@ var SubscriptionType_HeadlineSurveys BlpConnSubscriptionType = _swig_getSubscrip
 var SubscriptionType_ReleaseCalendar BlpConnSubscriptionType = _swig_getSubscriptionType_ReleaseCalendar()
 type BlpConnTopicType int
 
+var TopicType_Bsid BlpConnTopicType = _swig_getTopicType_Bsid()
+var TopicType_Buid BlpConnTopicType = _swig_getTopicType_Buid()
 var TopicType_Cusip BlpConnTopicType = _swig_getTopicType_Cusip()
+var TopicType_Eid BlpConnTopicType = _swig_getTopicType_Eid()
+var TopicType_Figi BlpConnTopicType = _swig_getTopicType_Figi()
+var TopicType_Isin BlpConnTopicType = _swig_getTopicType_Isin()
+var TopicType_Sedol BlpConnTopicType = _swig_getTopicType_Sedol()
 var TopicType_Ticker BlpConnTopicType = _swig_getTopicType_Ticker()
 type Context interface {
 	Swigcptr() uintptr

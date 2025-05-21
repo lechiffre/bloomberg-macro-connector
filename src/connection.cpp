@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <fstream>
 #include <blpapi_authoptions.h>
 #include <blpapi_correlationid.h>
@@ -83,6 +84,7 @@ namespace BlpConn {
 static const int module = static_cast<int>(Module::Session);
 
 bool Context::initializeSession(const std::string& config_path) {
+
     json config;
     try {
         config = readConfiguration(config_path);
@@ -90,6 +92,13 @@ bool Context::initializeSession(const std::string& config_path) {
         log(module, 0, 0, e.what());
         return false;
     }
+#ifdef DEBUG
+    event_handler_.logger_.testing_ = config["mode"] == "test";
+    uint64_t event_id = 0;
+    if (event_handler_.logger_.testing_) {
+        event_id = event_handler_.logger_.profiler_.push("Context", "initializeSession", "InitializeSession");
+    }
+#endif
     blpapi::SessionOptions session_options;
     try {
         session_options = defineSessionOptions(config);
@@ -119,10 +128,18 @@ bool Context::initializeSession(const std::string& config_path) {
             "Failed to open service: " + service_);
         return false;
     }
+#ifdef DEBUG
+    if (event_handler_.logger_.testing_) {
+        event_handler_.logger_.profiler_.push("Context", "initializeSession", "InitializeSession", event_id);
+    }
+#endif
     return true;
 }
 
 void Context::shutdownSession() {
+#ifdef DEBUG
+    event_handler_.logger_.profiler_.stop();
+#endif
     if (session_) {
         session_->stop();
         delete session_;

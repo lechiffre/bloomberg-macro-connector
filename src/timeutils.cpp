@@ -20,13 +20,13 @@ namespace BlpConn {
 
           return dt;
       }
-}
 
 std::string currentTimeStamp() {
       time_t now = std::time(nullptr);
       std::ostringstream oss;
       oss << std::put_time(std::localtime(&now), "%Y-%m-%d %H:%M:%S");
       return oss.str();
+}
 }
 
 uint64_t currentTime() {

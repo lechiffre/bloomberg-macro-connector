@@ -2,16 +2,19 @@
 #define _BLPCONN_SERIALIZE_H_
 
 #include <flatbuffers/flatbuffers.h>
-#include "blpconn_message.h"
+
 #include "blpconn_fb_generated.h"
+#include "blpconn_message.h"
 
 namespace BlpConn {
 
 flatbuffers::Offset<FB::HeadlineEconomicEvent> serializeHeadlineEconomicEvent(
-    flatbuffers::FlatBufferBuilder& builder, const HeadlineEconomicEvent& event);
+    flatbuffers::FlatBufferBuilder& builder,
+    const HeadlineEconomicEvent& event);
 
 flatbuffers::Offset<FB::HeadlineCalendarEvent> serializeHeadlineCalendarEvent(
-    flatbuffers::FlatBufferBuilder& builder, const HeadlineCalendarEvent& event);
+    flatbuffers::FlatBufferBuilder& builder,
+    const HeadlineCalendarEvent& event);
 
 flatbuffers::Offset<FB::LogMessage> serializeLogMessage(
     flatbuffers::FlatBufferBuilder& builder, const LogMessage& log_message);
@@ -19,10 +22,11 @@ flatbuffers::Offset<FB::LogMessage> serializeLogMessage(
 // Helper functions
 int getLastFileNumber();
 std::string fbGetNextFileName(const std::string& dir);
-void fbBufferToFile(uint8_t* buffer, size_t size, const std::string& filename);;
-void fbBuilderToFile(flatbuffers::FlatBufferBuilder& builder, const std::string& filename);
+void fbBufferToFile(uint8_t* buffer, size_t size, const std::string& filename);
+;
+void fbBuilderToFile(flatbuffers::FlatBufferBuilder& builder,
+                     const std::string& filename);
 
-} // namespace BlpConn
+}  // namespace BlpConn
 
-#endif // _BLPCONN_SERIALIZE_H_
-
+#endif  // _BLPCONN_SERIALIZE_H_

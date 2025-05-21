@@ -2,9 +2,13 @@
 #define _BLPCONN_LOGGER_H
 
 #include <iostream>
-#include <vector>
 #include <string>
+#include <vector>
+
 #include "blpconn_observer.h"
+#ifdef DEBUG
+#include "blpconn_profiler.h"
+#endif
 
 namespace BlpConn {
 
@@ -14,14 +18,14 @@ namespace BlpConn {
  * of registered observer functions.
  */
 class Logger {
-public:
+   public:
     /**
      * The default output stream is std::cout. The client program can
      * specify a different output stream if needed. The output stream
      * is used when no observer functions are registered. Otherwise,
      * notifications are sent only to the observer functions.
      */
-    Logger(std::ostream* out_stream = &std::cout): out_stream_(out_stream) {}
+    Logger(std::ostream* out_stream = &std::cout) : out_stream_(out_stream) {}
 
     /**
      * This method is the way to register observer functions.
@@ -35,7 +39,8 @@ public:
      * messages to the output stream or to the registered observer
      * functions.
      */
-    void log(uint8_t module, uint8_t status, uint64_t correlation_id, const std::string& message);
+    void log(uint8_t module, uint8_t status, uint64_t correlation_id,
+             const std::string& message);
 
     // void send_notification(Message message, MessageType msg_type);
     // void sendNotification(flatbuffers::FlatBufferBuilder& builder);
@@ -44,12 +49,17 @@ public:
      */
     void notify(const uint8_t* buffer, size_t size);
 
-private:
+#ifdef DEBUG
+    bool testing_ = true;
+    ProfileQueue profiler_;
+#endif
+
+   private:
     std::ostream* out_stream_;
     std::vector<ObserverFunc> callbacks_;
     // TODO: check if it needs to have one or more buffers
 };
 
-} // namespace BlpConn
+}  // namespace BlpConn
 
-#endif // _BLPCONN_LOGGER_H
+#endif  // _BLPCONN_LOGGER_H

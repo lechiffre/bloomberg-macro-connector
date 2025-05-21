@@ -23,7 +23,13 @@ var SubscriptionType_HeadlineSurveys BlpConnSubscriptionType = _swig_getSubscrip
 var SubscriptionType_ReleaseCalendar BlpConnSubscriptionType = _swig_getSubscriptionType_ReleaseCalendar()
 type BlpConnTopicType int
 
+var TopicType_Bsid BlpConnTopicType = _swig_getTopicType_Bsid()
+var TopicType_Buid BlpConnTopicType = _swig_getTopicType_Buid()
 var TopicType_Cusip BlpConnTopicType = _swig_getTopicType_Cusip()
+var TopicType_Eid BlpConnTopicType = _swig_getTopicType_Eid()
+var TopicType_Figi BlpConnTopicType = _swig_getTopicType_Figi()
+var TopicType_Isin BlpConnTopicType = _swig_getTopicType_Isin()
+var TopicType_Sedol BlpConnTopicType = _swig_getTopicType_Sedol()
 var TopicType_Ticker BlpConnTopicType = _swig_getTopicType_Ticker()
 type Context interface {
 	Swigcptr() uintptr
@@ -42,6 +48,8 @@ func NewContext() (_swig_ret Context)
 type SubscriptionRequest interface {
 	Swigcptr() uintptr
 	SwigIsSubscriptionRequest()
+	SetService(arg2 string)
+	GetService() (_swig_ret string)
 	SetTopic(arg2 string)
 	GetTopic() (_swig_ret string)
 	SetTopic_type(arg2 BlpConnTopicType)
@@ -83,6 +91,8 @@ func (arg1 SwigcptrSubscriptionRequest) GetCorrelation_id() (_swig_ret uint64)
 
 func (arg1 SwigcptrSubscriptionRequest) GetOptions() (_swig_ret string)
 
+func (arg1 SwigcptrSubscriptionRequest) GetService() (_swig_ret string)
+
 func (arg1 SwigcptrSubscriptionRequest) GetSubscription_type() (_swig_ret BlpConnSubscriptionType)
 
 func (arg1 SwigcptrSubscriptionRequest) GetTopic() (_swig_ret string)
@@ -92,6 +102,8 @@ func (arg1 SwigcptrSubscriptionRequest) GetTopic_type() (_swig_ret BlpConnTopicT
 func (arg1 SwigcptrSubscriptionRequest) SetCorrelation_id(arg2 uint64)
 
 func (arg1 SwigcptrSubscriptionRequest) SetOptions(arg2 string)
+
+func (arg1 SwigcptrSubscriptionRequest) SetService(arg2 string)
 
 func (arg1 SwigcptrSubscriptionRequest) SetSubscription_type(arg2 BlpConnSubscriptionType)
 

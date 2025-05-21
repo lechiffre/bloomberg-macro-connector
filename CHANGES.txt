@@ -41,3 +41,7 @@
 0.1.0 - 2025-05-09:
 
 - First complete delivery
+
+0.2.0 - 2025-05-20:
+
+- Support to convert directly from blpapi::Element to flatbuffers

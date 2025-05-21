@@ -32,13 +32,15 @@ typedef _gostring_ swig_type_2;
 typedef _gostring_ swig_type_3;
 typedef _gostring_ swig_type_4;
 typedef _gostring_ swig_type_5;
-typedef long long swig_type_6;
-typedef long long swig_type_7;
-typedef _gostring_ swig_type_8;
-typedef _gostring_ swig_type_9;
-typedef void* swig_type_10;
-typedef long long swig_type_11;
-typedef _gostring_ swig_type_12;
+typedef _gostring_ swig_type_6;
+typedef _gostring_ swig_type_7;
+typedef long long swig_type_8;
+typedef long long swig_type_9;
+typedef _gostring_ swig_type_10;
+typedef _gostring_ swig_type_11;
+typedef void* swig_type_12;
+typedef long long swig_type_13;
+typedef _gostring_ swig_type_14;
 extern void _wrap_Swig_free_blpconngo_952fca452fa5a6d6(uintptr_t arg1);
 extern uintptr_t _wrap_Swig_malloc_blpconngo_952fca452fa5a6d6(swig_intgo arg1);
 extern void _wrap_defaultObserver_blpconngo_952fca452fa5a6d6(swig_voidp arg1, swig_type_1 arg2);
@@ -47,28 +49,36 @@ extern swig_intgo _wrap_SubscriptionType_ReleaseCalendar_blpconngo_952fca452fa5a
 extern swig_intgo _wrap_SubscriptionType_HeadlineSurveys_blpconngo_952fca452fa5a6d6(void);
 extern swig_intgo _wrap_TopicType_Ticker_blpconngo_952fca452fa5a6d6(void);
 extern swig_intgo _wrap_TopicType_Cusip_blpconngo_952fca452fa5a6d6(void);
-extern void _wrap_SubscriptionRequest_topic_set_blpconngo_952fca452fa5a6d6(uintptr_t arg1, swig_type_2 arg2);
-extern swig_type_3 _wrap_SubscriptionRequest_topic_get_blpconngo_952fca452fa5a6d6(uintptr_t arg1);
+extern swig_intgo _wrap_TopicType_Sedol_blpconngo_952fca452fa5a6d6(void);
+extern swig_intgo _wrap_TopicType_Isin_blpconngo_952fca452fa5a6d6(void);
+extern swig_intgo _wrap_TopicType_Bsid_blpconngo_952fca452fa5a6d6(void);
+extern swig_intgo _wrap_TopicType_Buid_blpconngo_952fca452fa5a6d6(void);
+extern swig_intgo _wrap_TopicType_Eid_blpconngo_952fca452fa5a6d6(void);
+extern swig_intgo _wrap_TopicType_Figi_blpconngo_952fca452fa5a6d6(void);
+extern void _wrap_SubscriptionRequest_service_set_blpconngo_952fca452fa5a6d6(uintptr_t arg1, swig_type_2 arg2);
+extern swig_type_3 _wrap_SubscriptionRequest_service_get_blpconngo_952fca452fa5a6d6(uintptr_t arg1);
+extern void _wrap_SubscriptionRequest_topic_set_blpconngo_952fca452fa5a6d6(uintptr_t arg1, swig_type_4 arg2);
+extern swig_type_5 _wrap_SubscriptionRequest_topic_get_blpconngo_952fca452fa5a6d6(uintptr_t arg1);
 extern void _wrap_SubscriptionRequest_topic_type_set_blpconngo_952fca452fa5a6d6(uintptr_t arg1, swig_intgo arg2);
 extern swig_intgo _wrap_SubscriptionRequest_topic_type_get_blpconngo_952fca452fa5a6d6(uintptr_t arg1);
 extern void _wrap_SubscriptionRequest_subscription_type_set_blpconngo_952fca452fa5a6d6(uintptr_t arg1, swig_intgo arg2);
 extern swig_intgo _wrap_SubscriptionRequest_subscription_type_get_blpconngo_952fca452fa5a6d6(uintptr_t arg1);
-extern void _wrap_SubscriptionRequest_options_set_blpconngo_952fca452fa5a6d6(uintptr_t arg1, swig_type_4 arg2);
-extern swig_type_5 _wrap_SubscriptionRequest_options_get_blpconngo_952fca452fa5a6d6(uintptr_t arg1);
-extern void _wrap_SubscriptionRequest_correlation_id_set_blpconngo_952fca452fa5a6d6(uintptr_t arg1, swig_type_6 arg2);
-extern swig_type_7 _wrap_SubscriptionRequest_correlation_id_get_blpconngo_952fca452fa5a6d6(uintptr_t arg1);
-extern swig_type_8 _wrap_SubscriptionRequest_toUri_blpconngo_952fca452fa5a6d6(uintptr_t arg1);
+extern void _wrap_SubscriptionRequest_options_set_blpconngo_952fca452fa5a6d6(uintptr_t arg1, swig_type_6 arg2);
+extern swig_type_7 _wrap_SubscriptionRequest_options_get_blpconngo_952fca452fa5a6d6(uintptr_t arg1);
+extern void _wrap_SubscriptionRequest_correlation_id_set_blpconngo_952fca452fa5a6d6(uintptr_t arg1, swig_type_8 arg2);
+extern swig_type_9 _wrap_SubscriptionRequest_correlation_id_get_blpconngo_952fca452fa5a6d6(uintptr_t arg1);
+extern swig_type_10 _wrap_SubscriptionRequest_toUri_blpconngo_952fca452fa5a6d6(uintptr_t arg1);
 extern uintptr_t _wrap_new_SubscriptionRequest_blpconngo_952fca452fa5a6d6(void);
 extern void _wrap_delete_SubscriptionRequest_blpconngo_952fca452fa5a6d6(uintptr_t arg1);
 extern uintptr_t _wrap_new_Context_blpconngo_952fca452fa5a6d6(void);
 extern void _wrap_delete_Context_blpconngo_952fca452fa5a6d6(uintptr_t arg1);
-extern _Bool _wrap_Context_initializeSession_blpconngo_952fca452fa5a6d6(uintptr_t arg1, swig_type_9 arg2);
+extern _Bool _wrap_Context_initializeSession_blpconngo_952fca452fa5a6d6(uintptr_t arg1, swig_type_11 arg2);
 extern void _wrap_Context_shutdownSession_blpconngo_952fca452fa5a6d6(uintptr_t arg1);
 extern _Bool _wrap_Context_isConnected_blpconngo_952fca452fa5a6d6(uintptr_t arg1);
 extern swig_intgo _wrap_Context_subscribe_blpconngo_952fca452fa5a6d6(uintptr_t arg1, uintptr_t arg2);
 extern void _wrap_Context_unsubscribe_blpconngo_952fca452fa5a6d6(uintptr_t arg1, uintptr_t arg2);
-extern void _wrap_Context_addNotificationHandler_blpconngo_952fca452fa5a6d6(uintptr_t arg1, swig_type_10 arg2);
-extern void _wrap_Context_log_blpconngo_952fca452fa5a6d6(uintptr_t arg1, char arg2, char arg3, swig_type_11 arg4, swig_type_12 arg5);
+extern void _wrap_Context_addNotificationHandler_blpconngo_952fca452fa5a6d6(uintptr_t arg1, swig_type_12 arg2);
+extern void _wrap_Context_log_blpconngo_952fca452fa5a6d6(uintptr_t arg1, char arg2, char arg3, swig_type_13 arg4, swig_type_14 arg5);
 #undef intgo
 */
 import "C"
@@ -175,6 +185,48 @@ func _swig_getTopicType_Cusip() (_swig_ret BlpConnTopicType) {
 }
 
 var TopicType_Cusip BlpConnTopicType = _swig_getTopicType_Cusip()
+func _swig_getTopicType_Sedol() (_swig_ret BlpConnTopicType) {
+	var swig_r BlpConnTopicType
+	swig_r = (BlpConnTopicType)(C._wrap_TopicType_Sedol_blpconngo_952fca452fa5a6d6())
+	return swig_r
+}
+
+var TopicType_Sedol BlpConnTopicType = _swig_getTopicType_Sedol()
+func _swig_getTopicType_Isin() (_swig_ret BlpConnTopicType) {
+	var swig_r BlpConnTopicType
+	swig_r = (BlpConnTopicType)(C._wrap_TopicType_Isin_blpconngo_952fca452fa5a6d6())
+	return swig_r
+}
+
+var TopicType_Isin BlpConnTopicType = _swig_getTopicType_Isin()
+func _swig_getTopicType_Bsid() (_swig_ret BlpConnTopicType) {
+	var swig_r BlpConnTopicType
+	swig_r = (BlpConnTopicType)(C._wrap_TopicType_Bsid_blpconngo_952fca452fa5a6d6())
+	return swig_r
+}
+
+var TopicType_Bsid BlpConnTopicType = _swig_getTopicType_Bsid()
+func _swig_getTopicType_Buid() (_swig_ret BlpConnTopicType) {
+	var swig_r BlpConnTopicType
+	swig_r = (BlpConnTopicType)(C._wrap_TopicType_Buid_blpconngo_952fca452fa5a6d6())
+	return swig_r
+}
+
+var TopicType_Buid BlpConnTopicType = _swig_getTopicType_Buid()
+func _swig_getTopicType_Eid() (_swig_ret BlpConnTopicType) {
+	var swig_r BlpConnTopicType
+	swig_r = (BlpConnTopicType)(C._wrap_TopicType_Eid_blpconngo_952fca452fa5a6d6())
+	return swig_r
+}
+
+var TopicType_Eid BlpConnTopicType = _swig_getTopicType_Eid()
+func _swig_getTopicType_Figi() (_swig_ret BlpConnTopicType) {
+	var swig_r BlpConnTopicType
+	swig_r = (BlpConnTopicType)(C._wrap_TopicType_Figi_blpconngo_952fca452fa5a6d6())
+	return swig_r
+}
+
+var TopicType_Figi BlpConnTopicType = _swig_getTopicType_Figi()
 type SwigcptrSubscriptionRequest uintptr
 
 func (p SwigcptrSubscriptionRequest) Swigcptr() uintptr {
@@ -184,10 +236,29 @@ func (p SwigcptrSubscriptionRequest) Swigcptr() uintptr {
 func (p SwigcptrSubscriptionRequest) SwigIsSubscriptionRequest() {
 }
 
+func (arg1 SwigcptrSubscriptionRequest) SetService(arg2 string) {
+	_swig_i_0 := arg1
+	_swig_i_1 := arg2
+	C._wrap_SubscriptionRequest_service_set_blpconngo_952fca452fa5a6d6(C.uintptr_t(_swig_i_0), *(*C.swig_type_2)(unsafe.Pointer(&_swig_i_1)))
+	if Swig_escape_always_false {
+		Swig_escape_val = arg2
+	}
+}
+
+func (arg1 SwigcptrSubscriptionRequest) GetService() (_swig_ret string) {
+	var swig_r string
+	_swig_i_0 := arg1
+	swig_r_p := C._wrap_SubscriptionRequest_service_get_blpconngo_952fca452fa5a6d6(C.uintptr_t(_swig_i_0))
+	swig_r = *(*string)(unsafe.Pointer(&swig_r_p))
+	var swig_r_1 string
+ swig_r_1 = swigCopyString(swig_r) 
+	return swig_r_1
+}
+
 func (arg1 SwigcptrSubscriptionRequest) SetTopic(arg2 string) {
 	_swig_i_0 := arg1
 	_swig_i_1 := arg2
-	C._wrap_SubscriptionRequest_topic_set_blpconngo_952fca452fa5a6d6(C.uintptr_t(_swig_i_0), *(*C.swig_type_2)(unsafe.Pointer(&_swig_i_1)))
+	C._wrap_SubscriptionRequest_topic_set_blpconngo_952fca452fa5a6d6(C.uintptr_t(_swig_i_0), *(*C.swig_type_4)(unsafe.Pointer(&_swig_i_1)))
 	if Swig_escape_always_false {
 		Swig_escape_val = arg2
 	}
@@ -232,7 +303,7 @@ func (arg1 SwigcptrSubscriptionRequest) GetSubscription_type() (_swig_ret BlpCon
 func (arg1 SwigcptrSubscriptionRequest) SetOptions(arg2 string) {
 	_swig_i_0 := arg1
 	_swig_i_1 := arg2
-	C._wrap_SubscriptionRequest_options_set_blpconngo_952fca452fa5a6d6(C.uintptr_t(_swig_i_0), *(*C.swig_type_4)(unsafe.Pointer(&_swig_i_1)))
+	C._wrap_SubscriptionRequest_options_set_blpconngo_952fca452fa5a6d6(C.uintptr_t(_swig_i_0), *(*C.swig_type_6)(unsafe.Pointer(&_swig_i_1)))
 	if Swig_escape_always_false {
 		Swig_escape_val = arg2
 	}
@@ -251,7 +322,7 @@ func (arg1 SwigcptrSubscriptionRequest) GetOptions() (_swig_ret string) {
 func (arg1 SwigcptrSubscriptionRequest) SetCorrelation_id(arg2 uint64) {
 	_swig_i_0 := arg1
 	_swig_i_1 := arg2
-	C._wrap_SubscriptionRequest_correlation_id_set_blpconngo_952fca452fa5a6d6(C.uintptr_t(_swig_i_0), C.swig_type_6(_swig_i_1))
+	C._wrap_SubscriptionRequest_correlation_id_set_blpconngo_952fca452fa5a6d6(C.uintptr_t(_swig_i_0), C.swig_type_8(_swig_i_1))
 }
 
 func (arg1 SwigcptrSubscriptionRequest) GetCorrelation_id() (_swig_ret uint64) {
@@ -285,6 +356,8 @@ func DeleteSubscriptionRequest(arg1 SubscriptionRequest) {
 type SubscriptionRequest interface {
 	Swigcptr() uintptr
 	SwigIsSubscriptionRequest()
+	SetService(arg2 string)
+	GetService() (_swig_ret string)
 	SetTopic(arg2 string)
 	GetTopic() (_swig_ret string)
 	SetTopic_type(arg2 BlpConnTopicType)
@@ -322,7 +395,7 @@ func (arg1 SwigcptrContext) InitializeSession(arg2 string) (_swig_ret bool) {
 	var swig_r bool
 	_swig_i_0 := arg1
 	_swig_i_1 := arg2
-	swig_r = (bool)(C._wrap_Context_initializeSession_blpconngo_952fca452fa5a6d6(C.uintptr_t(_swig_i_0), *(*C.swig_type_9)(unsafe.Pointer(&_swig_i_1))))
+	swig_r = (bool)(C._wrap_Context_initializeSession_blpconngo_952fca452fa5a6d6(C.uintptr_t(_swig_i_0), *(*C.swig_type_11)(unsafe.Pointer(&_swig_i_1))))
 	if Swig_escape_always_false {
 		Swig_escape_val = arg2
 	}
@@ -358,7 +431,7 @@ func (arg1 SwigcptrContext) Unsubscribe(arg2 SubscriptionRequest) {
 func (arg1 SwigcptrContext) AddNotificationHandler(arg2 _swig_fnptr) {
 	_swig_i_0 := arg1
 	_swig_i_1 := arg2
-	C._wrap_Context_addNotificationHandler_blpconngo_952fca452fa5a6d6(C.uintptr_t(_swig_i_0), C.swig_type_10(_swig_i_1))
+	C._wrap_Context_addNotificationHandler_blpconngo_952fca452fa5a6d6(C.uintptr_t(_swig_i_0), C.swig_type_12(_swig_i_1))
 }
 
 func (arg1 SwigcptrContext) Log(arg2 byte, arg3 byte, arg4 uint64, arg5 string) {
@@ -367,7 +440,7 @@ func (arg1 SwigcptrContext) Log(arg2 byte, arg3 byte, arg4 uint64, arg5 string) 
 	_swig_i_2 := arg3
 	_swig_i_3 := arg4
 	_swig_i_4 := arg5
-	C._wrap_Context_log_blpconngo_952fca452fa5a6d6(C.uintptr_t(_swig_i_0), C.char(_swig_i_1), C.char(_swig_i_2), C.swig_type_11(_swig_i_3), *(*C.swig_type_12)(unsafe.Pointer(&_swig_i_4)))
+	C._wrap_Context_log_blpconngo_952fca452fa5a6d6(C.uintptr_t(_swig_i_0), C.char(_swig_i_1), C.char(_swig_i_2), C.swig_type_13(_swig_i_3), *(*C.swig_type_14)(unsafe.Pointer(&_swig_i_4)))
 	if Swig_escape_always_false {
 		Swig_escape_val = arg5
 	}

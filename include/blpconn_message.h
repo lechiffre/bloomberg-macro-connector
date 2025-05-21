@@ -1,18 +1,19 @@
 #ifndef ECONOMIC_EVENT_H
 #define ECONOMIC_EVENT_H
 
-#include <cstdint>
-#include <string>
-#include <cmath>
 #include <blpapi_datetime.h>
 #include <blpapi_element.h>
+
+#include <cmath>
+#include <cstdint>
+#include <string>
 // #include <flatbuffers/flatbuffers.h>
 
 using namespace BloombergLP;
 
 namespace BlpConn {
 
-enum class Module: uint8_t {
+enum class Module : uint8_t {
     Unknown = 0,
     System,
     Session,
@@ -22,7 +23,7 @@ enum class Module: uint8_t {
     Another = 99,
 };
 
-enum class SessionStatus: uint8_t {
+enum class SessionStatus : uint8_t {
     Unknown = 0,
     ConnectionUp,
     Started,
@@ -33,7 +34,7 @@ enum class SessionStatus: uint8_t {
     Another = 99,
 };
 
-enum class SubscriptionStatus: uint8_t {
+enum class SubscriptionStatus : uint8_t {
     Unknown = 0,
     Started,
     StreamsActivated,
@@ -43,7 +44,7 @@ enum class SubscriptionStatus: uint8_t {
     Another = 99,
 };
 
-enum class ServiceStatus: uint8_t {
+enum class ServiceStatus : uint8_t {
     Unknown = 0,
     Opened,
     Closed,
@@ -51,14 +52,14 @@ enum class ServiceStatus: uint8_t {
     Another = 99,
 };
 
-enum class ReleaseStatus: uint8_t {
+enum class ReleaseStatus : uint8_t {
     Unknown = 0,
     Released,
     Scheduled,
     Another = 99,
 };
 
-enum class EventSubType: uint8_t {
+enum class EventSubType : uint8_t {
     Unknown = 0,
     New,
     Update,
@@ -67,7 +68,7 @@ enum class EventSubType: uint8_t {
     Another = 99,
 };
 
-enum class EventType: uint8_t {
+enum class EventType : uint8_t {
     Unknown = 0,
     Actual,
     Revision,
@@ -111,7 +112,7 @@ struct HeadlineBaseEvent {
     DateTimeType release_end_dt;
 };
 
-struct HeadlineEconomicEvent: public HeadlineBaseEvent {
+struct HeadlineEconomicEvent : public HeadlineBaseEvent {
     ValueType value;
     ValueType prior_value;
     uint64_t prior_event_id = 0;
@@ -120,11 +121,10 @@ struct HeadlineEconomicEvent: public HeadlineBaseEvent {
     DateTimeType prior_economic_release_end_dt;
 };
 
-struct HeadlineCalendarEvent: public HeadlineBaseEvent {
+struct HeadlineCalendarEvent : public HeadlineBaseEvent {
     ReleaseStatus release_status = ReleaseStatus::Unknown;
 };
 
+}  // namespace BlpConn
 
-} // namespace BlpConn
-
-#endif // ECONOMIC_EVENT_H
+#endif  // ECONOMIC_EVENT_H

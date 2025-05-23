@@ -5,6 +5,10 @@ project(blpconn VERSION 0.0.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -O3 -fPIE")
 set(CMAKE_CXX_STANDARD 14)
+<<<<<<< HEAD
+set(CMAKE_CXX_COMPILER "/opt/rh/devtoolset-9/root/bin/g++")
+set(JSONINC "/opt/tt/nlohmann_json-3.11.2-gcc9-cxx11/include")
+set(GTEST "/opt/tt/gtest-1.14.0-gcc9-cxx11/")
 set(CMAKE_CXX_COMPILER "/opt/rh/devtoolset-9/root/bin/g++")
 set(JSONINC "/opt/tt/nlohmann_json-3.11.2-gcc9-cxx11/include")
 set(GTEST "/opt/tt/gtest-1.14.0-gcc9-cxx11/")
@@ -16,8 +20,7 @@ set(BLPAPI3_64_URL "https://blpapi.bloomberg.com/download/releases/raw/files/blp
 set(BLPAPI3_64_DIR "${CMAKE_SOURCE_DIR}/blpapi3_64")
 set(BLPAPI3_64_TAR "${CMAKE_SOURCE_DIR}/blpapi3_64.tar.gz")
 
-
-# Check if blpapi3_64 directory exists
+#Check if blpapi3_64 directory exists
 if(NOT EXISTS ${BLPAPI3_64_TAR})
     execute_process(
         COMMAND curl -f -o blpapi3_64.tar.gz ${BLPAPI3_64_URL}
@@ -31,7 +34,7 @@ if(NOT EXISTS ${BLPAPI3_64_TAR})
 endif()
 
 if(NOT EXISTS ${BLPAPI3_64_DIR})
-    # Create the blpapi3_64 directory
+#Create the blpapi3_64 directory
     execute_process(
         COMMAND ${CMAKE_COMMAND} -E make_directory ${BLPAPI3_64_DIR}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -41,7 +44,7 @@ if(NOT EXISTS ${BLPAPI3_64_DIR})
         message(FATAL_ERROR "Failed to create directory ${BLPAPI3_64_DIR}")
     endif()
 
-    # Extract the library
+#Extract the library
     execute_process(
         COMMAND tar xf blpapi3_64.tar.gz -C ${BLPAPI3_64_DIR}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -54,10 +57,10 @@ else()
     message(STATUS "blpapi3_64 already exists in ${BLPAPI3_64_DIR}, skipping download and extraction")
 endif()
 
-#link_directories(${BLPAPI3_64_DIR}/blpapi_cpp_3.25.3.1/Linux)
+#link_directories(${BLPAPI3_64_DIR} / blpapi_cpp_3.25.3.1 / Linux)
 link_directories(/usr/local/lib)
 
-# set(BLPAPILIB "${BLPAPI3_64_DIR}/blpapi_cpp_3.25.3.1/Linux/libblpapi3_64.so")
+#set(BLPAPILIB "${BLPAPI3_64_DIR}/blpapi_cpp_3.25.3.1/Linux/libblpapi3_64.so")
 set(BLPAPILIB "blpapi3_64")
 set(BLPAPIINC "${BLPAPI3_64_DIR}/blpapi_cpp_3.25.3.1/include")
 
@@ -67,7 +70,7 @@ add_library(blpconn STATIC ${SOURCE_FILES})
 target_compile_definitions(blpconn PRIVATE ENABLE_PROFILING)
 target_include_directories(blpconn PRIVATE include ${BLPAPIINC} ${JSONINC})
 # target_link_libraries(blpconn PRIVATE ${BLPAPI3_64_DIR}/blpapi_cpp_3.25.3.1/Linux/libblpapi3_64.so)
-target_link_libraries(blpconn PRIVATE ${BLPAPILIB} -lspdlog -lfmt)
+target_link_libraries(blpconn PRIVATE ${BLPAPILIB})
 install(TARGETS blpconn DESTINATION lib)
 
 file(GLOB EXAMPLE_FILES examples/*.cpp)
@@ -80,22 +83,22 @@ foreach(example ${EXAMPLE_FILES})
     add_dependencies(${binname} blpconn)
 endforeach(example ${EXAMPLE_FILES})
 
-enable_testing()
-include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-include_directories(${gtest_SOURCE_DIR}/googletest/include ${gtest_SOURCE_DIR}/googlemock/include)
-
-file(GLOB TEST_FILES tests/*.cpp)
-foreach(test ${TEST_FILES})
-   get_filename_component(binname ${test} NAME_WE)
-   add_executable(${binname} ${test})
-   target_include_directories(${binname} PRIVATE include ${BLPAPIINC}
-   ${GTEST}/include)
-   target_link_directories(${binname} PRIVATE ${GTEST}/lib64)
-   target_link_libraries(${binname} PRIVATE blpconn ${BLPAPILIB} gtest gmock pthread stdc++fs)
-   install(TARGETS ${binname} DESTINATION bin)
-   add_dependencies(${binname} blpconn)
-   add_test(NAME ${binname} COMMAND ${binname})
-endforeach(test ${TEST_FILES})
+# enable_testing()
+# include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+# include_directories(${gtest_SOURCE_DIR}/googletest/include ${gtest_SOURCE_DIR}/googlemock/include)
+# 
+# file(GLOB TEST_FILES tests/*.cpp)
+# foreach(test ${TEST_FILES})
+#    get_filename_component(binname ${test} NAME_WE)
+#    add_executable(${binname} ${test})
+#    target_include_directories(${binname} PRIVATE include ${BLPAPIINC}
+#    ${GTEST}/include)
+#    target_link_directories(${binname} PRIVATE ${GTEST}/lib64)
+#    target_link_libraries(${binname} PRIVATE blpconn ${BLPAPILIB} gtest gmock pthread stdc++fs)
+#    install(TARGETS ${binname} DESTINATION bin)
+#    add_dependencies(${binname} blpconn)
+#    add_test(NAME ${binname} COMMAND ${binname})
+# endforeach(test ${TEST_FILES})
 
 
 

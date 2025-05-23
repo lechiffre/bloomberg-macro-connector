@@ -1,8 +1,8 @@
 #ifndef _BLPCONN_EVENT_H
 #define _BLPCONN_EVENT_H
 
-#include <blpapi_session.h>
 #include "blpconn_logger.h"
+#include <blpapi_session.h>
 
 using namespace BloombergLP;
 
@@ -20,21 +20,21 @@ class Context;
  * to keep the connection alive and report the status of the connection.
  */
 class EventHandler : public blpapi::EventHandler {
-   public:
-    friend Context;
+public:
+  friend Context;
 
-    /**
-     * This method is called when an event is received. It processes
-     * the event and sends the formatted JSON message to the logger.
-     * This method is call by the Bloomberg API when an event is received.
-     */
-    bool processEvent(const blpapi::Event& event,
-                      blpapi::Session* session) override;
+  /**
+   * This method is called when an event is received. It processes
+   * the event and sends the formatted JSON message to the logger.
+   * This method is call by the Bloomberg API when an event is received.
+   */
+  bool processEvent(const blpapi::Event &event,
+                    blpapi::Session *session) override;
 
-   private:
-    Logger logger_;
+private:
+  Logger logger_;
 };
 
-}  // namespace BlpConn
+} // namespace BlpConn
 
-#endif  // _BLPCONN_EVENT_H
+#endif // _BLPCONN_EVENT_H

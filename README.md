@@ -1,4 +1,4 @@
-# BlpConn: B-PIPE Connector
+#BlpConn : B - PIPE Connector
 
 BlpConn is a high-performance C++/Go library for working with the Bloomberg Market
 Data Feed (B-PIPE). At this moment, BlpConn focuses on retrieving data from
@@ -64,87 +64,100 @@ import (
 )
 
 func main() {
-    ctx := blpconngo.NewContext()
-    ctx.AddNotificationHandler(blpconngo.Callback)
-    configPath := "./config.json"
-    res := ctx.InitializeSession(configPath)
-    if !res {
-        log.Fatal("Failed to initialize session")
-    }
-    defer ctx.ShutdownSession()
-    // The session is now active and ready to process subscription requests
+ctx:
+  = blpconngo.NewContext() ctx.AddNotificationHandler(blpconngo.Callback)
+        configPath : = "./config.json" res
+      : = ctx.InitializeSession(configPath) if !res{log.Fatal(
+            "Failed to initialize session")} defer ctx.ShutdownSession()
+  // The session is now active and ready to process subscription requests
 }
+``` ##Configuration
+
+    In the previous section,
+    the first step on initializing the context is settin the authetication
+            parameters
+                .Those and other application global values are defined in a
+                    configuration file
+                .The path of the configuration file is passed to
+                    the `InitializeSession` function
+                .The configuration file is a JSON file.A
+`config -
+        example.json` file is included with source code.
+
+        This is an example of a configuration file :
+
+```json{
+          "client_certificate" : "./credentials/client_certificate.pk12",
+          "root_certificate" : "./credentials/root_certificate.pk7",
+          "password" : "PASSWORD",
+          "primary_host" : "bloomberg-server1",
+          "secondary_host" : "bloomberg-server2",
+          "port" : 8194,
+          "default_service" : "//blp/economic-data",
+          "app_name" : "TraderApp:MarketData",
+          "mode" : "prod"
+        }
 ```
-## Configuration
 
-In the previous section, the first step on initializing the context is settin
-the authetication parameters.  Those and other application global values are
-defined in a configuration file. The path of the configuration file is passed to
-the `InitializeSession` function. The configuration file is a JSON file. A
-`config-example.json` file is included with source code.
+    In this case,
+    it is assumed that the certificates are located in the folder
+`./ credentials`.
 
-This is an example of a configuration file:
+        Parameters to define are:
 
-```json
-{
-  "client_certificate": "./credentials/client_certificate.pk12",
-  "root_certificate": "./credentials/root_certificate.pk7",
-  "password": "PASSWORD",
-  "primary_host": "bloomberg-server1",
-  "secondary_host": "bloomberg-server2",
-  "port": 8194,
-  "default_service": "//blp/economic-data",
-  "app_name": "TraderApp:MarketData",
-  "mode": "prod"
-}
-```
+* `client_certificate`
+    : Path to the file with the client certificate * `root_certificate`
+    : Path to the file with the root certificate * `password`
+    : Password to access Bloomberg's services * `primary_host`
+    : Name of Bloomberg's primary host * `secondary_host`
+    : Name of Bloomberg's secondary host * `port`
+    : Server port to access the services * `default_service`
+    : Default service identification * `app_name`
+    : Bloomberg's designated application name * `mode`
+    : Mode of operation.It can
+          be `prod` or `test`
 
-In this case, it is assumed that the certificates are located in the folder
-`./credentials`.
+                               **Note *
+                                   * : The `mode` configuration parameter only
+                                           has effect if the code has been
+                                               compiled with
+                                                   the `ENABLE_PROFILING` option
+                                                       .
 
-Parameters to define are:
+                                       ##Subscription Request
 
-* `client_certificate`: Path to the file with the client certificate
-* `root_certificate`: Path to the file with the root certificate
-* `password`: Password to access Bloomberg's services
-* `primary_host`: Name of Bloomberg's primary host
-* `secondary_host`: Name of Bloomberg's secondary host
-* `port`: Server port to access the services
-* `default_service`: Default service identification
-* `app_name`: Bloomberg's designated application name
-* `mode`: Mode of operation. It can be `prod` or `test`
+                                           The main task provided by the library
+                                               is let the client to subscribe /
+                           unsubscribe to real time data about economic events
+                               .The characteristics of the required information
+                                   are defined in a subscription request
+                               .Once the subscription has been activated,
+    your application will start receiving updates and notifications about your
+        request
+            .
 
-**Note**: The `mode` configuration parameter only has effect if the code has
-been compiled with the `ENABLE_PROFILING` option.
+    A request contains :
 
-## Subscription Request
+    * `service`: One of the services offered by Bloomberg.At this moment,
+    the only service enabled is `economic - data`.* `subscription_type`
+    : A category of information,
+    such as a calendar of releases or
+        economic headlines.* `topic_type`
+    : The standard used to encode the entity or
+        security you are requesting information about
+            .The most commonly used is
+        "Ticker." Other types include CUSIP and FIGI.* `topic`
+    : The specific identifier that represents the entity or
+        security you are requesting information about.* `options`
+    : Some requests may require complementary information,
+    such as a period of
+        time.This attribute is used to encode those additional
+            parameters.* `correlation_id`
+    : A number to identify the request.This number must be assigned by the user.
 
-The main task provided by the library is let the client to subscribe/unsubscribe
-to real time data about economic events.  The characteristics of the required 
-information are defined in a subscription request.  Once the subscription has
-been activated, your application will start receiving updates and notifications
-about your request.
+      This is the definition of a subscription request :
 
-A request contains:
-
-* `service`: One of the services offered by Bloomberg. At this moment, the only
-  service enabled is `economic-data`.
-* `subscription_type`: A category of information, such as a calendar of releases
-  or economic headlines.
-* `topic_type`: The standard used to encode the entity or security you are
-  requesting information about. The most commonly used is "Ticker." Other types
-  include CUSIP and FIGI.
-* `topic`: The specific identifier that represents the entity or security
-  you are requesting information about.
-* `options`: Some requests may require complementary information, such as a
- period of time. This attribute is used to encode those additional parameters.
-* `correlation_id`: A number to identify the request. This number must be
- assigned by the user.
-
-This is the definition of a subscription request:
-
-```c++
-struct SubscriptionRequest {
+```c++ struct SubscriptionRequest {
   std::string service;
   std::string topic;
   TopicType topic_type = TopicType::Ticker;
@@ -152,26 +165,26 @@ struct SubscriptionRequest {
   std::string options = "";
   uint64_t correlation_id = 0;
 }
-```
-The correlation ID is required to follow up the request. Related notifications
-will be tagged with the same correlation ID. The client program can use this
-ID to identify the request and process the notifications accordingly. Moreover,
-to stop the subscription, the correlation ID is link to the original request.
+``` The correlation ID is required to follow up the
+    request.Related notifications will be tagged with the same correlation
+        ID.The client program can use this ID to identify
+            the request and process the notifications accordingly.Moreover,
+    to stop the subscription,
+    the correlation ID is link to the original request.
 
-For subscription and topic types, the library provides predefined enumerations
-with valid values.
+    For subscription and topic types,
+    the library provides predefined enumerations with valid values.
 
-```c++
-enum class SubscriptionType {
-    HeadlineActuals,
-    ReleaseCalendar,
-    HeadlineSurveys
-};
+```c++ enum class SubscriptionType {
+      HeadlineActuals,
+      ReleaseCalendar,
+      HeadlineSurveys
+    };
 
-enum class TopicType { 
-    Ticker,
-    Cusip,
-    Figi,
+enum class TopicType {
+  Ticker,
+  Cusip,
+  Figi,
 };
 ```
 Here is an example on creating a subscription request in Go:
@@ -360,13 +373,13 @@ it is a distribution of values, so the fields `low`, `high`, `median`,
 
 ```c++
 struct ValueType {
-    double number;
-    double value;
-    double low;
-    double high;
-    double median;
-    double average;
-    double standard_deviation;
+  double number;
+  double value;
+  double low;
+  double high;
+  double median;
+  double average;
+  double standard_deviation;
 };
 ```
 
@@ -381,25 +394,25 @@ Here is an example of deserialization in C++:
 
 ```c++
 void observer(const uint8_t *buffer, size_t size) {
-    flatbuffers::Verifier verifier(buffer, size);
-    if (!BlpConn::FB::VerifyMessageVector(verifier, nullptr, nullptr)) {
-        std::cout << "Invalid message" << std::endl;
-        return;
-    }
-    auto main = flatbuffers::GetRoot<BlpConn::FB::Main>(buffer);
-    if (main->message_type() == BlpConn::FB::Message_HeadlineEconomicEvent) {
-        auto fb_event = main->message_as_HeadlineEconomicEvent();
-        auto event = toHeadlineEconomicEvent(fb_event);
-        std::cout << event << std::endl;
-    } else if (main->message_type() == FB::Message_HeadlineCalendarEvent) {
-        auto fb_event = main->message_as_HeadlineCalendarEvent();
-        auto event = toHeadlineCalendarEvent(fb_event);
-        std::cout << event << std::endl;
-    } else if (main->message_type() == BlpConn::FB::Message_LogMessage) {
-        auto fb_log_message = main->message_as_LogMessage();
-        auto log_message = toLogMessage(fb_log_message);
-        std::cout << log_message << std::endl;
-    }
+  flatbuffers::Verifier verifier(buffer, size);
+  if (!BlpConn::FB::VerifyMessageVector(verifier, nullptr, nullptr)) {
+    std::cout << "Invalid message" << std::endl;
+    return;
+  }
+  auto main = flatbuffers::GetRoot<BlpConn::FB::Main>(buffer);
+  if (main->message_type() == BlpConn::FB::Message_HeadlineEconomicEvent) {
+    auto fb_event = main->message_as_HeadlineEconomicEvent();
+    auto event = toHeadlineEconomicEvent(fb_event);
+    std::cout << event << std::endl;
+  } else if (main->message_type() == FB::Message_HeadlineCalendarEvent) {
+    auto fb_event = main->message_as_HeadlineCalendarEvent();
+    auto event = toHeadlineCalendarEvent(fb_event);
+    std::cout << event << std::endl;
+  } else if (main->message_type() == BlpConn::FB::Message_LogMessage) {
+    auto fb_log_message = main->message_as_LogMessage();
+    auto log_message = toLogMessage(fb_log_message);
+    std::cout << log_message << std::endl;
+  }
 }
 ```
 
@@ -593,12 +606,11 @@ A observer function is shown below:
 ```go
 //export NotificationHandler
 func NotificationHandler(buffer *C.uchar, len C.size_t) {
-    if buffer == nil || len == 0 {
-        fmt.Println("Invalid buffer or length")
-        return
-    }
-    bufferSlice := C.GoBytes(unsafe.Pointer(buffer), C.int(len))
-    NativeHandler(bufferSlice)
+  if buffer
+    == nil ||
+        len == 0 {fmt.Println("Invalid buffer or length") return } bufferSlice
+        : = C.GoBytes(unsafe.Pointer(buffer), C.int(len))
+                NativeHandler(bufferSlice)
 }
 ```
 
@@ -606,7 +618,7 @@ The comment above the observer function is needed in order to pass that function
 
 ```c
 void Callback(uint8_t* buffer, size_t len) {
-    NotificationHandler(buffer, len);
+  NotificationHandler(buffer, len);
 }
 ```
 
@@ -701,4 +713,3 @@ library to manage the threading process.
 * Memory management: The most of the parameters are passed by reference. The
  most expensive data transfer is
  moving strings, which has been minimized to the strictly necessary.
-

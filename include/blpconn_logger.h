@@ -6,11 +6,11 @@
 #include <vector>
 
 #include "blpconn_observer.h"
-#ifdef DEBUG
-#include "blpconn_profiler.h"
-#endif
 
 namespace BlpConn {
+
+class EventHandler;
+class Context;
 
 /**
  * This class is responsible for logging messages. It can log messages
@@ -19,6 +19,8 @@ namespace BlpConn {
  */
 class Logger {
    public:
+    friend class EventHandler; 
+    friend class Context;
     /**
      * The default output stream is std::cout. The client program can
      * specify a different output stream if needed. The output stream
@@ -49,15 +51,9 @@ class Logger {
      */
     void notify(const uint8_t* buffer, size_t size);
 
-#ifdef DEBUG
-    bool testing_ = true;
-    ProfileQueue profiler_;
-#endif
-
    private:
     std::ostream* out_stream_;
     std::vector<ObserverFunc> callbacks_;
-    // TODO: check if it needs to have one or more buffers
 };
 
 }  // namespace BlpConn

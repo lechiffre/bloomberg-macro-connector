@@ -93,11 +93,7 @@ bool Context::initializeSession(const std::string& config_path) {
         return false;
     }
 #ifdef DEBUG
-    event_handler_.logger_.testing_ = config["mode"] == "test";
-    uint64_t event_id = 0;
-    if (event_handler_.logger_.testing_) {
-        event_id = event_handler_.logger_.profiler_.push("Context", "initializeSession", "InitializeSession");
-    }
+    // event_handler_.logger_.testing_ = config["mode"] == "test";
 #endif
     blpapi::SessionOptions session_options;
     try {
@@ -129,17 +125,11 @@ bool Context::initializeSession(const std::string& config_path) {
         return false;
     }
 #ifdef DEBUG
-    if (event_handler_.logger_.testing_) {
-        event_handler_.logger_.profiler_.push("Context", "initializeSession", "InitializeSession", event_id);
-    }
 #endif
     return true;
 }
 
 void Context::shutdownSession() {
-#ifdef DEBUG
-    event_handler_.logger_.profiler_.stop();
-#endif
     if (session_) {
         session_->stop();
         delete session_;

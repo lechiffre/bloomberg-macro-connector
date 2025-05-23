@@ -3,9 +3,6 @@
 
 #include <blpapi_session.h>
 #include "blpconn_logger.h"
-#ifdef DEBUG
-#include "blpconn_profiler.h"
-#endif
 
 using namespace BloombergLP;
 
@@ -24,18 +21,13 @@ class Context;
  */
 class EventHandler : public blpapi::EventHandler {
    public:
-    /**
-     * It is possible to set a custom logger object.
-     */
-    // void setLogger(Logger *prt_logger) { prt_logger_ = prt_logger; }
-    // void setLogger2(Logger& logger) { logger_ = logger; }
+    friend Context;
 
     /**
      * This method is called when an event is received. It processes
      * the event and sends the formatted JSON message to the logger.
      * This method is call by the Bloomberg API when an event is received.
      */
-    friend Context;
     bool processEvent(const blpapi::Event& event,
                       blpapi::Session* session) override;
 

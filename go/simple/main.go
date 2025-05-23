@@ -4,7 +4,7 @@ import (
 	"blpconngo"
 	"log"
 	"time"
-	"fmt"
+	_ "fmt"
 )
 
 func main() {

@@ -11,32 +11,15 @@ void Logger::addNotificationHandler(ObserverFunc fnc) noexcept {
 }
 
 void Logger::notify(const uint8_t* buffer, size_t size) {
-#ifdef DEBUG
-    uint64_t event_id = 0;
-    if (testing_) {
-        event_id = profiler_.push("Logger", "notify", "NotifyObservers");
-    }
-#endif
     for (const auto& callback : callbacks_) {
         callback(buffer, size);
     }
-#ifdef DEBUG
-    if (testing_) {
-        profiler_.push("Logger", "notify", "NotifyObservers", event_id);
-    }
-#endif
 }
 
 void Logger::log(uint8_t module, uint8_t status, uint64_t correlation_id,
     const std::string& message)
 {
     if (module == 0) return;
-#ifdef DEBUG
-    uint64_t event_id = 0;
-    if (testing_) {
-        event_id = profiler_.push("Logger", "log", "LogMessage");
-    }
-#endif
     LogMessage log_message;
     log_message.log_dt = currentTime();
     log_message.module = module;
@@ -50,20 +33,10 @@ void Logger::log(uint8_t module, uint8_t status, uint64_t correlation_id,
         *out_stream_ << log_message << std::endl;
     }
 
-    // Only print to std::cout if in debug mode
-#ifdef DEBUG
-    std::cout << log_message << std::endl;
-#endif
-
     // Build FlatBuffer and notify observers
     flatbuffers::FlatBufferBuilder builder = buildBufferLogMessage(log_message);
     notify(builder.GetBufferPointer(), builder.GetSize());
 
-#ifdef DEBUG
-    if (testing_) {
-        profiler_.push("Logger", "log", "LogMessage", event_id);
-    }
-#endif
 }
 
 } // namespace BlpConn

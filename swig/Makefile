@@ -1,4 +1,4 @@
-CXXFLAGS = -Wall -g -std=c++14 -fPIE
+CXXFLAGS = -Wall -g -std=c++14 -fPIE -DDEBUG
 INC = -Wall -I../include -I../blpapi3_64/blpapi_cpp_3.25.3.1/include/
 NAME = blpconngo
 

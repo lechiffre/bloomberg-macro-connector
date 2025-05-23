@@ -34,37 +34,23 @@ static void sendNotification(flatbuffers::FlatBufferBuilder& builder, Logger *lo
 void processEconomicEvent(const blpapi::Element& elem, Logger& logger) {
     if (elem.name() == HEADLINE_ECONOMIC_EVENT) {
 #ifdef DEBUG
-        uint64_t event_id = 0;
-        if (logger.testing_) {
-            event_id = logger.profiler_.push("EventHandler", "processEconomicEvent", "HeadlineEconomicEvent");
-        }
+    // auto start = std::chrono::high_resolution_clock::now();
 #endif
         HeadlineEconomicEvent event = parseHeadlineEconomicEvent(elem);
         flatbuffers::FlatBufferBuilder builder = buildBufferEconomicEvent(event);
         // flatbuffers::FlatBufferBuilder builder = buildBufferEconomicEvent(elem);
         sendNotification(builder, &logger);
 #ifdef DEBUG
-        if (logger.testing_) {
-            logger.profiler_.push("EventHandler", "processEconomicEvent", "HeadlineEconomicEvent", event_id); 
-        }
+    // auto end = std::chrono::high_resolution_clock::now();
+    // auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    // logger.profiler_.writer(
+    //    "context", "initializeSession", "", duration);
 #endif
     } else if (elem.name() == HEADLINE_CALENDAR_EVENT) {
-#ifdef DEBUG
-        uint64_t event_id = 0;
-        if (logger.testing_) {
-            event_id = logger.profiler_.push("EventHandler", "processEconomicEvent", "HeadlineCalendarEvent");
-        }
-#endif
         HeadlineCalendarEvent event = parseHeadlineCalendarEvent(elem);
         flatbuffers::FlatBufferBuilder builder = buildBufferCalendarEvent(event);
         // flatbuffers::FlatBufferBuilder builder = buildBufferCalendarEvent(elem);
         sendNotification(builder, &logger);
-#ifdef DEBUG
-        if (logger.testing_) {
-            logger.profiler_.push("EventHandler", "processEconomicEvent", "HeadlineCalendarEvent", event_id); 
-        }
-#endif
-    } else if (elem.name() == HEADLINE_CALENDAR_EVENT) {
     } else {
         std::string e = "Unknown event type: ";
         e += elem.name().string();
@@ -73,12 +59,6 @@ void processEconomicEvent(const blpapi::Element& elem, Logger& logger) {
 }
 
 bool processSubscriptionData(const blpapi::Event& event, blpapi::Session *session, Logger& logger) {
-#ifdef DEBUG
-    uint64_t event_id = 0;
-    if (logger.testing_) {
-        event_id = logger.profiler_.push("EventHandler", "processSubscriptionData", "SubscriptionData");
-    }
-#endif
     blpapi::MessageIterator msgIter(event);
     while (msgIter.next()) {
         blpapi::Message msg = msgIter.message();
@@ -97,21 +77,10 @@ bool processSubscriptionData(const blpapi::Event& event, blpapi::Session *sessio
                 "Subscription Heartbeat");
         }
     }
-#ifdef DEBUG
-    if (logger.testing_) {
-        logger.profiler_.push("EventHandler", "processSubscriptionData", "SubscriptionData", event_id); 
-    }
-#endif
     return true;
 }
 
 bool processSessionStatus(const blpapi::Event& event, blpapi::Session *session, Logger& logger) {
-#ifdef DEBUG
-    uint64_t event_id = 0;
-    if (logger.testing_) {
-        event_id = logger.profiler_.push("EventHandler", "processSessionStatus", "SessionStatus");
-    }
-#endif
     blpapi::MessageIterator msgIter(event);
     const uint8_t module = static_cast<uint8_t>(Module::Session);
     while (msgIter.next()) {
@@ -131,21 +100,10 @@ bool processSessionStatus(const blpapi::Event& event, blpapi::Session *session, 
             logger.log(module, static_cast<uint8_t>(SessionStatus::Unknown), 0, oss.str());
         }
     }
-#ifdef DEBUG
-    if (logger.testing_) {
-        logger.profiler_.push("EventHandler", "processSessionStatus", "SessionStatus", event_id); 
-    }
-#endif
     return true;
 }
 
 bool processServiceStatus(const blpapi::Event& event, blpapi::Session *session, Logger& logger) {
-#ifdef DEBUG
-    uint64_t event_id = 0;
-    if (logger.testing_) {
-        event_id = logger.profiler_.push("EventHandler", "processServiceStatus", "ServiceStatus");
-    }
-#endif
     blpapi::MessageIterator msgIter(event);
     const uint8_t module = static_cast<uint8_t>(Module::Service);
     while (msgIter.next()) {
@@ -159,21 +117,10 @@ bool processServiceStatus(const blpapi::Event& event, blpapi::Session *session, 
             logger.log(module, static_cast<uint8_t>(ServiceStatus::Unknown), 0, oss.str());
         }
     }
-#ifdef DEBUG
-    if (logger.testing_) {
-        logger.profiler_.push("EventHandler", "processServiceStatus", "ServiceStatus", event_id); 
-    }
-#endif
     return true;
 }
 
 bool processSubscriptionStatus(const blpapi::Event& event, blpapi::Session *session, Logger& logger) {
-#ifdef DEBUG
-    uint64_t event_id = 0;
-    if (logger.testing_) {
-        event_id = logger.profiler_.push("EventHandler", "processSubscriptionStatus", "SubscriptionStatus");
-    }
-#endif
     blpapi::MessageIterator msgIter(event);
     const uint8_t module = static_cast<uint8_t>(Module::Subscription);
     while (msgIter.next()) {
@@ -194,11 +141,6 @@ bool processSubscriptionStatus(const blpapi::Event& event, blpapi::Session *sess
             logger.log(module, static_cast<uint8_t>(SubscriptionStatus::Unknown), correlation_id, oss.str());
         }
     }
-#ifdef DEBUG
-    if (logger.testing_) {
-        logger.profiler_.push("EventHandler", "processSubscriptionStatus", "SubscriptionStatus", event_id); 
-    }
-#endif
     return true;
 }
 

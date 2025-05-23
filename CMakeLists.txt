@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.16)
 
 project(blpconn VERSION 0.0.1 LANGUAGES CXX)
 
-# add_definitions(-DDEBUG)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -O3 -fPIE")
 if(NOT DEFINED CMAKE_CXX_COMPILER)
@@ -64,9 +63,10 @@ link_directories(/usr/local/lib)
 set(BLPAPILIB "blpapi3_64")
 set(BLPAPIINC "${BLPAPI3_64_DIR}/blpapi_cpp_3.25.3.1/include")
 
-file(GLOB SOURCE_FILES src/*.cpp)  # This already includes serialize.cpp
+file(GLOB SOURCE_FILES src/*.cpp)
 add_library(blpconn STATIC ${SOURCE_FILES})
 
+target_compile_definitions(blpconn PRIVATE DEBUG)
 target_include_directories(blpconn PRIVATE include ${BLPAPIINC} ${JSONINC})
 # target_link_libraries(blpconn PRIVATE ${BLPAPI3_64_DIR}/blpapi_cpp_3.25.3.1/Linux/libblpapi3_64.so)
 target_link_libraries(blpconn PRIVATE ${BLPAPILIB})

@@ -39,9 +39,6 @@ std::string toString(const SessionStatus status) {
         case SessionStatus::Another:
             return "Another";
         default:
-#ifdef DEBUG
-            std::cerr << "Unknown session status: " << static_cast<int>(status) << std::endl;
-#endif
             return "Unknown";
     }
 }

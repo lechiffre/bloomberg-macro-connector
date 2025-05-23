@@ -54,12 +54,6 @@ const std::string SubscriptionRequest::toUri() {
 }
 
 int Context::subscribe(SubscriptionRequest& request) {
-#ifdef DEBUG
-    uint64_t event_id = 0;
-    if (event_handler_.logger_.testing_) {
-        event_id = event_handler_.logger_.profiler_.push("Context", "subscribe", "SubscriptionRequest");
-    }
-#endif
     blpapi::CorrelationId corr_id(request.correlation_id);
     if (!session_) {
         log(
@@ -96,20 +90,9 @@ int Context::subscribe(SubscriptionRequest& request) {
         corr_id.asInteger(),
         "Subscription successful");
     return subscription_counter_++;
-#ifdef DEBUG
-    if (event_handler_.logger_.testing_) {
-        event_handler_.logger_.profiler_.push("Context", "subscribe", "SubscriptionRequest", event_id);
-    }
-#endif
 }
 
 void Context::unsubscribe(SubscriptionRequest& request) {
-#ifdef DEBUG
-    uint64_t event_id = 0;
-    if (event_handler_.logger_.testing_) {
-        event_id = event_handler_.logger_.profiler_.push("Context", "unsubscribe", "UnsubscriptionRequest");
-    }
-#endif
     blpapi::CorrelationId corr_id(request.correlation_id);
     if (!session_) {
         log(
@@ -140,11 +123,6 @@ void Context::unsubscribe(SubscriptionRequest& request) {
             "Error: Unsubscription failed");
         return;
     }
-#ifdef DEBUG
-    if (event_handler_.logger_.testing_) {
-        event_handler_.logger_.profiler_.push("Context", "unsubscribe", "UnsubscriptionRequest", event_id);
-    }
-#endif
 }
 
 } // namespace BlpConn

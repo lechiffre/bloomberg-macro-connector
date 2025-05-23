@@ -1,7 +1,7 @@
 cd build
-cmake..
-cmake --build .
-cmake --install .
+cmake3 ..
+cmake3 --build .
+cmake3 --install .
 cd ../swig
 make
 cd ../go

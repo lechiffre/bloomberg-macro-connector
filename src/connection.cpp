@@ -83,6 +83,12 @@ namespace BlpConn {
 static const int module = static_cast<int>(Module::Session);
 
 bool Context::initializeSession(const std::string& config_path) {
+#ifdef ENABLE_PROFILING
+    MiniLogger::LoggerManager::initialize(
+        "profiler.txt", 
+        MiniLogger::LogLevel::DEBUG,
+        true);
+#endif
     PROFILE_FUNCTION()
     json config;
     try {
@@ -131,6 +137,9 @@ void Context::shutdownSession() {
         delete session_;
         session_ = nullptr;
     }
+#ifdef ENABLE_PROFILING
+    MiniLogger::LoggerManager::shutdown();
+#endif
 }
 
 } // namespace BlpConn

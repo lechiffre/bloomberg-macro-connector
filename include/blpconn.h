@@ -97,12 +97,6 @@ struct SubscriptionRequest {
 class Context {
 public:
   Context() {
-#ifdef ENABLE_PROFILING
-    MiniLogger::LoggerManager::initialize(
-        "profiler.txt", 
-        MiniLogger::LogLevel::DEBUG,
-        true);
-#endif
   }
 
   /**
@@ -113,9 +107,6 @@ public:
     if (session_) {
       shutdownSession();
     }
-#ifdef ENABLE_PROFILING
-    MiniLogger::LoggerManager::shutdown();
-#endif
   }
 
   /**

@@ -455,12 +455,13 @@ organized in the following way:
 
 To compile the library, the following requirements are needed:
 
-- Blpapi SDK 3.25.3
-- Boost 1.88
-- Google Test 1.16
-- Swig 4.3
-- Go 1.24
-- FlatBuffers 25.2
+- [Blpapi SDK 3.25.3](https://www.bloomberg.com/professional/support/api-library/)
+- [Boost 1.88](https://www.boost.org/))
+- [Google Test 1.16](https://google.github.io/googletest/)
+- [Swig 4.3](https://www.swig.org/)
+- [Go 1.24](https://golang.org/)
+- [FlatBuffers 25.2](https://flatbuffers.dev/)
+- [minispdlog 1.0](https://github.com/jailop/minispdlog/)
 
 The compilation process has several steps:
 
@@ -781,9 +782,11 @@ Because the TT server uses `devtoolset_9`, it is needed to pass as environment v
 of the C and C++ compilers. The following variables were exported, including one related to the location of
 the BLPAPI library:
 
-    export CXX=/opt/rh/devtoolset-9/root/bin/g++
-    export CC=/opt/rh/devtoolset-9/root/bin/gcc
-    export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+```sh
+export CXX=/opt/rh/devtoolset-9/root/bin/g++
+export CC=/opt/rh/devtoolset-9/root/bin/gcc
+export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+```
     
 ## CMake configuration file
 

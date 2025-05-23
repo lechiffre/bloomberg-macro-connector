@@ -68,8 +68,7 @@ add_library(blpconn STATIC ${SOURCE_FILES})
 
 target_compile_definitions(blpconn PRIVATE ENABLE_PROFILING)
 target_include_directories(blpconn PRIVATE include ${BLPAPIINC} ${JSONINC})
-# target_link_libraries(blpconn PRIVATE ${BLPAPI3_64_DIR}/blpapi_cpp_3.25.3.1/Linux/libblpapi3_64.so)
-target_link_libraries(blpconn PRIVATE ${BLPAPILIB})
+target_link_libraries(blpconn PRIVATE ${BLPAPILIB} -lpthread)
 install(TARGETS blpconn DESTINATION lib)
 
 file(GLOB EXAMPLE_FILES examples/*.cpp)

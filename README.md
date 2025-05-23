@@ -1,8 +1,8 @@
 #BlpConn : B - PIPE Connector
 
-BlpConn is a high-performance C++/Go library for working with the Bloomberg Market
-Data Feed (B-PIPE). At this moment, BlpConn focuses on retrieving data from
-Bloomberg's economic data feed (`//blp/economic-data`).
+BlpConn is a high-performance C++/Go library for working with the Bloomberg
+Market Data Feed (B-PIPE). At this moment, BlpConn focuses on retrieving data
+from Bloomberg's economic data feed (`//blp/economic-data`).
 
 ## Workflow
 
@@ -11,29 +11,31 @@ Bloomberg's economic data feed (`//blp/economic-data`).
 The above diagram shows the workflow to retrieve real-time data from Bloomberg
 B-PIPE. The process is as follows:
 
-1. **Initialize**: A session to connect to Bloomberg's
-   services is created. The session is responsible for managing the connection and
-   communication with the server. The session opens a service. A service is a specific
+1. **Initialize**: A session to connect to Bloomberg's services is created. The
+   session is responsible for managing the connection and communication with
+   the server. The session opens a service. A service is a specific
    functionality provided by Bloomberg. In this case, the service is
    `//blp/economic-data`.
 2. **Subscribe**: The client program sends a subscription request to the
-    service. The request contains the information about the data the client
-    wants to receive. The request is sent to the server, and responses are received asynchronously.
-3. **Observe**: The client program registers one or more observer functions. These
-   functions are called when the server sends notifications about the service status
-   and the subscription data. The observer functions are responsible for processing
-    the notifications and updating the client program with the new data.
+   service. The request contains the information about the data the client
+   wants to receive. The request is sent to the server, and responses are
+   received asynchronously.
+3. **Observe**: The client program registers one or more observer functions.
+   These functions are called when the server sends notifications about the
+   service status and the subscription data. The observer functions are
+   responsible for processing the notifications and updating the client program
+   with the new data.
 4. **Unsubscribe**: The client program can unsubscribe from the service at any
-   time. Subscriptions are identified by a correlation ID assigned by the client
-    program. The correlation ID is used to identify the subscription and
-    unsubscribe from it. The client program can also close the session, which
-    will automatically unsubscribe from all services and close the connection to
-    the server.
+   time. Subscriptions are identified by a correlation ID assigned by the
+   client program. The correlation ID is used to identify the subscription and
+   unsubscribe from it. The client program can also close the session, which
+   will automatically unsubscribe from all services and close the connection to
+   the server.
 5. **Shutdown**: The client program can shut down the service at any time. This
-    will close the connection to the server and free up any resources used by the
-    session. The client program can also shut down the service when it is no longer
-    needed. This will close the connection to the server and free up any resources
-    used by the session.
+   will close the connection to the server and free up any resources used by
+   the session. The client program can also shut down the service when it is no
+   longer needed. This will close the connection to the server and free up any
+   resources used by the session.
 
 ## Application Context
 
@@ -46,12 +48,20 @@ The first step is to initialize a context, which includes:
 Once the the connection has been initialized, the client program can start
 subscribing to data feeds and managing responses and notifications.
 
-The session should be shutdown when the client program is finished. In C++, if the context is active at the end of the program, it will be shutdown automatically. In Go, the context must be shutdown explicitly using `defer`.
+The session should be shutdown when the client program is finished. In C++, if
+the context is active at the end of the program, it will be shutdown
+automatically. In Go, the context must be shutdown explicitly using `defer`.
 
-During the client program execution, a context can be initialized and shutdown as many times as needed. This can be helpfull if for any reason the connection to the Bloomberg servers is lost. There are two mechanisms the client can use to monitor the context status:
+During the client program execution, a context can be initialized and shutdown
+as many times as needed. This can be helpfull if for any reason the connection
+to the Bloomberg servers is lost. There are two mechanisms the client can use
+to monitor the context status:
 
-* The function `isConnected()` which returns true if the context is connected to the server.
-* Monitoring log messages of type `Hearbeat`, which are sent periodically by the server to indicate that the connection is still active. More about processing notifications below.
+* The function `isConnected()` which returns true if the context is connected
+  to the server.
+* Monitoring log messages of type `Hearbeat`, which are sent periodically by
+  the server to indicate that the connection is still active. More about
+  processing notifications below.
 
 Here is an example of managing the applcation context:
 
@@ -64,98 +74,85 @@ import (
 )
 
 func main() {
-ctx:
-  = blpconngo.NewContext() ctx.AddNotificationHandler(blpconngo.Callback)
-        configPath : = "./config.json" res
-      : = ctx.InitializeSession(configPath) if !res{log.Fatal(
-            "Failed to initialize session")} defer ctx.ShutdownSession()
-  // The session is now active and ready to process subscription requests
+    ctx := blpconngo.NewContext()
+    ctx.AddNotificationHandler(blpconngo.Callback)
+    configPath : = "./config.json"
+    res := ctx.InitializeSession(configPath)
+    if !res{log.Fatal(
+        "Failed to initialize session")
+    }
+    defer ctx.ShutdownSession()
+    // The session is now active and ready to process subscription requests
 }
-``` ##Configuration
-
-    In the previous section,
-    the first step on initializing the context is settin the authetication
-            parameters
-                .Those and other application global values are defined in a
-                    configuration file
-                .The path of the configuration file is passed to
-                    the `InitializeSession` function
-                .The configuration file is a JSON file.A
-`config -
-        example.json` file is included with source code.
-
-        This is an example of a configuration file :
-
-```json{
-          "client_certificate" : "./credentials/client_certificate.pk12",
-          "root_certificate" : "./credentials/root_certificate.pk7",
-          "password" : "PASSWORD",
-          "primary_host" : "bloomberg-server1",
-          "secondary_host" : "bloomberg-server2",
-          "port" : 8194,
-          "default_service" : "//blp/economic-data",
-          "app_name" : "TraderApp:MarketData",
-          "mode" : "prod"
-        }
 ```
 
-    In this case,
-    it is assumed that the certificates are located in the folder
-`./ credentials`.
+## Configuration
 
-        Parameters to define are:
+In the previous section, the first step on initializing the context is settin
+the authetication parameters .Those and other application global values are
+defined in a configuration file .The path of the configuration file is passed
+to the `InitializeSession` function .The configuration file is a JSON file.A
+`config - example.json` file is included with source code.
 
-* `client_certificate`
-    : Path to the file with the client certificate * `root_certificate`
-    : Path to the file with the root certificate * `password`
-    : Password to access Bloomberg's services * `primary_host`
-    : Name of Bloomberg's primary host * `secondary_host`
-    : Name of Bloomberg's secondary host * `port`
-    : Server port to access the services * `default_service`
-    : Default service identification * `app_name`
-    : Bloomberg's designated application name * `mode`
-    : Mode of operation.It can
-          be `prod` or `test`
+This is an example of a configuration file :
 
-                               **Note *
-                                   * : The `mode` configuration parameter only
-                                           has effect if the code has been
-                                               compiled with
-                                                   the `ENABLE_PROFILING` option
-                                                       .
+```json
+{
+  "client_certificate" : "./credentials/client_certificate.pk12",
+  "root_certificate" : "./credentials/root_certificate.pk7",
+  "password" : "PASSWORD",
+  "primary_host" : "bloomberg-server1",
+  "secondary_host" : "bloomberg-server2",
+  "port" : 8194,
+  "default_service" : "//blp/economic-data",
+  "app_name" : "TraderApp:MarketData",
+  "mode" : "prod"
+}
+```
 
-                                       ##Subscription Request
+In this case, it is assumed that the certificates are located in the folder `./
+credentials`.
 
-                                           The main task provided by the library
-                                               is let the client to subscribe /
-                           unsubscribe to real time data about economic events
-                               .The characteristics of the required information
-                                   are defined in a subscription request
-                               .Once the subscription has been activated,
-    your application will start receiving updates and notifications about your
-        request
-            .
+Parameters to define are:
 
-    A request contains :
+* `client_certificate`: Path to the file with the client certificate
+* `root_certificate`: Path to the file with the root certificate
+* `password`: Password to access Bloomberg's services
+* `primary_host`: Name of Bloomberg's primary host
+* `secondary_host`: Name of Bloomberg's secondary host
+* `port`: Server port to access the services
+* `default_service`: Default service identification
+* `app_name`: Bloomberg's designated application name
+* `mode`: Mode of operation. It can be `prod` or `test`
 
-    * `service`: One of the services offered by Bloomberg.At this moment,
-    the only service enabled is `economic - data`.* `subscription_type`
-    : A category of information,
-    such as a calendar of releases or
-        economic headlines.* `topic_type`
-    : The standard used to encode the entity or
-        security you are requesting information about
-            .The most commonly used is
-        "Ticker." Other types include CUSIP and FIGI.* `topic`
-    : The specific identifier that represents the entity or
-        security you are requesting information about.* `options`
-    : Some requests may require complementary information,
-    such as a period of
-        time.This attribute is used to encode those additional
-            parameters.* `correlation_id`
-    : A number to identify the request.This number must be assigned by the user.
+**Note** : The `mode` configuration parameter only has effect if the code has
+been compiled with the `ENABLE_PROFILING` option .
 
-      This is the definition of a subscription request :
+## Subscription Request
+
+The main task provided by the library is let the client to subscribe /
+unsubscribe to real time data about economic events .The characteristics of the
+required information are defined in a subscription request .Once the
+subscription has been activated, your application will start receiving updates
+and notifications about your request .
+
+A request contains :
+
+* `service`: One of the services offered by Bloomberg.At this moment, the only
+  service enabled is `economic - data`.
+* `subscription_type`: A category of information, such as a calendar of
+  releases or economic headlines.
+* `topic_type`: The standard used to encode the entity or security you are
+  requesting information about . The most commonly used is "Ticker." Other
+  types include CUSIP and FIGI.
+* `topic`: The specific identifier that represents the entity or security you
+  are requesting information about.
+* `options`: Some requests may require complementary information, such as a
+  period of time. This attribute is used to encode those additional parameters.
+* `correlation_id`: A number to identify the request.This number must be
+  assigned by the user.
+
+As an example, this is the definition of a subscription request:
 
 ```c++ struct SubscriptionRequest {
   std::string service;
@@ -165,17 +162,18 @@ ctx:
   std::string options = "";
   uint64_t correlation_id = 0;
 }
-``` The correlation ID is required to follow up the
-    request.Related notifications will be tagged with the same correlation
-        ID.The client program can use this ID to identify
-            the request and process the notifications accordingly.Moreover,
-    to stop the subscription,
-    the correlation ID is link to the original request.
+```
 
-    For subscription and topic types,
-    the library provides predefined enumerations with valid values.
+The correlation ID is required to follow up the request.Related notifications
+will be tagged with the same correlation ID. The client program can use this ID
+to identify the request and process the notifications accordingly.Moreover, to
+stop the subscription, the correlation ID is link to the original request.
 
-```c++ enum class SubscriptionType {
+For subscription and topic types, the library provides predefined enumerations
+with valid values.
+
+```c++
+enum class SubscriptionType {
       HeadlineActuals,
       ReleaseCalendar,
       HeadlineSurveys
@@ -187,6 +185,7 @@ enum class TopicType {
   Figi,
 };
 ```
+
 Here is an example on creating a subscription request in Go:
 
 ```go
@@ -219,7 +218,7 @@ sequences. FlatBuffers is a high-performance serialization format and library.
 The client program is responsible for implementing mechanisms to deserialize
 the data.  Examples of deserialization functions are provided below.
 
-In C++ and Go, default observer functions are provided. This catch all notitications
+In C++ and Go, default observer functions are provided. They catch all notitications
 and print them to the standard output.
 
 This how to register an observer function in C++:
@@ -243,8 +242,9 @@ Notifications can be any of the following types:
 
 ## Log Messages
 
-`LogMessage` is the general mechanism to inform the client about the status of the session, service, and subscriptions.
-A log message contains the following fields:
+`LogMessage` is the general mechanism to inform the client about the status of
+the session, service, and subscriptions.  A log message contains the following
+fields:
 
 * `module`: The module that generated the message.
 * `status`: An indication about the status of the module or an event.
@@ -461,7 +461,6 @@ To compile the library, the following requirements are needed:
 - Swig 4.3
 - Go 1.24
 - FlatBuffers 25.2
-- spdlog 1.15
 
 The compilation process has several steps:
 
@@ -498,16 +497,20 @@ More information: [FlatBuffers Docs](https://flatbuffers.dev/)
 
 ## Library Compilation
 
-To generate the library, `cmake` is used.
+To generate the library, `cmake` is used. A `CMakeLists.txt` example file is
+included. Adapt it based on your particular host setup.
 
 ```sh
+cp CMakeLists.txt.example CMakeLists.txt
+# Modify the CMakeList.txt file as needed
 mkdir build
 cd build
 cmake --build .
 cmake --install .
 ```
 
-The static library is located at `./lib/libblpconn.a`. Previous steps also compile example and test programs which are placed in the `./bin` folder.
+The static library is located at `./lib/libblpconn.a`. Previous steps also
+compile example and test programs which are placed in the `./bin` folder.
 
 ## SWIG C++/Go Wrappers
 
@@ -637,7 +640,7 @@ The Go program should have `cgo` parameters to compile the `blpconn` libraries. 
 ```go
 /*
 #cgo CFLAGS: -g -DENABLE_PROFILING
-#cgo LDFLAGS: -L../lib -lblpapi3_64 -lblpconngo -lblpconn -lspdlog -lfmt -lstdc++ 
+#cgo LDFLAGS: -L../lib -lblpapi3_64 -lblpconngo -lblpconn -lstdc++ 
 #include <stdlib.h>
 */
 import "C"
@@ -701,15 +704,152 @@ If you want to remove completely the profiling code, when compiling remove the `
 
 ## Engineering Comments
 
-* BlpConn doesn't not use additional threading features. It rests on the BPIPE 
-library to manage the threading process.
+* BlpConn doesn't not use additional threading features. It rests on the BPIPE
+  library to manage the threading process.
 * Errors are handled internally, they are not propagated to the client program.
   It is expected that the client program will detect anormal situations by
   monitoring the log messages.
-* Profiling and testing runs were have been using, but with limited data.
-  Regarding perfomance, the library overhead related to Bloomberg's B-PIPE
-  library is negligible (based on `gprof`). More optimizations can be done in the
-  serialization/deserialization process.
-* Memory management: The most of the parameters are passed by reference. The
- most expensive data transfer is
- moving strings, which has been minimized to the strictly necessary.
+  
+# Annex: TT Installation
+
+2025-05-12
+
+This note describe step by step the process to install BlpConn library in the TT server.
+The TT Server has a CentOS 7, which has been discontinued. Besides that, it has a special
+configuration. Therefore, support for it is only provided by Trading Technologies.
+
+## Github Repository Connection
+
+The access to the Github repository was set up using SSH keys. Doing that, the repository
+was cloned:
+
+    git clone git@github.com:jailop/bloomberg-geco-connector.git
+    
+
+## Worling directory
+
+The local copy of the repository is located in `/home/axssuperuser/bloomberg-geco-connector`.
+
+It is assumed that all the following commands are executed from that directory,
+unless otherwise stated.
+    
+## Configuration
+
+A zip file with the needed configuration files was copied in the TT server: `config.zip`.
+
+    unzip config.zip
+    
+When that file was uncompressed, the following files were created:
+
+    ./config.json
+    ./credentials/9F8E5FD041B209F39399EDB2E4120F53.pk12
+    ./credentials/rootCertificate.pk7
+
+## Flatbuffer Bindings
+
+The package `flatbuffers` is not available in the TT server nor in the repositories it has access to.
+It was intented to build from source, in the folder `/home/axssuperuser/build/flatbuffers/`, but
+that failed.
+
+Therefore, the `flatbuffers` generated files in the development machine were included in the source
+code repository, in order to avoid their generation in the TT server. It was only needed to update
+the repoitory:
+
+    git pull
+    
+## CMake command
+
+The default `cmake` version installed in the TT server was 2.8. The building
+script is for CMake 3.17. That package was installed in the TT server:
+
+    sudo yum install cmake3
+    
+Therefore, any time that CMake needs to be invoked, the command is `cmake3` instead of `cmake`.
+
+## GTest
+
+It was not possible to setup appropiately the `gtest` library in the TT server. For that reason, building
+testing files has been omitted in the TT server.
+
+## BLPAPI library
+
+The `blpapi` library was copied in the following address: `/usr/local/lib/libblpapi3_64.so`
+
+## Environment variables
+
+Because the TT server uses `devtoolset_9`, it is needed to pass as environment variables the location
+of the C and C++ compilers. The following variables were exported, including one related to the location of
+the BLPAPI library:
+
+    export CXX=/opt/rh/devtoolset-9/root/bin/g++
+    export CC=/opt/rh/devtoolset-9/root/bin/gcc
+    export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+    
+## CMake configuration file
+
+The configuration file was adapted to run properly in the TT server. Changes included:
+
+- The location of the `blpapi` library.
+- Commenting the section to build the test programs
+- Adding the path for the JSON library (used to read the configuration file)
+
+This adapted version of the configuration file has been uploaded to the repository.
+
+## Building the C++ library and programs
+
+In order to build the C++ library and the programs:
+
+    mkdir build
+    cd build
+    cmake3 ..
+    cmake3 --build .
+    cmake3 --install .
+    
+These new files were generated:
+
+    ./lib/libblpconn.a
+    ./bin/cli
+    ./bin/deserialize
+    ./bin/preliminar
+    ./bin/simple
+    
+## SWIG C++/Go Wrappers
+
+Given that an updated version of SWIG is already installed in the TT server, it
+was not need to do any additional step to generate the bindings for the Go
+language:
+
+    cd swig
+    make
+    
+These new files were generated:
+
+    ./lib/libblpconngo.a
+    ./go/blpconngo.go
+    ./docs/go-api.txt
+    
+## Generating Go binaries
+
+To generate the Go example binaries, as additional step it is need just to
+updated the module information, using `go mod tidy`:
+
+    cd go
+    go mod tidy
+    sh install.sh
+    
+These new files were generated:
+
+    ./go/bin/cli
+    ./go/bin/simple
+    
+## Running examples
+
+To run the examples, given that the configuration file is located in the
+default directory: `/home/axssuperuser/bloomberg-geco-connector`, the binaries
+should be run from there:
+
+    ./bin/simple
+    ./bin/cli
+    ./bin/deserialize tests/fbbin/fb_000001.bin
+    ./go/bin/simple
+    ./go/bin/cli

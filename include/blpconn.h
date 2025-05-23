@@ -96,7 +96,14 @@ struct SubscriptionRequest {
  */
 class Context {
 public:
-  Context() {}
+  Context() {
+#ifdef ENABLE_PROFILING
+    MiniLogger::LoggerManager::initialize(
+        "profiler.txt", 
+        MiniLogger::LogLevel::DEBUG,
+        true);
+#endif
+  }
 
   /**
    * In the case the service is still active, the destructor
@@ -106,6 +113,9 @@ public:
     if (session_) {
       shutdownSession();
     }
+#ifdef ENABLE_PROFILING
+    MiniLogger::LoggerManager::shutdown();
+#endif
   }
 
   /**

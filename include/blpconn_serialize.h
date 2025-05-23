@@ -5,6 +5,7 @@
 
 #include "blpconn_fb_generated.h"
 #include "blpconn_message.h"
+#include "blpconn_profiler.h"
 
 namespace BlpConn {
 

@@ -66,10 +66,10 @@ set(BLPAPIINC "${BLPAPI3_64_DIR}/blpapi_cpp_3.25.3.1/include")
 file(GLOB SOURCE_FILES src/*.cpp)
 add_library(blpconn STATIC ${SOURCE_FILES})
 
-target_compile_definitions(blpconn PRIVATE DEBUG)
+target_compile_definitions(blpconn PRIVATE ENABLE_PROFILING)
 target_include_directories(blpconn PRIVATE include ${BLPAPIINC} ${JSONINC})
 # target_link_libraries(blpconn PRIVATE ${BLPAPI3_64_DIR}/blpapi_cpp_3.25.3.1/Linux/libblpapi3_64.so)
-target_link_libraries(blpconn PRIVATE ${BLPAPILIB})
+target_link_libraries(blpconn PRIVATE ${BLPAPILIB} -lspdlog -lfmt)
 install(TARGETS blpconn DESTINATION lib)
 
 file(GLOB EXAMPLE_FILES examples/*.cpp)
@@ -98,4 +98,6 @@ foreach(test ${TEST_FILES})
    add_dependencies(${binname} blpconn)
    add_test(NAME ${binname} COMMAND ${binname})
 endforeach(test ${TEST_FILES})
+
+
 

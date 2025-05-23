@@ -1,0 +1,1 @@
+bool __is_profiling = false;

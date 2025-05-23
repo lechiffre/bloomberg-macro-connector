@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "blpconn_observer.h"
+#include "blpconn_profiler.h"
 
 namespace BlpConn {
 

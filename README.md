@@ -114,6 +114,9 @@ Parameters to define are:
 * `app_name`: Bloomberg's designated application name
 * `mode`: Mode of operation. It can be `prod` or `test`
 
+**Note**: The `mode` configuration parameter only has effect if the code has
+been compiled with the `ENABLE_PROFILING` option.
+
 ## Subscription Request
 
 The main task provided by the library is let the client to subscribe/unsubscribe
@@ -445,6 +448,7 @@ To compile the library, the following requirements are needed:
 - Swig 4.3
 - Go 1.24
 - FlatBuffers 25.2
+- spdlog 1.15
 
 The compilation process has several steps:
 
@@ -620,7 +624,8 @@ The Go program should have `cgo` parameters to compile the `blpconn` libraries. 
 
 ```go
 /*
-#cgo LDFLAGS: -L../lib -lblpapi3_64 -lblpconngo -lblpconn -lstdc++
+#cgo CFLAGS: -g -DENABLE_PROFILING
+#cgo LDFLAGS: -L../lib -lblpapi3_64 -lblpconngo -lblpconn -lspdlog -lfmt -lstdc++ 
 #include <stdlib.h>
 */
 import "C"
@@ -658,6 +663,29 @@ Go version:
 cd go
 go test ./tests/loadfbbin
 ```
+
+## Profiling
+
+By default, the library and examples are compiled using the `ENABLE_PROFILING` option.
+That option produces the inclusion of code to measure the time spent by critical
+functions. The profiling information is stored in the file `./profiler.txt`.
+
+Here is an example of the profiling output:
+
+```text
+[2025-05-22 23:41:16.489] [perf_logger] [info] processEconomicEvent 13 microseconds
+[2025-05-22 23:41:16.489] [perf_logger] [info] processSubscriptionData 349 microseconds
+[2025-05-22 23:41:21.320] [perf_logger] [info] unsubscribe 243 microseconds
+[2025-05-22 23:41:21.320] [perf_logger] [info] serializeLogMessage 2 microseconds
+[2025-05-22 23:41:21.320] [perf_logger] [info] buildBufferLogMessage 9 microseconds
+[2025-05-22 23:41:21.320] [perf_logger] [info] log 79 microseconds
+[2025-05-22 23:41:21.320] [perf_logger] [info] toLogMessage 1 microseconds
+[2025-05-22 23:41:21.320] [perf_logger] [info] defaultObserver 11 microseconds
+[2025-05-22 23:41:21.320] [perf_logger] [info] notify 13 microseconds
+```
+
+To deactivate profiling, set the configuration variable from "test" to "prod".
+If you want to remove completely the profiling code, when compiling remove the `ENABLE_PROFILING` option from the `CMakeLists.txt` and other build files.
 
 ## Engineering Comments
 

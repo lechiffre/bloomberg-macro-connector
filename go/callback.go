@@ -2,8 +2,8 @@ package blpconngo
 
 /*
 #include <callback.h>
-#cgo CFLAGS: -g
-#cgo LDFLAGS: -L../lib -lblpapi3_64 -lblpconngo -lblpconn -lstdc++
+#cgo CFLAGS: -g -DENABLE_PROFILING
+#cgo LDFLAGS: -L../lib -lblpapi3_64 -lblpconngo -lblpconn -lspdlog -lfmt -lstdc++ 
 */
 import "C"
 import (

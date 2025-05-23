@@ -8,6 +8,7 @@
 
 #include "blpconn_fb_generated.h"
 #include "blpconn_message.h"
+#include "blpconn_profiler.h"
 
 using namespace BloombergLP;
 
@@ -504,6 +505,7 @@ flatbuffers::FlatBufferBuilder buildBufferCalendarEvent(
 
 void parseHeadlineBaseEvent(const blpapi::Element elem,
                             HeadlineBaseEvent& message) {
+    PROFILE_FUNCTION()
     // Required fields
     message.id_bb_global = elem.getElement(ID_BB_GLOBAL).getValueAsString();
     message.parsekyable_des =
@@ -532,12 +534,14 @@ void parseHeadlineBaseEvent(const blpapi::Element elem,
         message.release_start_dt = interval.start;
         message.release_end_dt = interval.end;
     }
+    END_PROFILE_FUNCTION()
 }
 
 HeadlineEconomicEvent parseHeadlineEconomicEvent(const blpapi::Element& elem) {
+
+    PROFILE_FUNCTION()
     HeadlineEconomicEvent message;
     parseHeadlineBaseEvent(elem, message);
-
     if (elem.hasElement(VALUE)) {
         message.value = getValue(elem, VALUE);
     }
@@ -563,10 +567,12 @@ HeadlineEconomicEvent parseHeadlineEconomicEvent(const blpapi::Element& elem) {
             message.prior_economic_release_end_dt = interval.end;
         }
     }
+    END_PROFILE_FUNCTION()
     return message;
 }
 
 HeadlineCalendarEvent parseHeadlineCalendarEvent(const blpapi::Element& elem) {
+    PROFILE_FUNCTION()
     HeadlineCalendarEvent message;
     parseHeadlineBaseEvent(elem, message);
 
@@ -574,7 +580,7 @@ HeadlineCalendarEvent parseHeadlineCalendarEvent(const blpapi::Element& elem) {
         std::string s = elem.getElement(RELEASE_STATUS).getValueAsString();
         message.release_status = stringToReleaseStatus(s);
     }
-
+    END_PROFILE_FUNCTION()
     return message;
 }
 

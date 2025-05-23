@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <flatbuffers/flatbuffers.h>
+#include "blpconn_profiler.h"
 
 namespace BlpConn {
 
@@ -103,11 +104,13 @@ void fbBufferToFile(uint8_t* buffer, size_t size, const std::string& filename) {
 }
 
 void fbBuilderToFile(flatbuffers::FlatBufferBuilder& builder, const std::string& filename) {
+    PROFILE_FUNCTION()
     // Get the buffer pointer and size.
     uint8_t* buffer = builder.GetBufferPointer();
     size_t size = builder.GetSize();
     // Write the buffer to the file.
     fbBufferToFile(buffer, size, filename);
+    END_PROFILE_FUNCTION()
 }
 
 } // namespace BlpConn

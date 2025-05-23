@@ -1,4 +1,3 @@
-#include <cstdint>
 #include <fstream>
 #include <blpapi_authoptions.h>
 #include <blpapi_correlationid.h>
@@ -84,7 +83,7 @@ namespace BlpConn {
 static const int module = static_cast<int>(Module::Session);
 
 bool Context::initializeSession(const std::string& config_path) {
-
+    PROFILE_FUNCTION()
     json config;
     try {
         config = readConfiguration(config_path);
@@ -92,9 +91,7 @@ bool Context::initializeSession(const std::string& config_path) {
         log(module, 0, 0, e.what());
         return false;
     }
-#ifdef DEBUG
-    // event_handler_.logger_.testing_ = config["mode"] == "test";
-#endif
+    __is_profiling = config["mode"] == "test";
     blpapi::SessionOptions session_options;
     try {
         session_options = defineSessionOptions(config);
@@ -124,8 +121,7 @@ bool Context::initializeSession(const std::string& config_path) {
             "Failed to open service: " + service_);
         return false;
     }
-#ifdef DEBUG
-#endif
+    END_PROFILE_FUNCTION();
     return true;
 }
 

@@ -54,6 +54,7 @@ const std::string SubscriptionRequest::toUri() {
 }
 
 int Context::subscribe(SubscriptionRequest& request) {
+    PROFILE_FUNCTION()
     blpapi::CorrelationId corr_id(request.correlation_id);
     if (!session_) {
         log(
@@ -89,10 +90,12 @@ int Context::subscribe(SubscriptionRequest& request) {
         static_cast<uint8_t>(SubscriptionStatus::Success),
         corr_id.asInteger(),
         "Subscription successful");
+    END_PROFILE_FUNCTION()
     return subscription_counter_++;
 }
 
 void Context::unsubscribe(SubscriptionRequest& request) {
+    PROFILE_FUNCTION()
     blpapi::CorrelationId corr_id(request.correlation_id);
     if (!session_) {
         log(
@@ -123,6 +126,7 @@ void Context::unsubscribe(SubscriptionRequest& request) {
             "Error: Unsubscription failed");
         return;
     }
+    END_PROFILE_FUNCTION()
 }
 
 } // namespace BlpConn

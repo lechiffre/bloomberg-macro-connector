@@ -32,33 +32,31 @@ static void sendNotification(flatbuffers::FlatBufferBuilder& builder, Logger *lo
 }
 
 void processEconomicEvent(const blpapi::Element& elem, Logger& logger) {
+    PROFILE_FUNCTION()
     if (elem.name() == HEADLINE_ECONOMIC_EVENT) {
-#ifdef DEBUG
-    // auto start = std::chrono::high_resolution_clock::now();
-#endif
+        /* 
         HeadlineEconomicEvent event = parseHeadlineEconomicEvent(elem);
         flatbuffers::FlatBufferBuilder builder = buildBufferEconomicEvent(event);
-        // flatbuffers::FlatBufferBuilder builder = buildBufferEconomicEvent(elem);
+        */
+        flatbuffers::FlatBufferBuilder builder = buildBufferEconomicEvent(elem);
         sendNotification(builder, &logger);
-#ifdef DEBUG
-    // auto end = std::chrono::high_resolution_clock::now();
-    // auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    // logger.profiler_.writer(
-    //    "context", "initializeSession", "", duration);
-#endif
     } else if (elem.name() == HEADLINE_CALENDAR_EVENT) {
+        /*
         HeadlineCalendarEvent event = parseHeadlineCalendarEvent(elem);
         flatbuffers::FlatBufferBuilder builder = buildBufferCalendarEvent(event);
-        // flatbuffers::FlatBufferBuilder builder = buildBufferCalendarEvent(elem);
+        */
+        flatbuffers::FlatBufferBuilder builder = buildBufferCalendarEvent(elem);
         sendNotification(builder, &logger);
     } else {
         std::string e = "Unknown event type: ";
         e += elem.name().string();
         logger.log(module, 0, 0, e);
     }
+    END_PROFILE_FUNCTION()
 }
 
 bool processSubscriptionData(const blpapi::Event& event, blpapi::Session *session, Logger& logger) {
+    PROFILE_FUNCTION()
     blpapi::MessageIterator msgIter(event);
     while (msgIter.next()) {
         blpapi::Message msg = msgIter.message();
@@ -77,10 +75,12 @@ bool processSubscriptionData(const blpapi::Event& event, blpapi::Session *sessio
                 "Subscription Heartbeat");
         }
     }
+    END_PROFILE_FUNCTION()
     return true;
 }
 
 bool processSessionStatus(const blpapi::Event& event, blpapi::Session *session, Logger& logger) {
+    PROFILE_FUNCTION()
     blpapi::MessageIterator msgIter(event);
     const uint8_t module = static_cast<uint8_t>(Module::Session);
     while (msgIter.next()) {
@@ -100,10 +100,12 @@ bool processSessionStatus(const blpapi::Event& event, blpapi::Session *session, 
             logger.log(module, static_cast<uint8_t>(SessionStatus::Unknown), 0, oss.str());
         }
     }
+    END_PROFILE_FUNCTION()
     return true;
 }
 
 bool processServiceStatus(const blpapi::Event& event, blpapi::Session *session, Logger& logger) {
+    PROFILE_FUNCTION()
     blpapi::MessageIterator msgIter(event);
     const uint8_t module = static_cast<uint8_t>(Module::Service);
     while (msgIter.next()) {
@@ -117,10 +119,12 @@ bool processServiceStatus(const blpapi::Event& event, blpapi::Session *session, 
             logger.log(module, static_cast<uint8_t>(ServiceStatus::Unknown), 0, oss.str());
         }
     }
+    END_PROFILE_FUNCTION()
     return true;
 }
 
 bool processSubscriptionStatus(const blpapi::Event& event, blpapi::Session *session, Logger& logger) {
+    PROFILE_FUNCTION()
     blpapi::MessageIterator msgIter(event);
     const uint8_t module = static_cast<uint8_t>(Module::Subscription);
     while (msgIter.next()) {
@@ -141,6 +145,7 @@ bool processSubscriptionStatus(const blpapi::Event& event, blpapi::Session *sess
             logger.log(module, static_cast<uint8_t>(SubscriptionStatus::Unknown), correlation_id, oss.str());
         }
     }
+    END_PROFILE_FUNCTION()
     return true;
 }
 

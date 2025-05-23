@@ -24,6 +24,7 @@ BlpConn::ValueType deserializeValue(const BlpConn::FB::Value* value) {
 }
 
 BlpConn::HeadlineEconomicEvent toHeadlineEconomicEvent(const BlpConn::FB::HeadlineEconomicEvent* fb_event) {
+    PROFILE_FUNCTION()
     BlpConn::HeadlineEconomicEvent event;
     event.id_bb_global = fb_event->id_bb_global()->str();
     event.parsekyable_des = fb_event->parsekyable_des()->str();
@@ -40,10 +41,12 @@ BlpConn::HeadlineEconomicEvent toHeadlineEconomicEvent(const BlpConn::FB::Headli
     event.prior_observation_period = fb_event->prior_observation_period()->str();
     event.prior_economic_release_start_dt = deserializeDateTime(fb_event->prior_economic_release_start_dt());
     event.prior_economic_release_end_dt = deserializeDateTime(fb_event->prior_economic_release_end_dt());
+    END_PROFILE_FUNCTION()
     return event;
 }
 
 BlpConn::HeadlineCalendarEvent toHeadlineCalendarEvent(const BlpConn::FB::HeadlineCalendarEvent* fb_event) {
+    PROFILE_FUNCTION()
     BlpConn::HeadlineCalendarEvent event;
     event.id_bb_global = fb_event->id_bb_global()->str();
     event.parsekyable_des = fb_event->parsekyable_des()->str();
@@ -55,20 +58,24 @@ BlpConn::HeadlineCalendarEvent toHeadlineCalendarEvent(const BlpConn::FB::Headli
     event.release_start_dt = deserializeDateTime(fb_event->release_start_dt());
     event.release_end_dt = deserializeDateTime(fb_event->release_end_dt());
     event.release_status = static_cast<BlpConn::ReleaseStatus>(fb_event->release_status());
+    END_PROFILE_FUNCTION()
     return event;
 }
 
 LogMessage toLogMessage(const BlpConn::FB::LogMessage* fb_log_message) {
+    PROFILE_FUNCTION()
     BlpConn::LogMessage log_message;
     log_message.log_dt = deserializeDateTime(fb_log_message->log_dt());
     log_message.module = fb_log_message->module_(); // Fix: Use correct field name 'module_'
     log_message.status = fb_log_message->status();
     log_message.correlation_id = fb_log_message->correlation_id();
     log_message.message = fb_log_message->message()->str();
+    END_PROFILE_FUNCTION()
     return log_message;
 }
 
 void defaultObserver(const uint8_t *buffer, size_t size) {
+    PROFILE_FUNCTION()
     flatbuffers::Verifier verifier(buffer, size);
     if (!BlpConn::FB::VerifyMessageVector(verifier, nullptr, nullptr)) {
         std::cout << "Invalid message" << std::endl;
@@ -88,6 +95,7 @@ void defaultObserver(const uint8_t *buffer, size_t size) {
         auto log_message = toLogMessage(fb_log_message);
         std::cout << log_message << std::endl;
     }
+    END_PROFILE_FUNCTION()
 }
 
 

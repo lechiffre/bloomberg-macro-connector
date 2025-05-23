@@ -6,5 +6,6 @@
     "secondary_host": "SECONDARY_HOST_URL",
     "port": 8194,
     "default_service": "//blp/economic-data",
-    "app_name": "YOUR_APP_NAME"
+    "app_name": "YOUR_APP_NAME",
+    "mode": "test"
 }

@@ -1,11 +1,11 @@
 {
-    "client_certificate": "pk12_CERTIFICATE_PATH",
-    "root_certificate": "pk7_CERTIFICATE_PATH",
-    "password": "YOUR_PASSWORD",
-    "primary_host": "PRIMARY_HOST_URL",
-    "secondary_host": "SECONDARY_HOST_URL",
-    "port": 8194,
-    "default_service": "//blp/economic-data",
-    "app_name": "YOUR_APP_NAME",
-    "mode": "test"
+  "client_certificate": "pk12_CERTIFICATE_PATH",
+  "root_certificate": "pk7_CERTIFICATE_PATH",
+  "password": "YOUR_PASSWORD",
+  "primary_host": "PRIMARY_HOST_URL",
+  "secondary_host": "SECONDARY_HOST_URL",
+  "port": 8194,
+  "default_service": "//blp/economic-data",
+  "app_name": "YOUR_APP_NAME",
+  "mode": "test"
 }

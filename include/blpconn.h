@@ -28,9 +28,9 @@ namespace BlpConn {
  * event types when subscribing to a data feed.
  */
 enum class SubscriptionType {
-    HeadlineActuals,
-    ReleaseCalendar,
-    HeadlineSurveys
+  HeadlineActuals,
+  ReleaseCalendar,
+  HeadlineSurveys
 };
 
 /**
@@ -38,14 +38,14 @@ enum class SubscriptionType {
  * different identification standards.
  */
 enum class TopicType {
-    Ticker,  // Generic identifier
-    Cusip,   // Request by CUSIP
-    Sedol,   // Request by SEDOL
-    Isin,    // Request by ISIN
-    Bsid,    // Request by Bloomberg Security Identifier
-    Buid,    // Request by Bloomberg Unique Identifier
-    Eid,     // Request by Entitlement ID
-    Figi,    // Request by Financial Instrument Global Identifier
+  Ticker, // Generic identifier
+  Cusip,  // Request by CUSIP
+  Sedol,  // Request by SEDOL
+  Isin,   // Request by ISIN
+  Bsid,   // Request by Bloomberg Security Identifier
+  Buid,   // Request by Bloomberg Unique Identifier
+  Eid,    // Request by Entitlement ID
+  Figi,   // Request by Financial Instrument Global Identifier
 };
 
 /**
@@ -71,20 +71,20 @@ enum class TopicType {
  * the subscritpion.
  */
 struct SubscriptionRequest {
-    std::string service;
-    std::string topic;
-    TopicType topic_type = TopicType::Ticker;
-    SubscriptionType subscription_type = SubscriptionType::HeadlineActuals;
-    std::string options = "";
-    uint64_t correlation_id = 0;
+  std::string service;
+  std::string topic;
+  TopicType topic_type = TopicType::Ticker;
+  SubscriptionType subscription_type = SubscriptionType::HeadlineActuals;
+  std::string options = "";
+  uint64_t correlation_id = 0;
 
-    /**
-     * Converts struct attributes to an URI following standard
-     * defined by Bloomberg. Example:
-     *
-     *   "//blpapi/economic-data/headline-actuals/ticker/CATBTOTB Index"
-     */
-    const std::string toUri();
+  /**
+   * Converts struct attributes to an URI following standard
+   * defined by Bloomberg. Example:
+   *
+   *   "//blpapi/economic-data/headline-actuals/ticker/CATBTOTB Index"
+   */
+  const std::string toUri();
 };
 
 /**
@@ -95,95 +95,105 @@ struct SubscriptionRequest {
  * to log messages.
  */
 class Context {
-   public:
-    Context() {}
+public:
+  Context() {
+#ifdef ENABLE_PROFILING
+    MiniLogger::LoggerManager::initialize(
+        "profiler.txt", 
+        MiniLogger::LogLevel::DEBUG,
+        true);
+#endif
+  }
 
-    /**
-     * In the case the service is still active, the destructor
-     * take care to shut it down
-     */
-    ~Context() {
-        if (session_) {
-            shutdownSession();
-        }
+  /**
+   * In the case the service is still active, the destructor
+   * take care to shut it down
+   */
+  ~Context() {
+    if (session_) {
+      shutdownSession();
     }
+#ifdef ENABLE_PROFILING
+    MiniLogger::LoggerManager::shutdown();
+#endif
+  }
 
-    /**
-     * Authentication and connection to Bloomberg service.  The configuration
-     * file contains connection parameters and authentication information. The
-     * client program should specify the path to the configuration file.  The
-     * connection process is notified by the event handler.  Therefore, in
-     * order to receive notifications by callback functions, those functions
-     * should be registered before calling this method.
-     *
-     * @param config_path The path to the configuration file.
-     * @return true if the connection is successful, false otherwise.
-     */
-    bool initializeSession(const std::string& config_path);
+  /**
+   * Authentication and connection to Bloomberg service.  The configuration
+   * file contains connection parameters and authentication information. The
+   * client program should specify the path to the configuration file.  The
+   * connection process is notified by the event handler.  Therefore, in
+   * order to receive notifications by callback functions, those functions
+   * should be registered before calling this method.
+   *
+   * @param config_path The path to the configuration file.
+   * @return true if the connection is successful, false otherwise.
+   */
+  bool initializeSession(const std::string &config_path);
 
-    /**
-     * This method disconnects from the Bloomberg service.
-     * It is automatically called by the constructor.
-     */
-    void shutdownSession();
+  /**
+   * This method disconnects from the Bloomberg service.
+   * It is automatically called by the constructor.
+   */
+  void shutdownSession();
 
-    /**
-     * To report if the connection with Bloomberg service is
-     * established.
-     *
-     * @return true if the connection is established, false otherwise.
-     */
-    bool isConnected() { return session_ != nullptr; }
+  /**
+   * To report if the connection with Bloomberg service is
+   * established.
+   *
+   * @return true if the connection is established, false otherwise.
+   */
+  bool isConnected() { return session_ != nullptr; }
 
-    /**
-     * This method subscribes to a data feed. The client program
-     * should specify the topic, topic type, event type, and options
-     * in the subscription request. The subscription request is
-     * passed by reference.
-     *
-     * @param request The subscription request.
-     * @return 0 if the subscription is successful, -1 otherwise.
-     */
-    int subscribe(SubscriptionRequest& request);
+  /**
+   * This method subscribes to a data feed. The client program
+   * should specify the topic, topic type, event type, and options
+   * in the subscription request. The subscription request is
+   * passed by reference.
+   *
+   * @param request The subscription request.
+   * @return 0 if the subscription is successful, -1 otherwise.
+   */
+  int subscribe(SubscriptionRequest &request);
 
-    /**
-     * To unscribe the session for a data feed. It should include a
-     * correlation id set during the subscription, in order to identify
-     * the subscription to be closed.
-     *
-     * @param request The subscription request. The correlation id should
-     * be the same used for the subscription.
-     */
-    void unsubscribe(SubscriptionRequest& request);
+  /**
+   * To unscribe the session for a data feed. It should include a
+   * correlation id set during the subscription, in order to identify
+   * the subscription to be closed.
+   *
+   * @param request The subscription request. The correlation id should
+   * be the same used for the subscription.
+   */
+  void unsubscribe(SubscriptionRequest &request);
 
-    /**
-     * To register observer functions. The client program can
-     * register one or more observer functions. These functions
-     * will receive JSON messages in string format. The client
-     * program is responsible to parse and process the JSON messages.
-     *
-     * @param fnc The observer function to register.
-     */
-    void addNotificationHandler(ObserverFunc fnc) noexcept {
-        event_handler_.logger_.addNotificationHandler(fnc);
-    }
+  /**
+   * To register observer functions. The client program can
+   * register one or more observer functions. These functions
+   * will receive JSON messages in string format. The client
+   * program is responsible to parse and process the JSON messages.
+   *
+   * @param fnc The observer function to register.
+   */
+  void addNotificationHandler(ObserverFunc fnc) noexcept {
+    event_handler_.logger_.addNotificationHandler(fnc);
+  }
 
-    /**
-     * The client program can use this method to log own messages.
-     * Message should be in JSON format and be passed as strings.
-     */
-    void log(uint8_t module, uint8_t status, uint64_t correlation_id,
-             const std::string& message) {
-        event_handler_.logger_.log(module, status, correlation_id, message);
-    }
+  /**
+   * The client program can use this method to log own messages.
+   * Message should be in JSON format and be passed as strings.
+   */
+  void log(uint8_t module, uint8_t status, uint64_t correlation_id,
+           const std::string &message) {
+    event_handler_.logger_.log(module, status, correlation_id, message);
+  }
 
-  private:
-    std::string service_ = "//blp/economic-data";
-    EventHandler event_handler_;
-    blpapi::Session* session_ = nullptr;
-    int subscription_counter_ = 0;
+private:
+  std::string service_ = "//blp/economic-data";
+  EventHandler event_handler_;
+  blpapi::Session *session_ = nullptr;
+  int subscription_counter_ = 0;
 };
 
-}  // namespace BlpConn
+} // namespace BlpConn
 
-#endif  // _BLPCONN_H
+#endif // _BLPCONN_H

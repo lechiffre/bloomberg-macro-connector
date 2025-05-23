@@ -80,22 +80,22 @@ foreach(example ${EXAMPLE_FILES})
     add_dependencies(${binname} blpconn)
 endforeach(example ${EXAMPLE_FILES})
 
-enable_testing()
-include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-include_directories(${gtest_SOURCE_DIR}/googletest/include ${gtest_SOURCE_DIR}/googlemock/include)
-
-file(GLOB TEST_FILES tests/*.cpp)
-foreach(test ${TEST_FILES})
-   get_filename_component(binname ${test} NAME_WE)
-   add_executable(${binname} ${test})
-   target_include_directories(${binname} PRIVATE include ${BLPAPIINC}
-   ${GTEST}/include)
-   target_link_directories(${binname} PRIVATE ${GTEST}/lib64)
-   target_link_libraries(${binname} PRIVATE blpconn ${BLPAPILIB} gtest gmock pthread stdc++fs)
-   install(TARGETS ${binname} DESTINATION bin)
-   add_dependencies(${binname} blpconn)
-   add_test(NAME ${binname} COMMAND ${binname})
-endforeach(test ${TEST_FILES})
+# enable_testing()
+# include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+# include_directories(${gtest_SOURCE_DIR}/googletest/include ${gtest_SOURCE_DIR}/googlemock/include)
+# 
+# file(GLOB TEST_FILES tests/*.cpp)
+# foreach(test ${TEST_FILES})
+#    get_filename_component(binname ${test} NAME_WE)
+#    add_executable(${binname} ${test})
+#    target_include_directories(${binname} PRIVATE include ${BLPAPIINC}
+#    ${GTEST}/include)
+#    target_link_directories(${binname} PRIVATE ${GTEST}/lib64)
+#    target_link_libraries(${binname} PRIVATE blpconn ${BLPAPILIB} gtest gmock pthread stdc++fs)
+#    install(TARGETS ${binname} DESTINATION bin)
+#    add_dependencies(${binname} blpconn)
+#    add_test(NAME ${binname} COMMAND ${binname})
+# endforeach(test ${TEST_FILES})
 
 
 

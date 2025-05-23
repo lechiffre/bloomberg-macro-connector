@@ -1,9 +1,9 @@
 #ifndef _BLPCONN_PROFILER_H
 #define _BLPCONN_PROFILER_H
-#pragma once
 
 #include <spdlog/spdlog.h>
-#include <spdlog/sinks/basic_file_sink.h>
+// #include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/file_sinks.h>
 
 extern bool __is_profiling;
 

@@ -1,12 +1,12 @@
 #ifndef _BLPCONN_LOGGER_H
 #define _BLPCONN_LOGGER_H
 
+#include "blpconn_observer.h"
+#include "blpconn_profiler.h"
 #include <iostream>
 #include <string>
 #include <vector>
 
-#include "blpconn_observer.h"
-#include "blpconn_profiler.h"
 
 namespace BlpConn {
 

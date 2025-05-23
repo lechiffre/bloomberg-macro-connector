@@ -13,7 +13,7 @@ set(BLPAPI3_64_URL "https://blpapi.bloomberg.com/download/releases/raw/files/blp
 set(BLPAPI3_64_DIR "${CMAKE_SOURCE_DIR}/blpapi3_64")
 set(BLPAPI3_64_TAR "${CMAKE_SOURCE_DIR}/blpapi3_64.tar.gz")
 
-# Check if blpapi3_64 directory exists
+#Check if blpapi3_64 directory exists
 if(NOT EXISTS ${BLPAPI3_64_TAR})
     execute_process(
         COMMAND curl -f -o blpapi3_64.tar.gz ${BLPAPI3_64_URL}
@@ -27,7 +27,7 @@ if(NOT EXISTS ${BLPAPI3_64_TAR})
 endif()
 
 if(NOT EXISTS ${BLPAPI3_64_DIR})
-    # Create the blpapi3_64 directory
+#Create the blpapi3_64 directory
     execute_process(
         COMMAND ${CMAKE_COMMAND} -E make_directory ${BLPAPI3_64_DIR}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -37,7 +37,7 @@ if(NOT EXISTS ${BLPAPI3_64_DIR})
         message(FATAL_ERROR "Failed to create directory ${BLPAPI3_64_DIR}")
     endif()
 
-    # Extract the library
+#Extract the library
     execute_process(
         COMMAND tar xf blpapi3_64.tar.gz -C ${BLPAPI3_64_DIR}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}

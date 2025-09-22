@@ -1,4 +1,4 @@
-#BlpConn : B - PIPE Connector
+# BlpConn : B - PIPE Connector
 
 BlpConn is a high-performance C++/Go library for working with the Bloomberg
 Market Data Feed (B-PIPE). At this moment, BlpConn focuses on retrieving data

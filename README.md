@@ -2,7 +2,7 @@
 
 BlpConn is a high-performance C++/Go library for working with the Bloomberg
 Market Data Feed (B-PIPE). At this moment, BlpConn focuses on retrieving data
-from Bloomberg's economic data feed (`//blp/economic-data`).
+from Bloomberg's economic data feed (`//blp/macro-indicators`).
 
 ## Workflow
 
@@ -15,7 +15,7 @@ B-PIPE. The process is as follows:
    session is responsible for managing the connection and communication with
    the server. The session opens a service. A service is a specific
    functionality provided by Bloomberg. In this case, the service is
-   `//blp/economic-data`.
+   `//blp/macro-indicadors`.
 2. **Subscribe**: The client program sends a subscription request to the
    service. The request contains the information about the data the client
    wants to receive. The request is sent to the server, and responses are
@@ -43,7 +43,7 @@ The first step is to initialize a context, which includes:
 
 * Setting the authentication parameters
 * Opening a session
-* Activating the default service: `//blp/economic-data`
+* Activating the default service: `//blp/macro-indicators`
 
 Once the the connection has been initialized, the client program can start
 subscribing to data feeds and managing responses and notifications.
@@ -104,7 +104,7 @@ This is an example of a configuration file :
   "primary_host" : "bloomberg-server1",
   "secondary_host" : "bloomberg-server2",
   "port" : 8194,
-  "default_service" : "//blp/economic-data",
+  "default_service" : "//blp/macro-indicators",
   "app_name" : "TraderApp:MarketData",
   "mode" : "prod"
 }
@@ -139,9 +139,7 @@ and notifications about your request .
 A request contains :
 
 * `service`: One of the services offered by Bloomberg.At this moment, the only
-  service enabled is `economic - data`.
-* `subscription_type`: A category of information, such as a calendar of
-  releases or economic headlines.
+  service enabled is `macro-indicators`.
 * `topic_type`: The standard used to encode the entity or security you are
   requesting information about . The most commonly used is "Ticker." Other
   types include CUSIP and FIGI.
@@ -158,7 +156,6 @@ As an example, this is the definition of a subscription request:
   std::string service;
   std::string topic;
   TopicType topic_type = TopicType::Ticker;
-  SubscriptionType subscription_type = SubscriptionType::HeadlineActuals;
   std::string options = "";
   uint64_t correlation_id = 0;
 }
@@ -173,16 +170,9 @@ For subscription and topic types, the library provides predefined enumerations
 with valid values.
 
 ```c++
-enum class SubscriptionType {
-      HeadlineActuals,
-      ReleaseCalendar,
-      HeadlineSurveys
-    };
-
 enum class TopicType {
   Ticker,
-  Cusip,
-  Figi,
+  Bbgid
 };
 ```
 
@@ -195,7 +185,6 @@ import "blpconngo"
 // `ctx` An initialized BlpConn context
 request := blpconngo.NewSubscriptionRequest()
 request.SetTopic("INJCJC Index")
-request.SetSubscription_type(blpconngo.SubscriptionType_ReleaseCalendar)
 request.SetCorrelation_id(4)
 ctx.Subscribe(request)
 // The subscription remains active

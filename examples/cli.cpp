@@ -12,10 +12,9 @@ enum {
     UNSUBSCRIBE
 };
 
-void eventRequest(Context& ctx, SubscriptionType subscription_type, uint64_t corr, const std::string& rem, int action) {
+void eventRequest(Context& ctx, uint64_t corr, const std::string& rem, int action) {
     SubscriptionRequest request = {
         .topic = rem,
-        .subscription_type = subscription_type,
         .correlation_id = corr,
     };
     if (action == SUBSCRIBE) {
@@ -55,21 +54,9 @@ void processCommand(Context& ctx, const std::string& line) {
     boost::algorithm::trim(par);
     std::cout << cmd << ":" << evt << ":" << par << std::endl;
     if (cmd == "subscribe") {
-        if (evt == "calendar") {
-            eventRequest(ctx, SubscriptionType::ReleaseCalendar, std::stoi(corr), par, SUBSCRIBE); 
-        } else if (evt == "economic") {
-            eventRequest(ctx, SubscriptionType::HeadlineActuals, std::stoi(corr), par, SUBSCRIBE); 
-        } else {
-            std::cout << "Not defined command" << std::endl;
-        }
+        eventRequest(ctx, std::stoi(corr), par, SUBSCRIBE); 
     } else if (cmd == "unsubscribe") {
-        if (evt == "calendar") {
-            eventRequest(ctx, SubscriptionType::ReleaseCalendar, std::stoi(corr), par, UNSUBSCRIBE); 
-        } else if (evt == "economic") {
-            eventRequest(ctx, SubscriptionType::HeadlineActuals, std::stoi(corr), par, UNSUBSCRIBE); 
-        } else {
-            std::cout << "Not defined command" << std::endl;
-        }
+        eventRequest(ctx, std::stoi(corr), par, UNSUBSCRIBE); 
     }
     return;
 }

@@ -12,7 +12,6 @@ int main() {
     ctx.subscribe(request1);
     SubscriptionRequest request2 = {
         .topic = "INJCJC Index",
-        .subscription_type = SubscriptionType::ReleaseCalendar,
         .correlation_id = 1,
     };
     ctx.subscribe(request2);

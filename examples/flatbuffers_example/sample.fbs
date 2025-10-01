@@ -1,0 +1,8 @@
+namespace BlpConn;
+
+table Message {
+    name:string;
+    price:float;
+}
+
+root_type Message;

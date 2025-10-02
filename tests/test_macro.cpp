@@ -36,3 +36,30 @@ ENT_ID = 2167801 RELEVANCE_VALUE = 55.263200 OBSERVATION_PERIOD = "Jul" ECO_RELE
  = -5.860000 REVISION_METADATA = { PRIOR_EVENT_ID = 2167800 PRIOR_OBSERVATION_PERIOD = "
 Jun" PRIOR_ECO_RELEASE_DT = { DATETIME = 2025-08-05T12:30:00.000+00:00 } } } }
 
+*/
+
+#include <blpconn.h>
+#include <gtest/gtest.h>
+#include <thread>
+#include <chrono>
+
+using namespace BlpConn;
+
+TEST(Context, Subscription) {
+    Context ctx;
+    std::string config_path = "./config.json";
+    EXPECT_TRUE(ctx.initializeSession(config_path));
+    SubscriptionRequest request = {
+            .topic = "CATBTOTB Index",
+            .correlation_id = 1
+    };
+    EXPECT_EQ(ctx.subscribe(request), 0);
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+    ctx.unsubscribe(request);
+    ctx.shutdownSession();
+}
+
+int main(int argc, char **argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}

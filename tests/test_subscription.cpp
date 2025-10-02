@@ -9,6 +9,7 @@ TEST(Context, Subscription) {
     Context ctx;
     std::string config_path = "./config.json";
     EXPECT_TRUE(ctx.initializeSession(config_path));
+    ctx.addNotificationHandler(defaultObserver);
     SubscriptionRequest request = {
             .topic = "CATBTOTB Index",
             .correlation_id = 1

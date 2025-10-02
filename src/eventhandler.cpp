@@ -40,7 +40,6 @@ static void sendNotification(flatbuffers::FlatBufferBuilder& builder, Logger *lo
 
 void processMacroEvent(const blpapi::Element& elem, Logger& logger) {
     PROFILE_FUNCTION()
-    std::cout << elem << std::endl;
     if (elem.name() == MACRO_HEADLINE_EVENT) {
         flatbuffers::FlatBufferBuilder builder = buildBufferMacroHeadlineEvent(elem);
         sendNotification(builder, &logger);

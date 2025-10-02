@@ -119,6 +119,7 @@ std::ostream& operator<<(std::ostream& os, const HeadlineEconomicEvent& event) {
     return os;
 }
 
+
 std::ostream& operator<<(std::ostream& os, const HeadlineCalendarEvent& event) {
     os << static_cast<const HeadlineBaseEvent&>(event)
        << ", release_status: " << releaseStatusToString(event.release_status)
@@ -162,6 +163,58 @@ std::ostream& operator<<(std::ostream& os, const LogMessage& log_message) {
 
     os << "|CorrelationID(" << log_message.correlation_id << ")"
        << "|" << log_message.message;
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const MacroReferenceData& data) {
+    os << "MacroReferenceData { id_bb_global: " << data.id_bb_global
+         << ", parsekyable_des: " << data.parsekyable_des
+            << ", description: " << data.description
+            << ", indx_freq: " << data.indx_freq
+            << ", indx_units: " << data.indx_units
+            << ", country_iso: " << data.country_iso
+            << ", indx_source: " << data.indx_source
+            << ", seasonality_transformation: " <<
+            data.seasonality_transformation
+            << " }";
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const MacroHeadLineEvent& event) {
+    os << "MacroHeadLineEvent { event_type: " << eventTypeToString(event.event_type)
+       << ", event_subtype: " << eventSubTypeToString(event.event_subtype)
+       << ", event_id: " << event.event_id
+       << ", observation_period: " << event.observation_period
+       << ", release_start_dt: { microseconds: " << event.release_start_dt.microseconds
+       << ", offset: " << event.release_start_dt.offset << " }"
+       << ", release_end_dt: { microseconds: " << event.release_end_dt.microseconds
+       << ", offset: " << event.release_end_dt.offset << " }"
+       << ", prior_event_id: " << event.prior_event_id
+       << ", prior_observation_period: " << event.prior_observation_period
+       << ", prior_economic_release_start_dt: { microseconds: " << event.prior_economic_release_start_dt.microseconds
+       << ", offset: " << event.prior_economic_release_start_dt.offset << " }"
+       << ", prior_economic_release_end_dt: { microseconds: " << event.prior_economic_release_end_dt.microseconds
+       << ", offset: " << event.prior_economic_release_end_dt.offset << " }"
+       << ", value: " << event.value
+       << " }";
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const MacroCalendarEvent& event) {
+    os << "MacroCalendarEvent { id_bb_global: " << event.id_bb_global
+       << ", parsekyable_des: " << event.parsekyable_des
+       << ", event_type: " << eventTypeToString(event.event_type)
+       << ", event_subtype: " << eventSubTypeToString(event.event_subtype)
+       << ", description: " << event.description
+       << ", event_id: " << event.event_id
+       << ", observation_period: " << event.observation_period
+       << ", release_start_dt: { microseconds: " << event.release_start_dt.microseconds
+       << ", offset: " << event.release_start_dt.offset << " }"
+       << ", release_end_dt: { microseconds: " << event.release_end_dt.microseconds
+       << ", offset: " << event.release_end_dt.offset << " }"
+       << ", release_status: " << releaseStatusToString(event.release_status)
+       << ", relevance_value: " << event.relevance_value
+       << " }";
     return os;
 }
 

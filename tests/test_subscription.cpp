@@ -5,14 +5,19 @@
 
 using namespace BlpConn;
 
-TEST(Context, Connection) {
+TEST(Context, Subscription) {
     Context ctx;
     std::string config_path = "./config.json";
     EXPECT_TRUE(ctx.initializeSession(config_path));
-    std::this_thread::sleep_for(std::chrono::seconds(3));
+    SubscriptionRequest request = {
+            .topic = "CATBTOTB Index",
+            .correlation_id = 1
+    };
+    EXPECT_EQ(ctx.subscribe(request), 0);
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+    ctx.unsubscribe(request);
     ctx.shutdownSession();
 }
-
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);

@@ -26,6 +26,7 @@ enum SessionStatusType: uint8 {
     SessionAnother = 99,
 }
 
+// Revised
 enum EventSubType: uint8 {
     Unknown = 0,
     New = 1,
@@ -35,6 +36,7 @@ enum EventSubType: uint8 {
     Another = 99
 }
 
+// Revised
 enum EventType: uint8 {
     Unknown = 0,
     Actual = 1,
@@ -89,6 +91,31 @@ table HeadlineEconomicEvent {
     prior_economic_release_end_dt: DateTime;
 }
 
+table MacroHeadlineEvent {
+    event_type: EventType;
+    event_subtype: EventSubType;
+    event_id: int;
+    observation_period: string;
+    release_start_dt: DateTime;
+    release_end_dt: DateTime;
+    prior_event_id: int;
+    prior_observation_period: string;
+    prior_economic_release_start_dt: DateTime;
+    prior_economic_release_end_dt: DateTime;
+    value: Value;
+}
+
+table MacroReferenceData {
+    id_bb_global: string (required);
+    parsekyable_des: string (required);
+    description: string;
+    indx_freq: string;
+    indx_units: string;
+    country_iso: string;
+    indx_source: string;
+    seasonality_transformation: string;
+}
+
 table HeadlineCalendarEvent {
     // Shared fields
     id_bb_global: string (required);
@@ -105,6 +132,20 @@ table HeadlineCalendarEvent {
     release_status: ReleaseStatus;
 }
 
+table MacroCalendarEvent {
+    id_bb_global: string (required);
+    parsekyable_des: string (required);
+    event_type: EventType;
+    event_subtype: EventSubType;
+    description: string;
+    event_id: int;  // TODO Check for string
+    observation_period: string;
+    release_start_dt: DateTime;
+    release_end_dt: DateTime;
+    release_status: ReleaseStatus;
+    relevance_value: double;
+}
+
 table LogMessage {
     log_dt: DateTime; // Timestamp of the log
     module: uint8; // Module that generated the log
@@ -116,6 +157,9 @@ table LogMessage {
 union Message {
     HeadlineEconomicEvent,
     HeadlineCalendarEvent,
+    MacroReferenceData,
+    MacroHeadlineEvent,
+    MacroCalendarEvent,
     LogMessage,
 }
 

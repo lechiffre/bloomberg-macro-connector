@@ -7,7 +7,6 @@
 #include "blpconn_message.h"
 #include "blpconn_deserialize.h"
 
-
 namespace BlpConn {
 
 static const uint8_t module = static_cast<uint8_t>(Module::System);
@@ -21,14 +20,42 @@ static const blpapi::Name SUBSCRIPTION_STARTED("SubscriptionStarted");
 static const blpapi::Name SUBSCRIPTION_STREAMS_ACTIVATED("SubscriptionStreamsActivated");
 static const blpapi::Name SUBSCRIPTION_TERMINATED("SubscriptionTerminated");
 static const blpapi::Name SUBSCRIPTION_FAILURE("SubscriptionFailure");
+
+// TODO to be remove
 static const blpapi::Name ECONOMIC_EVENT("EconomicEvent");
 static const blpapi::Name HEADLINE_ECONOMIC_EVENT("HeadlineEconomicEvent");
 static const blpapi::Name HEADLINE_CALENDAR_EVENT("HeadlineCalendarEvent");
+
+// New events
+static const blpapi::Name MACRO_EVENT("MacroEvent");
+static const blpapi::Name MACRO_REFERENCE_DATA("MacroReferenceData");
+static const blpapi::Name MACRO_HEADLINE_EVENT("MacroHeadlineEvent");
+static const blpapi::Name MACRO_CALENDAR_EVENT("MacroCalendarEvent");
 
 static void sendNotification(flatbuffers::FlatBufferBuilder& builder, Logger *logger) {
     uint8_t * buffer = builder.GetBufferPointer();
     int size = builder.GetSize();
     logger->notify(buffer, size);
+}
+
+void processMacroEvent(const blpapi::Element& elem, Logger& logger) {
+    PROFILE_FUNCTION()
+    std::cout << elem << std::endl;
+    if (elem.name() == MACRO_HEADLINE_EVENT) {
+        flatbuffers::FlatBufferBuilder builder = buildBufferMacroHeadlineEvent(elem);
+        sendNotification(builder, &logger);
+    } else if (elem.name() == MACRO_CALENDAR_EVENT) {
+        flatbuffers::FlatBufferBuilder builder = buildBufferMacroCalendarEvent(elem);
+        sendNotification(builder, &logger);
+    } else if (elem.name() == MACRO_REFERENCE_DATA) {
+        flatbuffers::FlatBufferBuilder builder = buildBufferMacroReferenceData(elem);
+        sendNotification(builder, &logger);
+    } else {
+        std::string e = "Unknown macro event type: ";
+        e += elem.name().string();
+        logger.log(module, 0, 0, e);
+    }
+    END_PROFILE_FUNCTION()
 }
 
 void processEconomicEvent(const blpapi::Element& elem, Logger& logger) {
@@ -61,7 +88,14 @@ bool processSubscriptionData(const blpapi::Event& event, blpapi::Session *sessio
     while (msgIter.next()) {
         blpapi::Message msg = msgIter.message();
         blpapi::Element elem = msg.asElement();
-        if (elem.name() == ECONOMIC_EVENT) {
+        if (elem.name() == MACRO_EVENT) {
+            for (std::size_t i = 0; i < elem.numValues(); ++i) {
+                blpapi::Element sub_elem = elem.getElement(i);
+                processMacroEvent(sub_elem, logger);
+            }
+        }
+        // TODO this branch will be removed
+        else if (elem.name() == ECONOMIC_EVENT) {
             for (std::size_t i = 0; i < elem.numValues(); ++i) {
                 blpapi::Element sub_elem = elem.getElement(i);
                 processEconomicEvent(sub_elem, logger);

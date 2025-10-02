@@ -121,6 +121,45 @@ struct HeadlineEconomicEvent : public HeadlineBaseEvent {
   DateTimeType prior_economic_release_end_dt;
 };
 
+struct MacroReferenceData {
+    std::string id_bb_global;
+    std::string parsekyable_des;
+    std::string description = "";
+    std::string indx_freq = "";
+    std::string indx_units = "";
+    std::string country_iso = "";
+    std::string indx_source = "";
+    std::string seasonality_transformation = "";
+};
+
+struct MacroHeadLineEvent {
+    EventType event_type = EventType::Unknown;
+    EventSubType event_subtype = EventSubType::Unknown;
+    uint64_t event_id = 0;
+    std::string observation_period = "";
+    DateTimeType release_start_dt;
+    DateTimeType release_end_dt;
+    uint64_t prior_event_id = 0;
+    std::string prior_observation_period = "";
+    DateTimeType prior_economic_release_start_dt;
+    DateTimeType prior_economic_release_end_dt;
+    ValueType value;
+};
+
+struct MacroCalendarEvent {
+    std::string id_bb_global;
+    std::string parsekyable_des;
+    EventType event_type = EventType::Unknown;
+    EventSubType event_subtype = EventSubType::Unknown;
+    std::string description = "";
+    uint64_t event_id = 0;
+    std::string observation_period = "";
+    DateTimeType release_start_dt;
+    DateTimeType release_end_dt;
+    ReleaseStatus release_status = ReleaseStatus::Unknown;
+    double relevance_value = std::nanf("");
+};
+
 struct HeadlineCalendarEvent : public HeadlineBaseEvent {
   ReleaseStatus release_status = ReleaseStatus::Unknown;
 };

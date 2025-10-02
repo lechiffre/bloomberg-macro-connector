@@ -17,6 +17,16 @@ flatbuffers::Offset<FB::HeadlineCalendarEvent>
 serializeHeadlineCalendarEvent(flatbuffers::FlatBufferBuilder &builder,
                                const HeadlineCalendarEvent &event);
 
+flatbuffers::Offset<FB::MacroReferenceData> serializeMacroReferenceData(
+    flatbuffers::FlatBufferBuilder& builder, const MacroReferenceData& data);
+
+flatbuffers::Offset<FB::MacroHeadlineEvent> serializeMacroHeadlineEvent(
+    flatbuffers::FlatBufferBuilder& builder, const MacroHeadLineEvent& event);
+
+
+flatbuffers::Offset<FB::MacroCalendarEvent> serializeMacroCalendarEvent(
+    flatbuffers::FlatBufferBuilder& builder, const MacroCalendarEvent& event);
+
 flatbuffers::Offset<FB::LogMessage>
 serializeLogMessage(flatbuffers::FlatBufferBuilder &builder,
                     const LogMessage &log_message);

@@ -22,18 +22,6 @@ using namespace BloombergLP;
  */
 namespace BlpConn {
 
-// TODO Subscription type will be removed
-/**
- * The EventType enum defines the types of events that can be
- * subscribed to. The client program can choose one or more
- * event types when subscribing to a data feed.
- */
-enum class SubscriptionType {
-  HeadlineActuals,
-  ReleaseCalendar,
-  HeadlineSurveys
-};
-
 /**
  * Bloomberg's let subscriptors to request data using
  * different identification standards.

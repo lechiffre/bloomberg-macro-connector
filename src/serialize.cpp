@@ -125,6 +125,84 @@ flatbuffers::Offset<FB::HeadlineEconomicEvent> serializeHeadlineEconomicEvent(
     );
 }
 
+flatbuffers::Offset<FB::MacroReferenceData> serializeMacroReferenceData(
+    flatbuffers::FlatBufferBuilder& builder, const MacroReferenceData& data) {
+    PROFILE_FUNCTION()
+    auto id_bb_global = builder.CreateString(data.id_bb_global);
+    auto parsekyable_des = builder.CreateString(data.parsekyable_des);
+    auto description = builder.CreateString(data.description);
+    auto indx_freq = builder.CreateString(data.indx_freq);
+    auto indx_units = builder.CreateString(data.indx_units);
+    auto country_iso = builder.CreateString(data.country_iso);
+    auto indx_source = builder.CreateString(data.indx_source);
+    auto seasonality_transformation = builder.CreateString(
+            data.seasonality_transformation);
+    END_PROFILE_FUNCTION()
+    return FB::CreateMacroReferenceData(builder,
+            id_bb_global,
+            parsekyable_des,
+            description,
+            indx_freq,
+            indx_units,
+            country_iso,
+            indx_source,
+            seasonality_transformation);
+}
+
+flatbuffers::Offset<FB::MacroHeadlineEvent> serializeMacroHeadlineEvent(
+    flatbuffers::FlatBufferBuilder& builder, const MacroHeadLineEvent& event) {
+    PROFILE_FUNCTION()
+    auto observation_period = builder.CreateString(event.observation_period);
+    auto release_start_dt = serializeDateTime(builder, event.release_start_dt);
+    auto release_end_dt = serializeDateTime(builder, event.release_end_dt);
+    auto prior_observation_period = builder.CreateString(
+            event.prior_observation_period);
+    auto prior_release_start_dt = serializeDateTime(
+            builder, event.prior_economic_release_start_dt);
+    auto prior_release_end_dt = serializeDateTime(
+            builder, event.prior_economic_release_end_dt);
+    auto value = serializeValue(builder, event.value);
+    END_PROFILE_FUNCTION()
+    return FB::CreateMacroHeadlineEvent(
+            builder,
+            static_cast<FB::EventType>(event.event_type),
+            static_cast<FB::EventSubType>(event.event_subtype),
+            event.event_id,
+            observation_period,
+            release_start_dt,
+            release_end_dt,
+            event.prior_event_id,
+            prior_observation_period,
+            prior_release_start_dt,
+            prior_release_end_dt,
+            value);
+}
+
+flatbuffers::Offset<FB::MacroCalendarEvent> serializeMacroCalendarEvent(
+    flatbuffers::FlatBufferBuilder& builder, const MacroCalendarEvent& event) {
+    PROFILE_FUNCTION()
+    auto id_bb_global = builder.CreateString(event.id_bb_global);
+    auto parsekyable_des = builder.CreateString(event.parsekyable_des);
+    auto description = builder.CreateString(event.description);
+    auto observation_period = builder.CreateString(event.observation_period);
+    auto release_start_dt = serializeDateTime(builder, event.release_start_dt);
+    auto release_end_dt = serializeDateTime(builder, event.release_end_dt);
+    END_PROFILE_FUNCTION()
+    return FB::CreateMacroCalendarEvent(
+        builder,
+        id_bb_global,
+        parsekyable_des,
+        static_cast<FB::EventType>(event.event_type),
+        static_cast<FB::EventSubType>(event.event_subtype),
+        description,
+        event.event_id,
+        observation_period,
+        release_start_dt,
+        release_end_dt,
+        static_cast<FB::ReleaseStatus>(event.release_status),
+        event.relevance_value);
+}
+
 flatbuffers::Offset<FB::HeadlineCalendarEvent> serializeHeadlineCalendarEvent(
     flatbuffers::FlatBufferBuilder& builder, const HeadlineCalendarEvent& event) {
     PROFILE_FUNCTION()
@@ -158,6 +236,42 @@ flatbuffers::Offset<FB::LogMessage> serializeLogMessage(
     END_PROFILE_FUNCTION()
     return FB::CreateLogMessage(builder, log_dt, log_message.module, // Fix: Serialize the module field
         log_message.status, log_message.correlation_id, message); // Fix: Serialize the correlation_id field
+}
+
+flatbuffers::FlatBufferBuilder buildBufferMacroReferenceData(
+        MacroReferenceData& data) {
+    PROFILE_FUNCTION()
+    flatbuffers::FlatBufferBuilder builder;
+    auto fb_macro_data = serializeMacroReferenceData(builder, data).Union();
+    auto fb_main = FB::CreateMain(builder,
+            FB::Message::Message_MacroReferenceData, fb_macro_data);
+    builder.Finish(fb_main);
+    END_PROFILE_FUNCTION()
+    return builder;
+}
+
+flatbuffers::FlatBufferBuilder buildBufferMacroHeadlineEvent(
+        MacroHeadLineEvent& event) {
+    PROFILE_FUNCTION()
+    flatbuffers::FlatBufferBuilder builder;
+    auto fb_macro_headline = serializeMacroHeadlineEvent(builder, event).Union();
+    auto fb_main = FB::CreateMain(builder,
+            FB::Message::Message_MacroHeadlineEvent, fb_macro_headline);
+    builder.Finish(fb_main);
+    END_PROFILE_FUNCTION()
+    return builder;
+}
+
+flatbuffers::FlatBufferBuilder buildBufferMacroCalendarEvent(
+        MacroCalendarEvent& event) {
+    PROFILE_FUNCTION()
+    flatbuffers::FlatBufferBuilder builder;
+    auto fb_macro_calendar = serializeMacroCalendarEvent(builder, event).Union();
+    auto fb_main = FB::CreateMain(builder,
+        FB::Message::Message_MacroCalendarEvent, fb_macro_calendar);
+    builder.Finish(fb_main);
+    END_PROFILE_FUNCTION()
+    return builder;
 }
 
 flatbuffers::FlatBufferBuilder buildBufferEconomicEvent(HeadlineEconomicEvent& event) {

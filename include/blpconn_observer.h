@@ -20,6 +20,7 @@ namespace BlpConn {
 typedef void (*ObserverFunc)(const uint8_t *buffer, size_t size);
 
 void defaultObserver(const uint8_t *buffer, size_t size);
+
 } // namespace BlpConn
 
 #endif // _BLPCONN_OBSERVER_H

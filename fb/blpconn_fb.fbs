@@ -91,6 +91,17 @@ table HeadlineEconomicEvent {
     prior_economic_release_end_dt: DateTime;
 }
 
+table MacroReferenceData {
+    id_bb_global: string (required);
+    parsekyable_des: string (required);
+    description: string;
+    indx_freq: string;
+    indx_units: string;
+    country_iso: string;
+    indx_source: string;
+    seasonality_transformation: string;
+}
+
 table MacroHeadlineEvent {
     event_type: EventType;
     event_subtype: EventSubType;
@@ -105,16 +116,21 @@ table MacroHeadlineEvent {
     value: Value;
 }
 
-table MacroReferenceData {
+table MacroCalendarEvent {
     id_bb_global: string (required);
     parsekyable_des: string (required);
+    event_type: EventType;
+    event_subtype: EventSubType;
     description: string;
-    indx_freq: string;
-    indx_units: string;
-    country_iso: string;
-    indx_source: string;
-    seasonality_transformation: string;
+    event_id: int;  // TODO Check for string
+    observation_period: string;
+    release_start_dt: DateTime;
+    release_end_dt: DateTime;
+    release_status: ReleaseStatus;
+    relevance_value: double;
 }
+
+
 
 table HeadlineCalendarEvent {
     // Shared fields
@@ -130,20 +146,6 @@ table HeadlineCalendarEvent {
 
     // Specific fields
     release_status: ReleaseStatus;
-}
-
-table MacroCalendarEvent {
-    id_bb_global: string (required);
-    parsekyable_des: string (required);
-    event_type: EventType;
-    event_subtype: EventSubType;
-    description: string;
-    event_id: int;  // TODO Check for string
-    observation_period: string;
-    release_start_dt: DateTime;
-    release_end_dt: DateTime;
-    release_status: ReleaseStatus;
-    relevance_value: double;
 }
 
 table LogMessage {

@@ -41,13 +41,13 @@ static void sendNotification(flatbuffers::FlatBufferBuilder& builder, Logger *lo
 void processMacroEvent(const blpapi::Element& elem, Logger& logger) {
     PROFILE_FUNCTION()
     if (elem.name() == MACRO_HEADLINE_EVENT) {
-        flatbuffers::FlatBufferBuilder builder = buildBufferMacroHeadlineEvent(elem);
+        auto builder = buildBufferMacroHeadlineEvent(elem);
         sendNotification(builder, &logger);
     } else if (elem.name() == MACRO_CALENDAR_EVENT) {
-        flatbuffers::FlatBufferBuilder builder = buildBufferMacroCalendarEvent(elem);
+        auto builder = buildBufferMacroCalendarEvent(elem);
         sendNotification(builder, &logger);
     } else if (elem.name() == MACRO_REFERENCE_DATA) {
-        flatbuffers::FlatBufferBuilder builder = buildBufferMacroReferenceData(elem);
+        auto builder = buildBufferMacroReferenceData(elem);
         sendNotification(builder, &logger);
     } else {
         std::string e = "Unknown macro event type: ";

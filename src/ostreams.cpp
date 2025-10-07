@@ -180,8 +180,8 @@ std::ostream& operator<<(std::ostream& os, const MacroReferenceData& data) {
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const MacroHeadLineEvent& event) {
-    os << "MacroHeadLineEvent { event_type: " << eventTypeToString(event.event_type)
+std::ostream& operator<<(std::ostream& os, const MacroHeadlineEvent& event) {
+    os << "MacroHeadlineEvent { event_type: " << eventTypeToString(event.event_type)
        << ", event_subtype: " << eventSubTypeToString(event.event_subtype)
        << ", event_id: " << event.event_id
        << ", observation_period: " << event.observation_period

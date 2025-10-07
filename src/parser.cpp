@@ -750,9 +750,9 @@ MacroReferenceData parseMacroReferenceData(const blpapi::Element& elem) {
     return message;
 }
 
-MacroHeadLineEvent parseMacroHeadlineEvent(const blpapi::Element& elem) {
+MacroHeadlineEvent parseMacroHeadlineEvent(const blpapi::Element& elem) {
     PROFILE_FUNCTION()
-    MacroHeadLineEvent message;
+    MacroHeadlineEvent message;
     if (elem.hasElement(EVENT_TYPE)) {
         std::string s = elem.getElement(EVENT_TYPE).getValueAsString();
         message.event_type = stringToEventType(s);

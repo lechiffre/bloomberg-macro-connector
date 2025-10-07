@@ -150,7 +150,7 @@ flatbuffers::Offset<FB::MacroReferenceData> serializeMacroReferenceData(
 }
 
 flatbuffers::Offset<FB::MacroHeadlineEvent> serializeMacroHeadlineEvent(
-    flatbuffers::FlatBufferBuilder& builder, const MacroHeadLineEvent& event) {
+    flatbuffers::FlatBufferBuilder& builder, const MacroHeadlineEvent& event) {
     PROFILE_FUNCTION()
     auto observation_period = builder.CreateString(event.observation_period);
     auto release_start_dt = serializeDateTime(builder, event.release_start_dt);
@@ -251,7 +251,7 @@ flatbuffers::FlatBufferBuilder buildBufferMacroReferenceData(
 }
 
 flatbuffers::FlatBufferBuilder buildBufferMacroHeadlineEvent(
-        MacroHeadLineEvent& event) {
+        MacroHeadlineEvent& event) {
     PROFILE_FUNCTION()
     flatbuffers::FlatBufferBuilder builder;
     auto fb_macro_headline = serializeMacroHeadlineEvent(builder, event).Union();

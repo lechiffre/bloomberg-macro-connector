@@ -78,10 +78,10 @@ MacroReferenceData toMacroReferenceData(
     return data;
 }
 
-MacroHeadLineEvent toMacroHeadlineEvent(
+MacroHeadlineEvent toMacroHeadlineEvent(
         const BlpConn::FB::MacroHeadlineEvent* fb_event) {
     PROFILE_FUNCTION()
-    BlpConn::MacroHeadLineEvent event;
+    BlpConn::MacroHeadlineEvent event;
     event.event_type = static_cast<BlpConn::EventType>(
             fb_event->event_type());
     event.event_subtype = static_cast<BlpConn::EventSubType>(

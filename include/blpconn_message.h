@@ -132,7 +132,7 @@ struct MacroReferenceData {
     std::string seasonality_transformation = "";
 };
 
-struct MacroHeadLineEvent {
+struct MacroHeadlineEvent {
     EventType event_type = EventType::Unknown;
     EventSubType event_subtype = EventSubType::Unknown;
     uint64_t event_id = 0;

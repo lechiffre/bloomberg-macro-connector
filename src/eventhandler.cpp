@@ -41,14 +41,32 @@ static void sendNotification(flatbuffers::FlatBufferBuilder& builder, Logger *lo
 void processMacroEvent(const blpapi::Element& elem, Logger& logger) {
     PROFILE_FUNCTION()
     if (elem.name() == MACRO_HEADLINE_EVENT) {
-        auto builder = buildBufferMacroHeadlineEvent(elem);
-        sendNotification(builder, &logger);
+        try {
+            auto builder = buildBufferMacroHeadlineEvent(elem);
+            sendNotification(builder, &logger);
+        } catch (const std::exception& e) {
+            std::string err = "Error processing MacroHeadlineEvent: ";
+            err += e.what();
+            logger.log(module, 0, 0, err);
+        }
     } else if (elem.name() == MACRO_CALENDAR_EVENT) {
-        auto builder = buildBufferMacroCalendarEvent(elem);
-        sendNotification(builder, &logger);
+        try {
+            auto builder = buildBufferMacroCalendarEvent(elem);
+            sendNotification(builder, &logger);
+        } catch (const std::exception& e) {
+            std::string err = "Error processing MacroCalendarEvent: ";
+            err += e.what();
+            logger.log(module, 0, 0, err);
+        }
     } else if (elem.name() == MACRO_REFERENCE_DATA) {
-        auto builder = buildBufferMacroReferenceData(elem);
-        sendNotification(builder, &logger);
+        try {
+            auto builder = buildBufferMacroReferenceData(elem);
+            sendNotification(builder, &logger);
+        } catch (const std::exception& e) {
+            std::string err = "Error processing MacroReferenceData: ";
+            err += e.what();
+            logger.log(module, 0, 0, err);
+        }
     } else {
         std::string e = "Unknown macro event type: ";
         e += elem.name().string();

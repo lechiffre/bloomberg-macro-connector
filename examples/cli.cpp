@@ -26,39 +26,32 @@ void eventRequest(Context& ctx, uint64_t corr, const std::string& rem, int actio
 
 void processCommand(Context& ctx, const std::string& line) {
     size_t pos = line.find(' ');
+    // Command
     if (pos == line.npos) {
         std::cout << "Invalidad command" << std::endl;
         return;
     }
     std::string cmd = line.substr(0, pos);
+    boost::algorithm::trim(cmd);
+    // Correlation ID
     std::string rem = line.substr(pos);
     boost::trim(rem);
-    pos = rem.find(' ');
-    if (pos == line.npos) {
-        std::cout << "Invalidad event" << std::endl;
-        return;
-    }
-    std::string evt = rem.substr(0, pos);
-    rem = rem.substr(pos);
-    boost::trim(rem);
+    
     pos = rem.find(' ');
     if (pos == line.npos) {
         std::cout << "Invalidad event" << std::endl;
         return;
     }
     std::string corr = rem.substr(0, pos);
-    std::string par = rem.substr(pos);
-    boost::algorithm::trim(cmd);
-    boost::algorithm::trim(evt);
     boost::algorithm::trim(corr);
+    std::string par = rem.substr(pos);
     boost::algorithm::trim(par);
-    std::cout << cmd << ":" << evt << ":" << par << std::endl;
+    
     if (cmd == "subscribe") {
         eventRequest(ctx, std::stoi(corr), par, SUBSCRIBE); 
-    } else if (cmd == "unsubscribe") {
+    } else {
         eventRequest(ctx, std::stoi(corr), par, UNSUBSCRIBE); 
     }
-    return;
 }
 
 void run(Context& ctx) {

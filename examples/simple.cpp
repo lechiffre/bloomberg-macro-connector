@@ -8,6 +8,7 @@ int main() {
     Context ctx;
     std::string config_path = "./config.json";
     ctx.initializeSession(config_path);
+    ctx.addNotificationHandler(defaultObserver);
     SubscriptionRequest request1 = {.topic = "CATBTOTB Index"};
     ctx.subscribe(request1);
     SubscriptionRequest request2 = {

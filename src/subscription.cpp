@@ -15,7 +15,6 @@ static const char* toString(TopicType topic_type) noexcept {
     return "unknown";
 }
 
-// TODO Test
 std::string SubscriptionRequest::toUri() const {
     const char* topic_type_str = toString(topic_type);
     size_t len = 2 + std::strlen(topic_type_str) + topic.length() +
@@ -33,7 +32,6 @@ std::string SubscriptionRequest::toUri() const {
     return uri;
 }
 
-// TODO test
 int Context::subscribe(SubscriptionRequest& request) {
     PROFILE_FUNCTION()
     blpapi::CorrelationId corr_id(request.correlation_id);
@@ -75,7 +73,6 @@ int Context::subscribe(SubscriptionRequest& request) {
     return subscription_counter_++;
 }
 
-// TODO test
 void Context::unsubscribe(SubscriptionRequest& request) {
     PROFILE_FUNCTION()
     blpapi::CorrelationId corr_id(request.correlation_id);

@@ -41,8 +41,20 @@ func (rcv *MacroHeadlineEvent) Table() flatbuffers.Table {
 	return rcv._tab
 }
 
-func (rcv *MacroHeadlineEvent) EventType() EventType {
+func (rcv *MacroHeadlineEvent) CorrId() uint64 {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(4))
+	if o != 0 {
+		return rcv._tab.GetUint64(o + rcv._tab.Pos)
+	}
+	return 0
+}
+
+func (rcv *MacroHeadlineEvent) MutateCorrId(n uint64) bool {
+	return rcv._tab.MutateUint64Slot(4, n)
+}
+
+func (rcv *MacroHeadlineEvent) EventType() EventType {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(6))
 	if o != 0 {
 		return EventType(rcv._tab.GetByte(o + rcv._tab.Pos))
 	}
@@ -50,11 +62,11 @@ func (rcv *MacroHeadlineEvent) EventType() EventType {
 }
 
 func (rcv *MacroHeadlineEvent) MutateEventType(n EventType) bool {
-	return rcv._tab.MutateByteSlot(4, byte(n))
+	return rcv._tab.MutateByteSlot(6, byte(n))
 }
 
 func (rcv *MacroHeadlineEvent) EventSubtype() EventSubType {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(6))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(8))
 	if o != 0 {
 		return EventSubType(rcv._tab.GetByte(o + rcv._tab.Pos))
 	}
@@ -62,11 +74,11 @@ func (rcv *MacroHeadlineEvent) EventSubtype() EventSubType {
 }
 
 func (rcv *MacroHeadlineEvent) MutateEventSubtype(n EventSubType) bool {
-	return rcv._tab.MutateByteSlot(6, byte(n))
+	return rcv._tab.MutateByteSlot(8, byte(n))
 }
 
 func (rcv *MacroHeadlineEvent) EventId() int32 {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(8))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(10))
 	if o != 0 {
 		return rcv._tab.GetInt32(o + rcv._tab.Pos)
 	}
@@ -74,11 +86,11 @@ func (rcv *MacroHeadlineEvent) EventId() int32 {
 }
 
 func (rcv *MacroHeadlineEvent) MutateEventId(n int32) bool {
-	return rcv._tab.MutateInt32Slot(8, n)
+	return rcv._tab.MutateInt32Slot(10, n)
 }
 
 func (rcv *MacroHeadlineEvent) ObservationPeriod() []byte {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(10))
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(12))
 	if o != 0 {
 		return rcv._tab.ByteVector(o + rcv._tab.Pos)
 	}
@@ -86,19 +98,6 @@ func (rcv *MacroHeadlineEvent) ObservationPeriod() []byte {
 }
 
 func (rcv *MacroHeadlineEvent) ReleaseStartDt(obj *DateTime) *DateTime {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(12))
-	if o != 0 {
-		x := rcv._tab.Indirect(o + rcv._tab.Pos)
-		if obj == nil {
-			obj = new(DateTime)
-		}
-		obj.Init(rcv._tab.Bytes, x)
-		return obj
-	}
-	return nil
-}
-
-func (rcv *MacroHeadlineEvent) ReleaseEndDt(obj *DateTime) *DateTime {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(14))
 	if o != 0 {
 		x := rcv._tab.Indirect(o + rcv._tab.Pos)
@@ -111,28 +110,8 @@ func (rcv *MacroHeadlineEvent) ReleaseEndDt(obj *DateTime) *DateTime {
 	return nil
 }
 
-func (rcv *MacroHeadlineEvent) PriorEventId() int32 {
+func (rcv *MacroHeadlineEvent) ReleaseEndDt(obj *DateTime) *DateTime {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(16))
-	if o != 0 {
-		return rcv._tab.GetInt32(o + rcv._tab.Pos)
-	}
-	return 0
-}
-
-func (rcv *MacroHeadlineEvent) MutatePriorEventId(n int32) bool {
-	return rcv._tab.MutateInt32Slot(16, n)
-}
-
-func (rcv *MacroHeadlineEvent) PriorObservationPeriod() []byte {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(18))
-	if o != 0 {
-		return rcv._tab.ByteVector(o + rcv._tab.Pos)
-	}
-	return nil
-}
-
-func (rcv *MacroHeadlineEvent) PriorEconomicReleaseStartDt(obj *DateTime) *DateTime {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(20))
 	if o != 0 {
 		x := rcv._tab.Indirect(o + rcv._tab.Pos)
 		if obj == nil {
@@ -144,7 +123,27 @@ func (rcv *MacroHeadlineEvent) PriorEconomicReleaseStartDt(obj *DateTime) *DateT
 	return nil
 }
 
-func (rcv *MacroHeadlineEvent) PriorEconomicReleaseEndDt(obj *DateTime) *DateTime {
+func (rcv *MacroHeadlineEvent) PriorEventId() int32 {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(18))
+	if o != 0 {
+		return rcv._tab.GetInt32(o + rcv._tab.Pos)
+	}
+	return 0
+}
+
+func (rcv *MacroHeadlineEvent) MutatePriorEventId(n int32) bool {
+	return rcv._tab.MutateInt32Slot(18, n)
+}
+
+func (rcv *MacroHeadlineEvent) PriorObservationPeriod() []byte {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(20))
+	if o != 0 {
+		return rcv._tab.ByteVector(o + rcv._tab.Pos)
+	}
+	return nil
+}
+
+func (rcv *MacroHeadlineEvent) PriorEconomicReleaseStartDt(obj *DateTime) *DateTime {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(22))
 	if o != 0 {
 		x := rcv._tab.Indirect(o + rcv._tab.Pos)
@@ -157,8 +156,21 @@ func (rcv *MacroHeadlineEvent) PriorEconomicReleaseEndDt(obj *DateTime) *DateTim
 	return nil
 }
 
-func (rcv *MacroHeadlineEvent) Value(obj *Value) *Value {
+func (rcv *MacroHeadlineEvent) PriorEconomicReleaseEndDt(obj *DateTime) *DateTime {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(24))
+	if o != 0 {
+		x := rcv._tab.Indirect(o + rcv._tab.Pos)
+		if obj == nil {
+			obj = new(DateTime)
+		}
+		obj.Init(rcv._tab.Bytes, x)
+		return obj
+	}
+	return nil
+}
+
+func (rcv *MacroHeadlineEvent) Value(obj *Value) *Value {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(26))
 	if o != 0 {
 		x := rcv._tab.Indirect(o + rcv._tab.Pos)
 		if obj == nil {
@@ -171,40 +183,43 @@ func (rcv *MacroHeadlineEvent) Value(obj *Value) *Value {
 }
 
 func MacroHeadlineEventStart(builder *flatbuffers.Builder) {
-	builder.StartObject(11)
+	builder.StartObject(12)
+}
+func MacroHeadlineEventAddCorrId(builder *flatbuffers.Builder, corrId uint64) {
+	builder.PrependUint64Slot(0, corrId, 0)
 }
 func MacroHeadlineEventAddEventType(builder *flatbuffers.Builder, eventType EventType) {
-	builder.PrependByteSlot(0, byte(eventType), 0)
+	builder.PrependByteSlot(1, byte(eventType), 0)
 }
 func MacroHeadlineEventAddEventSubtype(builder *flatbuffers.Builder, eventSubtype EventSubType) {
-	builder.PrependByteSlot(1, byte(eventSubtype), 0)
+	builder.PrependByteSlot(2, byte(eventSubtype), 0)
 }
 func MacroHeadlineEventAddEventId(builder *flatbuffers.Builder, eventId int32) {
-	builder.PrependInt32Slot(2, eventId, 0)
+	builder.PrependInt32Slot(3, eventId, 0)
 }
 func MacroHeadlineEventAddObservationPeriod(builder *flatbuffers.Builder, observationPeriod flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(3, flatbuffers.UOffsetT(observationPeriod), 0)
+	builder.PrependUOffsetTSlot(4, flatbuffers.UOffsetT(observationPeriod), 0)
 }
 func MacroHeadlineEventAddReleaseStartDt(builder *flatbuffers.Builder, releaseStartDt flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(4, flatbuffers.UOffsetT(releaseStartDt), 0)
+	builder.PrependUOffsetTSlot(5, flatbuffers.UOffsetT(releaseStartDt), 0)
 }
 func MacroHeadlineEventAddReleaseEndDt(builder *flatbuffers.Builder, releaseEndDt flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(5, flatbuffers.UOffsetT(releaseEndDt), 0)
+	builder.PrependUOffsetTSlot(6, flatbuffers.UOffsetT(releaseEndDt), 0)
 }
 func MacroHeadlineEventAddPriorEventId(builder *flatbuffers.Builder, priorEventId int32) {
-	builder.PrependInt32Slot(6, priorEventId, 0)
+	builder.PrependInt32Slot(7, priorEventId, 0)
 }
 func MacroHeadlineEventAddPriorObservationPeriod(builder *flatbuffers.Builder, priorObservationPeriod flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(7, flatbuffers.UOffsetT(priorObservationPeriod), 0)
+	builder.PrependUOffsetTSlot(8, flatbuffers.UOffsetT(priorObservationPeriod), 0)
 }
 func MacroHeadlineEventAddPriorEconomicReleaseStartDt(builder *flatbuffers.Builder, priorEconomicReleaseStartDt flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(8, flatbuffers.UOffsetT(priorEconomicReleaseStartDt), 0)
+	builder.PrependUOffsetTSlot(9, flatbuffers.UOffsetT(priorEconomicReleaseStartDt), 0)
 }
 func MacroHeadlineEventAddPriorEconomicReleaseEndDt(builder *flatbuffers.Builder, priorEconomicReleaseEndDt flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(9, flatbuffers.UOffsetT(priorEconomicReleaseEndDt), 0)
+	builder.PrependUOffsetTSlot(10, flatbuffers.UOffsetT(priorEconomicReleaseEndDt), 0)
 }
 func MacroHeadlineEventAddValue(builder *flatbuffers.Builder, value flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(10, flatbuffers.UOffsetT(value), 0)
+	builder.PrependUOffsetTSlot(11, flatbuffers.UOffsetT(value), 0)
 }
 func MacroHeadlineEventEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	return builder.EndObject()

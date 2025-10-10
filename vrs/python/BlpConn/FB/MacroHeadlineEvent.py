@@ -25,46 +25,42 @@ class MacroHeadlineEvent(object):
         self._tab = flatbuffers.table.Table(buf, pos)
 
     # MacroHeadlineEvent
-    def EventType(self):
+    def CorrId(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
         if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Uint8Flags, o + self._tab.Pos)
+            return self._tab.Get(flatbuffers.number_types.Uint64Flags, o + self._tab.Pos)
         return 0
 
     # MacroHeadlineEvent
-    def EventSubtype(self):
+    def EventType(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
         if o != 0:
             return self._tab.Get(flatbuffers.number_types.Uint8Flags, o + self._tab.Pos)
         return 0
 
     # MacroHeadlineEvent
-    def EventId(self):
+    def EventSubtype(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Uint8Flags, o + self._tab.Pos)
+        return 0
+
+    # MacroHeadlineEvent
+    def EventId(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
         if o != 0:
             return self._tab.Get(flatbuffers.number_types.Int32Flags, o + self._tab.Pos)
         return 0
 
     # MacroHeadlineEvent
     def ObservationPeriod(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(12))
         if o != 0:
             return self._tab.String(o + self._tab.Pos)
         return None
 
     # MacroHeadlineEvent
     def ReleaseStartDt(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(12))
-        if o != 0:
-            x = self._tab.Indirect(o + self._tab.Pos)
-            from BlpConn.FB.DateTime import DateTime
-            obj = DateTime()
-            obj.Init(self._tab.Bytes, x)
-            return obj
-        return None
-
-    # MacroHeadlineEvent
-    def ReleaseEndDt(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(14))
         if o != 0:
             x = self._tab.Indirect(o + self._tab.Pos)
@@ -75,22 +71,8 @@ class MacroHeadlineEvent(object):
         return None
 
     # MacroHeadlineEvent
-    def PriorEventId(self):
+    def ReleaseEndDt(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(16))
-        if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Int32Flags, o + self._tab.Pos)
-        return 0
-
-    # MacroHeadlineEvent
-    def PriorObservationPeriod(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(18))
-        if o != 0:
-            return self._tab.String(o + self._tab.Pos)
-        return None
-
-    # MacroHeadlineEvent
-    def PriorEconomicReleaseStartDt(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(20))
         if o != 0:
             x = self._tab.Indirect(o + self._tab.Pos)
             from BlpConn.FB.DateTime import DateTime
@@ -100,7 +82,21 @@ class MacroHeadlineEvent(object):
         return None
 
     # MacroHeadlineEvent
-    def PriorEconomicReleaseEndDt(self):
+    def PriorEventId(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(18))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Int32Flags, o + self._tab.Pos)
+        return 0
+
+    # MacroHeadlineEvent
+    def PriorObservationPeriod(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(20))
+        if o != 0:
+            return self._tab.String(o + self._tab.Pos)
+        return None
+
+    # MacroHeadlineEvent
+    def PriorEconomicReleaseStartDt(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(22))
         if o != 0:
             x = self._tab.Indirect(o + self._tab.Pos)
@@ -111,8 +107,19 @@ class MacroHeadlineEvent(object):
         return None
 
     # MacroHeadlineEvent
-    def Value(self):
+    def PriorEconomicReleaseEndDt(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(24))
+        if o != 0:
+            x = self._tab.Indirect(o + self._tab.Pos)
+            from BlpConn.FB.DateTime import DateTime
+            obj = DateTime()
+            obj.Init(self._tab.Bytes, x)
+            return obj
+        return None
+
+    # MacroHeadlineEvent
+    def Value(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(26))
         if o != 0:
             x = self._tab.Indirect(o + self._tab.Pos)
             from BlpConn.FB.Value import Value
@@ -122,73 +129,79 @@ class MacroHeadlineEvent(object):
         return None
 
 def MacroHeadlineEventStart(builder):
-    builder.StartObject(11)
+    builder.StartObject(12)
 
 def Start(builder):
     MacroHeadlineEventStart(builder)
 
+def MacroHeadlineEventAddCorrId(builder, corrId):
+    builder.PrependUint64Slot(0, corrId, 0)
+
+def AddCorrId(builder, corrId):
+    MacroHeadlineEventAddCorrId(builder, corrId)
+
 def MacroHeadlineEventAddEventType(builder, eventType):
-    builder.PrependUint8Slot(0, eventType, 0)
+    builder.PrependUint8Slot(1, eventType, 0)
 
 def AddEventType(builder, eventType):
     MacroHeadlineEventAddEventType(builder, eventType)
 
 def MacroHeadlineEventAddEventSubtype(builder, eventSubtype):
-    builder.PrependUint8Slot(1, eventSubtype, 0)
+    builder.PrependUint8Slot(2, eventSubtype, 0)
 
 def AddEventSubtype(builder, eventSubtype):
     MacroHeadlineEventAddEventSubtype(builder, eventSubtype)
 
 def MacroHeadlineEventAddEventId(builder, eventId):
-    builder.PrependInt32Slot(2, eventId, 0)
+    builder.PrependInt32Slot(3, eventId, 0)
 
 def AddEventId(builder, eventId):
     MacroHeadlineEventAddEventId(builder, eventId)
 
 def MacroHeadlineEventAddObservationPeriod(builder, observationPeriod):
-    builder.PrependUOffsetTRelativeSlot(3, flatbuffers.number_types.UOffsetTFlags.py_type(observationPeriod), 0)
+    builder.PrependUOffsetTRelativeSlot(4, flatbuffers.number_types.UOffsetTFlags.py_type(observationPeriod), 0)
 
 def AddObservationPeriod(builder, observationPeriod):
     MacroHeadlineEventAddObservationPeriod(builder, observationPeriod)
 
 def MacroHeadlineEventAddReleaseStartDt(builder, releaseStartDt):
-    builder.PrependUOffsetTRelativeSlot(4, flatbuffers.number_types.UOffsetTFlags.py_type(releaseStartDt), 0)
+    builder.PrependUOffsetTRelativeSlot(5, flatbuffers.number_types.UOffsetTFlags.py_type(releaseStartDt), 0)
 
 def AddReleaseStartDt(builder, releaseStartDt):
     MacroHeadlineEventAddReleaseStartDt(builder, releaseStartDt)
 
 def MacroHeadlineEventAddReleaseEndDt(builder, releaseEndDt):
-    builder.PrependUOffsetTRelativeSlot(5, flatbuffers.number_types.UOffsetTFlags.py_type(releaseEndDt), 0)
+    builder.PrependUOffsetTRelativeSlot(6, flatbuffers.number_types.UOffsetTFlags.py_type(releaseEndDt), 0)
 
 def AddReleaseEndDt(builder, releaseEndDt):
     MacroHeadlineEventAddReleaseEndDt(builder, releaseEndDt)
 
 def MacroHeadlineEventAddPriorEventId(builder, priorEventId):
-    builder.PrependInt32Slot(6, priorEventId, 0)
+    builder.PrependInt32Slot(7, priorEventId, 0)
 
 def AddPriorEventId(builder, priorEventId):
     MacroHeadlineEventAddPriorEventId(builder, priorEventId)
 
 def MacroHeadlineEventAddPriorObservationPeriod(builder, priorObservationPeriod):
-    builder.PrependUOffsetTRelativeSlot(7, flatbuffers.number_types.UOffsetTFlags.py_type(priorObservationPeriod), 0)
+    builder.PrependUOffsetTRelativeSlot(8, flatbuffers.number_types.UOffsetTFlags.py_type(priorObservationPeriod), 0)
 
 def AddPriorObservationPeriod(builder, priorObservationPeriod):
     MacroHeadlineEventAddPriorObservationPeriod(builder, priorObservationPeriod)
 
 def MacroHeadlineEventAddPriorEconomicReleaseStartDt(builder, priorEconomicReleaseStartDt):
-    builder.PrependUOffsetTRelativeSlot(8, flatbuffers.number_types.UOffsetTFlags.py_type(priorEconomicReleaseStartDt), 0)
+    builder.PrependUOffsetTRelativeSlot(9, flatbuffers.number_types.UOffsetTFlags.py_type(priorEconomicReleaseStartDt), 0)
 
 def AddPriorEconomicReleaseStartDt(builder, priorEconomicReleaseStartDt):
     MacroHeadlineEventAddPriorEconomicReleaseStartDt(builder, priorEconomicReleaseStartDt)
 
 def MacroHeadlineEventAddPriorEconomicReleaseEndDt(builder, priorEconomicReleaseEndDt):
-    builder.PrependUOffsetTRelativeSlot(9, flatbuffers.number_types.UOffsetTFlags.py_type(priorEconomicReleaseEndDt), 0)
+    builder.PrependUOffsetTRelativeSlot(10, flatbuffers.number_types.UOffsetTFlags.py_type(priorEconomicReleaseEndDt), 0)
 
 def AddPriorEconomicReleaseEndDt(builder, priorEconomicReleaseEndDt):
     MacroHeadlineEventAddPriorEconomicReleaseEndDt(builder, priorEconomicReleaseEndDt)
 
 def MacroHeadlineEventAddValue(builder, value):
-    builder.PrependUOffsetTRelativeSlot(10, flatbuffers.number_types.UOffsetTFlags.py_type(value), 0)
+    builder.PrependUOffsetTRelativeSlot(11, flatbuffers.number_types.UOffsetTFlags.py_type(value), 0)
 
 def AddValue(builder, value):
     MacroHeadlineEventAddValue(builder, value)

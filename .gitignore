@@ -25,3 +25,4 @@ vrs/python/.ipynb_checkpoints/
 vrs/python/__pycache__/
 vrs/python/*.pickle
 profiler.txt
+go/*string.go

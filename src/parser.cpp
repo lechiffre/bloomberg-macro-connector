@@ -492,7 +492,8 @@ flatbuffers::Offset<FB::HeadlineCalendarEvent> serializeHeadlineCalendarEvent(
 }
 
 flatbuffers::Offset<FB::MacroReferenceData> serializeMacroReferenceData(
-    flatbuffers::FlatBufferBuilder& builder, const blpapi::Element& elem) {
+        flatbuffers::FlatBufferBuilder& builder, uint64_t corrId,
+        const blpapi::Element& elem) {
     auto id_bb_global = fbString(builder, elem, ID_BB_GLOBAL);
     auto parsekyable_des = fbString(builder, elem, PARSEKYABLE_DES);
     auto description = fbString(builder, elem, DESCRIPTION);
@@ -503,12 +504,13 @@ flatbuffers::Offset<FB::MacroReferenceData> serializeMacroReferenceData(
     auto seasonality_transformation =
         fbString(builder, elem, SEASONALITY_TRANSFORMATION);
     return FB::CreateMacroReferenceData(
-        builder, id_bb_global, parsekyable_des, description, indx_freq,
+        builder, corrId, id_bb_global, parsekyable_des, description, indx_freq,
         indx_units, country_iso, indx_source, seasonality_transformation);
 }
 
 flatbuffers::Offset<FB::MacroHeadlineEvent> serializeMacroHeadlineEvent(
-    flatbuffers::FlatBufferBuilder& builder, const blpapi::Element& elem) {
+        flatbuffers::FlatBufferBuilder& builder, uint64_t corrId,
+        const blpapi::Element& elem) {
     int event_type = elem.hasElement(EVENT_TYPE)
                          ? eventTypeFromString(getString(elem, EVENT_TYPE))
                          : 0;
@@ -547,7 +549,7 @@ flatbuffers::Offset<FB::MacroHeadlineEvent> serializeMacroHeadlineEvent(
     }
     auto value = serializeValue(builder, elem, VALUE);
     return FB::CreateMacroHeadlineEvent(
-        builder, static_cast<FB::EventType>(event_type),
+        builder, corrId, static_cast<FB::EventType>(event_type),
         static_cast<FB::EventSubType>(event_subtype), event_id,
         observation_period, release_start_dt, release_end_dt, prior_event_id,
         prior_observation_period, prior_release_start_dt,
@@ -555,7 +557,8 @@ flatbuffers::Offset<FB::MacroHeadlineEvent> serializeMacroHeadlineEvent(
 }
 
 flatbuffers::Offset<FB::MacroCalendarEvent> serializeMacroCalendarEvent(
-    flatbuffers::FlatBufferBuilder& builder, const blpapi::Element& elem) {
+        flatbuffers::FlatBufferBuilder& builder, uint64_t corrId,
+        const blpapi::Element& elem) {
     auto id_bb_global = fbString(builder, elem, ID_BB_GLOBAL);
     auto parsekyable_des = fbString(builder, elem, PARSEKYABLE_DES);
     int event_type = elem.hasElement(EVENT_TYPE)
@@ -579,7 +582,7 @@ flatbuffers::Offset<FB::MacroCalendarEvent> serializeMacroCalendarEvent(
     double relevance_value = getFloatFromString(elem, RELEVANCE_VALUE);
 
     return FB::CreateMacroCalendarEvent(
-        builder, id_bb_global, parsekyable_des,
+        builder, corrId, id_bb_global, parsekyable_des,
         static_cast<FB::EventType>(event_type),
         static_cast<FB::EventSubType>(event_subtype),
         description,
@@ -609,9 +612,10 @@ flatbuffers::FlatBufferBuilder buildBufferCalendarEvent(
 }
 
 flatbuffers::FlatBufferBuilder buildBufferMacroReferenceData(
-        const blpapi::Element& elem) {
+        uint64_t corrId, const blpapi::Element& elem) {
     flatbuffers::FlatBufferBuilder builder;
-    auto fb_macro_reference = serializeMacroReferenceData(builder, elem).Union();
+    auto fb_macro_reference = serializeMacroReferenceData(builder, corrId,
+            elem).Union();
     auto fb_main = FB::CreateMain(
         builder, FB::Message::Message_MacroReferenceData, fb_macro_reference);
     builder.Finish(fb_main);
@@ -619,9 +623,10 @@ flatbuffers::FlatBufferBuilder buildBufferMacroReferenceData(
 }
 
 flatbuffers::FlatBufferBuilder buildBufferMacroHeadlineEvent(
-        const blpapi::Element& elem) {
+        uint64_t corrId, const blpapi::Element& elem) {
     flatbuffers::FlatBufferBuilder builder;
-    auto fb_macro_headline = serializeMacroHeadlineEvent(builder, elem).Union();
+    auto fb_macro_headline = serializeMacroHeadlineEvent(builder, corrId,
+            elem).Union();
     auto fb_main = FB::CreateMain(
         builder, FB::Message::Message_MacroHeadlineEvent, fb_macro_headline);
     builder.Finish(fb_main);
@@ -629,9 +634,10 @@ flatbuffers::FlatBufferBuilder buildBufferMacroHeadlineEvent(
 }
 
 flatbuffers::FlatBufferBuilder buildBufferMacroCalendarEvent(
-        const blpapi::Element& elem) {
+        uint64_t corrId, const blpapi::Element& elem) {
     flatbuffers::FlatBufferBuilder builder;
-    auto fb_macro_calendar = serializeMacroCalendarEvent(builder, elem).Union();
+    auto fb_macro_calendar = serializeMacroCalendarEvent(builder, corrId,
+            elem).Union();
     auto fb_main = FB::CreateMain(
         builder, FB::Message::Message_MacroCalendarEvent, fb_macro_calendar);
     builder.Finish(fb_main);
@@ -719,10 +725,12 @@ HeadlineCalendarEvent parseHeadlineCalendarEvent(const blpapi::Element& elem) {
     return message;
 }
 
-MacroReferenceData parseMacroReferenceData(const blpapi::Element& elem) {
+MacroReferenceData parseMacroReferenceData(uint64_t corrId,
+        const blpapi::Element& elem) {
     PROFILE_FUNCTION()
     MacroReferenceData message;
     // Required fields
+    message.corr_id = corrId;
     message.id_bb_global = elem.getElement(ID_BB_GLOBAL).getValueAsString();
     message.parsekyable_des =
         elem.getElement(PARSEKYABLE_DES).getValueAsString();
@@ -750,9 +758,11 @@ MacroReferenceData parseMacroReferenceData(const blpapi::Element& elem) {
     return message;
 }
 
-MacroHeadlineEvent parseMacroHeadlineEvent(const blpapi::Element& elem) {
+MacroHeadlineEvent parseMacroHeadlineEvent(uint64_t corrId,
+        const blpapi::Element& elem) {
     PROFILE_FUNCTION()
     MacroHeadlineEvent message;
+    message.corr_id = corrId;
     if (elem.hasElement(EVENT_TYPE)) {
         std::string s = elem.getElement(EVENT_TYPE).getValueAsString();
         message.event_type = stringToEventType(s);
@@ -793,10 +803,12 @@ MacroHeadlineEvent parseMacroHeadlineEvent(const blpapi::Element& elem) {
     return message;
 }
 
-MacroCalendarEvent parseMacroCalendarEvent(const blpapi::Element& elem) {
+MacroCalendarEvent parseMacroCalendarEvent(uint64_t corrId,
+        const blpapi::Element& elem) {
     PROFILE_FUNCTION()
     MacroCalendarEvent message;
     // Required fields
+    message.corr_id = corrId;
     message.id_bb_global = elem.getElement(ID_BB_GLOBAL).getValueAsString();
     message.parsekyable_des =
         elem.getElement(PARSEKYABLE_DES).getValueAsString();

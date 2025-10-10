@@ -38,11 +38,12 @@ static void sendNotification(flatbuffers::FlatBufferBuilder& builder, Logger *lo
     logger->notify(buffer, size);
 }
 
-void processMacroEvent(const blpapi::Element& elem, Logger& logger) {
+void processMacroEvent(uint64_t corrId, const blpapi::Element& elem,
+        Logger& logger) {
     PROFILE_FUNCTION()
     if (elem.name() == MACRO_HEADLINE_EVENT) {
         try {
-            auto builder = buildBufferMacroHeadlineEvent(elem);
+            auto builder = buildBufferMacroHeadlineEvent(corrId, elem);
             sendNotification(builder, &logger);
         } catch (const std::exception& e) {
             std::string err = "Error processing MacroHeadlineEvent: ";
@@ -51,7 +52,7 @@ void processMacroEvent(const blpapi::Element& elem, Logger& logger) {
         }
     } else if (elem.name() == MACRO_CALENDAR_EVENT) {
         try {
-            auto builder = buildBufferMacroCalendarEvent(elem);
+            auto builder = buildBufferMacroCalendarEvent(corrId, elem);
             sendNotification(builder, &logger);
         } catch (const std::exception& e) {
             std::string err = "Error processing MacroCalendarEvent: ";
@@ -60,7 +61,7 @@ void processMacroEvent(const blpapi::Element& elem, Logger& logger) {
         }
     } else if (elem.name() == MACRO_REFERENCE_DATA) {
         try {
-            auto builder = buildBufferMacroReferenceData(elem);
+            auto builder = buildBufferMacroReferenceData(corrId, elem);
             sendNotification(builder, &logger);
         } catch (const std::exception& e) {
             std::string err = "Error processing MacroReferenceData: ";
@@ -105,10 +106,13 @@ bool processSubscriptionData(const blpapi::Event& event, blpapi::Session *sessio
     while (msgIter.next()) {
         blpapi::Message msg = msgIter.message();
         blpapi::Element elem = msg.asElement();
+        blpapi::CorrelationId id = msg.correlationId();
+        uint64_t corrId = id.valueType() == blpapi::CorrelationId::ValueType::INT_VALUE
+            ? id.asInteger() : 0;
         if (elem.name() == MACRO_EVENT) {
             for (std::size_t i = 0; i < elem.numValues(); ++i) {
                 blpapi::Element sub_elem = elem.getElement(i);
-                processMacroEvent(sub_elem, logger);
+                processMacroEvent(corrId, sub_elem, logger);
             }
         }
         // TODO this branch will be removed

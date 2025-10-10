@@ -25,67 +25,63 @@ class MacroCalendarEvent(object):
         self._tab = flatbuffers.table.Table(buf, pos)
 
     # MacroCalendarEvent
-    def IdBbGlobal(self):
+    def CorrId(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
         if o != 0:
-            return self._tab.String(o + self._tab.Pos)
-        return None
+            return self._tab.Get(flatbuffers.number_types.Uint64Flags, o + self._tab.Pos)
+        return 0
 
     # MacroCalendarEvent
-    def ParsekyableDes(self):
+    def IdBbGlobal(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
         if o != 0:
             return self._tab.String(o + self._tab.Pos)
         return None
 
     # MacroCalendarEvent
-    def EventType(self):
+    def ParsekyableDes(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
         if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Uint8Flags, o + self._tab.Pos)
-        return 0
+            return self._tab.String(o + self._tab.Pos)
+        return None
 
     # MacroCalendarEvent
-    def EventSubtype(self):
+    def EventType(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
         if o != 0:
             return self._tab.Get(flatbuffers.number_types.Uint8Flags, o + self._tab.Pos)
         return 0
 
     # MacroCalendarEvent
-    def Description(self):
+    def EventSubtype(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(12))
+        if o != 0:
+            return self._tab.Get(flatbuffers.number_types.Uint8Flags, o + self._tab.Pos)
+        return 0
+
+    # MacroCalendarEvent
+    def Description(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(14))
         if o != 0:
             return self._tab.String(o + self._tab.Pos)
         return None
 
     # MacroCalendarEvent
     def EventId(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(14))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(16))
         if o != 0:
             return self._tab.Get(flatbuffers.number_types.Int32Flags, o + self._tab.Pos)
         return 0
 
     # MacroCalendarEvent
     def ObservationPeriod(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(16))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(18))
         if o != 0:
             return self._tab.String(o + self._tab.Pos)
         return None
 
     # MacroCalendarEvent
     def ReleaseStartDt(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(18))
-        if o != 0:
-            x = self._tab.Indirect(o + self._tab.Pos)
-            from BlpConn.FB.DateTime import DateTime
-            obj = DateTime()
-            obj.Init(self._tab.Bytes, x)
-            return obj
-        return None
-
-    # MacroCalendarEvent
-    def ReleaseEndDt(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(20))
         if o != 0:
             x = self._tab.Indirect(o + self._tab.Pos)
@@ -96,87 +92,104 @@ class MacroCalendarEvent(object):
         return None
 
     # MacroCalendarEvent
-    def ReleaseStatus(self):
+    def ReleaseEndDt(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(22))
+        if o != 0:
+            x = self._tab.Indirect(o + self._tab.Pos)
+            from BlpConn.FB.DateTime import DateTime
+            obj = DateTime()
+            obj.Init(self._tab.Bytes, x)
+            return obj
+        return None
+
+    # MacroCalendarEvent
+    def ReleaseStatus(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(24))
         if o != 0:
             return self._tab.Get(flatbuffers.number_types.Uint8Flags, o + self._tab.Pos)
         return 0
 
     # MacroCalendarEvent
     def RelevanceValue(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(24))
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(26))
         if o != 0:
             return self._tab.Get(flatbuffers.number_types.Float64Flags, o + self._tab.Pos)
         return 0.0
 
 def MacroCalendarEventStart(builder):
-    builder.StartObject(11)
+    builder.StartObject(12)
 
 def Start(builder):
     MacroCalendarEventStart(builder)
 
+def MacroCalendarEventAddCorrId(builder, corrId):
+    builder.PrependUint64Slot(0, corrId, 0)
+
+def AddCorrId(builder, corrId):
+    MacroCalendarEventAddCorrId(builder, corrId)
+
 def MacroCalendarEventAddIdBbGlobal(builder, idBbGlobal):
-    builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(idBbGlobal), 0)
+    builder.PrependUOffsetTRelativeSlot(1, flatbuffers.number_types.UOffsetTFlags.py_type(idBbGlobal), 0)
 
 def AddIdBbGlobal(builder, idBbGlobal):
     MacroCalendarEventAddIdBbGlobal(builder, idBbGlobal)
 
 def MacroCalendarEventAddParsekyableDes(builder, parsekyableDes):
-    builder.PrependUOffsetTRelativeSlot(1, flatbuffers.number_types.UOffsetTFlags.py_type(parsekyableDes), 0)
+    builder.PrependUOffsetTRelativeSlot(2, flatbuffers.number_types.UOffsetTFlags.py_type(parsekyableDes), 0)
 
 def AddParsekyableDes(builder, parsekyableDes):
     MacroCalendarEventAddParsekyableDes(builder, parsekyableDes)
 
 def MacroCalendarEventAddEventType(builder, eventType):
-    builder.PrependUint8Slot(2, eventType, 0)
+    builder.PrependUint8Slot(3, eventType, 0)
 
 def AddEventType(builder, eventType):
     MacroCalendarEventAddEventType(builder, eventType)
 
 def MacroCalendarEventAddEventSubtype(builder, eventSubtype):
-    builder.PrependUint8Slot(3, eventSubtype, 0)
+    builder.PrependUint8Slot(4, eventSubtype, 0)
 
 def AddEventSubtype(builder, eventSubtype):
     MacroCalendarEventAddEventSubtype(builder, eventSubtype)
 
 def MacroCalendarEventAddDescription(builder, description):
-    builder.PrependUOffsetTRelativeSlot(4, flatbuffers.number_types.UOffsetTFlags.py_type(description), 0)
+    builder.PrependUOffsetTRelativeSlot(5, flatbuffers.number_types.UOffsetTFlags.py_type(description), 0)
 
 def AddDescription(builder, description):
     MacroCalendarEventAddDescription(builder, description)
 
 def MacroCalendarEventAddEventId(builder, eventId):
-    builder.PrependInt32Slot(5, eventId, 0)
+    builder.PrependInt32Slot(6, eventId, 0)
 
 def AddEventId(builder, eventId):
     MacroCalendarEventAddEventId(builder, eventId)
 
 def MacroCalendarEventAddObservationPeriod(builder, observationPeriod):
-    builder.PrependUOffsetTRelativeSlot(6, flatbuffers.number_types.UOffsetTFlags.py_type(observationPeriod), 0)
+    builder.PrependUOffsetTRelativeSlot(7, flatbuffers.number_types.UOffsetTFlags.py_type(observationPeriod), 0)
 
 def AddObservationPeriod(builder, observationPeriod):
     MacroCalendarEventAddObservationPeriod(builder, observationPeriod)
 
 def MacroCalendarEventAddReleaseStartDt(builder, releaseStartDt):
-    builder.PrependUOffsetTRelativeSlot(7, flatbuffers.number_types.UOffsetTFlags.py_type(releaseStartDt), 0)
+    builder.PrependUOffsetTRelativeSlot(8, flatbuffers.number_types.UOffsetTFlags.py_type(releaseStartDt), 0)
 
 def AddReleaseStartDt(builder, releaseStartDt):
     MacroCalendarEventAddReleaseStartDt(builder, releaseStartDt)
 
 def MacroCalendarEventAddReleaseEndDt(builder, releaseEndDt):
-    builder.PrependUOffsetTRelativeSlot(8, flatbuffers.number_types.UOffsetTFlags.py_type(releaseEndDt), 0)
+    builder.PrependUOffsetTRelativeSlot(9, flatbuffers.number_types.UOffsetTFlags.py_type(releaseEndDt), 0)
 
 def AddReleaseEndDt(builder, releaseEndDt):
     MacroCalendarEventAddReleaseEndDt(builder, releaseEndDt)
 
 def MacroCalendarEventAddReleaseStatus(builder, releaseStatus):
-    builder.PrependUint8Slot(9, releaseStatus, 0)
+    builder.PrependUint8Slot(10, releaseStatus, 0)
 
 def AddReleaseStatus(builder, releaseStatus):
     MacroCalendarEventAddReleaseStatus(builder, releaseStatus)
 
 def MacroCalendarEventAddRelevanceValue(builder, relevanceValue):
-    builder.PrependFloat64Slot(10, relevanceValue, 0.0)
+    builder.PrependFloat64Slot(11, relevanceValue, 0.0)
 
 def AddRelevanceValue(builder, relevanceValue):
     MacroCalendarEventAddRelevanceValue(builder, relevanceValue)

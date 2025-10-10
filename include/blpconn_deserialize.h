@@ -9,9 +9,12 @@ namespace BlpConn {
 
 HeadlineCalendarEvent parseHeadlineCalendarEvent(const blpapi::Element &elem);
 HeadlineEconomicEvent parseHeadlineEconomicEvent(const blpapi::Element &elem);
-MacroReferenceData parseMacroReferenceData(const blpapi::Element &elem);
-MacroHeadlineEvent parseMacroHeadlineEvent(const blpapi::Element &elem);
-MacroCalendarEvent parseMacroCalendarEvent(const blpapi::Element &elem);
+MacroReferenceData parseMacroReferenceData(uint64_t corrId,
+        const blpapi::Element &elem);
+MacroHeadlineEvent parseMacroHeadlineEvent(uint64_t corrId,
+        const blpapi::Element &elem);
+MacroCalendarEvent parseMacroCalendarEvent(uint64_t corrId,
+        const blpapi::Element &elem);
 
 DateTimeType convertToDateTime(const blpapi::Datetime &dt);
 
@@ -62,13 +65,13 @@ flatbuffers::FlatBufferBuilder
 buildBufferCalendarEvent(const blpapi::Element &elem);
 
 
-flatbuffers::FlatBufferBuilder buildBufferMacroReferenceData(
+flatbuffers::FlatBufferBuilder buildBufferMacroReferenceData(uint64_t corrId,
         const blpapi::Element& elem);
 
-flatbuffers::FlatBufferBuilder buildBufferMacroHeadlineEvent(
+flatbuffers::FlatBufferBuilder buildBufferMacroHeadlineEvent(uint64_t corrId,
         const blpapi::Element& elem);
 
-flatbuffers::FlatBufferBuilder buildBufferMacroCalendarEvent(
+flatbuffers::FlatBufferBuilder buildBufferMacroCalendarEvent(uint64_t corrId,
         const blpapi::Element& elem);
 
 flatbuffers::FlatBufferBuilder buildBufferLogMessage(LogMessage &log_message);

@@ -122,6 +122,7 @@ struct HeadlineEconomicEvent : public HeadlineBaseEvent {
 };
 
 struct MacroReferenceData {
+    uint64_t corr_id;
     std::string id_bb_global;
     std::string parsekyable_des;
     std::string description = "";
@@ -133,6 +134,7 @@ struct MacroReferenceData {
 };
 
 struct MacroHeadlineEvent {
+    uint64_t corr_id;
     EventType event_type = EventType::Unknown;
     EventSubType event_subtype = EventSubType::Unknown;
     uint64_t event_id = 0;
@@ -147,6 +149,7 @@ struct MacroHeadlineEvent {
 };
 
 struct MacroCalendarEvent {
+    uint64_t corr_id;
     std::string id_bb_global;
     std::string parsekyable_des;
     EventType event_type = EventType::Unknown;

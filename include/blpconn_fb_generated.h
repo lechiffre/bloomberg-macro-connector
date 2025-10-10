@@ -25,17 +25,17 @@ struct ValueBuilder;
 struct HeadlineEconomicEvent;
 struct HeadlineEconomicEventBuilder;
 
-struct MacroHeadlineEvent;
-struct MacroHeadlineEventBuilder;
-
 struct MacroReferenceData;
 struct MacroReferenceDataBuilder;
 
-struct HeadlineCalendarEvent;
-struct HeadlineCalendarEventBuilder;
+struct MacroHeadlineEvent;
+struct MacroHeadlineEventBuilder;
 
 struct MacroCalendarEvent;
 struct MacroCalendarEventBuilder;
+
+struct HeadlineCalendarEvent;
+struct HeadlineCalendarEventBuilder;
 
 struct LogMessage;
 struct LogMessageBuilder;
@@ -110,24 +110,98 @@ inline const char *EnumNameModuleType(ModuleType e) {
   }
 }
 
+enum SubscriptionStatusType : uint8_t {
+  SubscriptionStatusType_SubscriptionUnknown = 0,
+  SubscriptionStatusType_SubscriptionStarted = 1,
+  SubscriptionStatusType_SubscriptionStreamsActivated = 2,
+  SubscriptionStatusType_SubscriptionTerminated = 3,
+  SubscriptionStatusType_SubscriptionSuccess = 4,
+  SubscriptionStatusType_SubscriptionFailure = 5,
+  SubscriptionStatusType_SubscriptionAnother = 99,
+  SubscriptionStatusType_MIN = SubscriptionStatusType_SubscriptionUnknown,
+  SubscriptionStatusType_MAX = SubscriptionStatusType_SubscriptionAnother
+};
+
+inline const SubscriptionStatusType (&EnumValuesSubscriptionStatusType())[7] {
+  static const SubscriptionStatusType values[] = {
+    SubscriptionStatusType_SubscriptionUnknown,
+    SubscriptionStatusType_SubscriptionStarted,
+    SubscriptionStatusType_SubscriptionStreamsActivated,
+    SubscriptionStatusType_SubscriptionTerminated,
+    SubscriptionStatusType_SubscriptionSuccess,
+    SubscriptionStatusType_SubscriptionFailure,
+    SubscriptionStatusType_SubscriptionAnother
+  };
+  return values;
+}
+
+inline const char *EnumNameSubscriptionStatusType(SubscriptionStatusType e) {
+  switch (e) {
+    case SubscriptionStatusType_SubscriptionUnknown: return "SubscriptionUnknown";
+    case SubscriptionStatusType_SubscriptionStarted: return "SubscriptionStarted";
+    case SubscriptionStatusType_SubscriptionStreamsActivated: return "SubscriptionStreamsActivated";
+    case SubscriptionStatusType_SubscriptionTerminated: return "SubscriptionTerminated";
+    case SubscriptionStatusType_SubscriptionSuccess: return "SubscriptionSuccess";
+    case SubscriptionStatusType_SubscriptionFailure: return "SubscriptionFailure";
+    case SubscriptionStatusType_SubscriptionAnother: return "SubscriptionAnother";
+    default: return "";
+  }
+}
+
+enum ServiceStatusType : uint8_t {
+  ServiceStatusType_ServiceUnknown = 0,
+  ServiceStatusType_ServiceOpened = 1,
+  ServiceStatusType_ServiceClosed = 2,
+  ServiceStatusType_ServiceFailure = 3,
+  ServiceStatusType_ServiceAnother = 99,
+  ServiceStatusType_MIN = ServiceStatusType_ServiceUnknown,
+  ServiceStatusType_MAX = ServiceStatusType_ServiceAnother
+};
+
+inline const ServiceStatusType (&EnumValuesServiceStatusType())[5] {
+  static const ServiceStatusType values[] = {
+    ServiceStatusType_ServiceUnknown,
+    ServiceStatusType_ServiceOpened,
+    ServiceStatusType_ServiceClosed,
+    ServiceStatusType_ServiceFailure,
+    ServiceStatusType_ServiceAnother
+  };
+  return values;
+}
+
+inline const char *EnumNameServiceStatusType(ServiceStatusType e) {
+  switch (e) {
+    case ServiceStatusType_ServiceUnknown: return "ServiceUnknown";
+    case ServiceStatusType_ServiceOpened: return "ServiceOpened";
+    case ServiceStatusType_ServiceClosed: return "ServiceClosed";
+    case ServiceStatusType_ServiceFailure: return "ServiceFailure";
+    case ServiceStatusType_ServiceAnother: return "ServiceAnother";
+    default: return "";
+  }
+}
+
 enum SessionStatusType : uint8_t {
   SessionStatusType_SessionUnknown = 0,
   SessionStatusType_SessionConnectionUp = 1,
   SessionStatusType_SessionStarted = 2,
   SessionStatusType_SessionConnectionDown = 3,
   SessionStatusType_SessionTerminated = 4,
+  SessionStatusType_SessionInvalidOptions = 5,
+  SessionStatusType_SessionFailure = 6,
   SessionStatusType_SessionAnother = 99,
   SessionStatusType_MIN = SessionStatusType_SessionUnknown,
   SessionStatusType_MAX = SessionStatusType_SessionAnother
 };
 
-inline const SessionStatusType (&EnumValuesSessionStatusType())[6] {
+inline const SessionStatusType (&EnumValuesSessionStatusType())[8] {
   static const SessionStatusType values[] = {
     SessionStatusType_SessionUnknown,
     SessionStatusType_SessionConnectionUp,
     SessionStatusType_SessionStarted,
     SessionStatusType_SessionConnectionDown,
     SessionStatusType_SessionTerminated,
+    SessionStatusType_SessionInvalidOptions,
+    SessionStatusType_SessionFailure,
     SessionStatusType_SessionAnother
   };
   return values;
@@ -140,6 +214,8 @@ inline const char *EnumNameSessionStatusType(SessionStatusType e) {
     case SessionStatusType_SessionStarted: return "SessionStarted";
     case SessionStatusType_SessionConnectionDown: return "SessionConnectionDown";
     case SessionStatusType_SessionTerminated: return "SessionTerminated";
+    case SessionStatusType_SessionInvalidOptions: return "SessionInvalidOptions";
+    case SessionStatusType_SessionFailure: return "SessionFailure";
     case SessionStatusType_SessionAnother: return "SessionAnother";
     default: return "";
   }
@@ -713,21 +789,188 @@ inline ::flatbuffers::Offset<HeadlineEconomicEvent> CreateHeadlineEconomicEventD
       prior_economic_release_end_dt);
 }
 
+struct MacroReferenceData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef MacroReferenceDataBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_CORR_ID = 4,
+    VT_ID_BB_GLOBAL = 6,
+    VT_PARSEKYABLE_DES = 8,
+    VT_DESCRIPTION = 10,
+    VT_INDX_FREQ = 12,
+    VT_INDX_UNITS = 14,
+    VT_COUNTRY_ISO = 16,
+    VT_INDX_SOURCE = 18,
+    VT_SEASONALITY_TRANSFORMATION = 20
+  };
+  uint64_t corr_id() const {
+    return GetField<uint64_t>(VT_CORR_ID, 0);
+  }
+  const ::flatbuffers::String *id_bb_global() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_ID_BB_GLOBAL);
+  }
+  const ::flatbuffers::String *parsekyable_des() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_PARSEKYABLE_DES);
+  }
+  const ::flatbuffers::String *description() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_DESCRIPTION);
+  }
+  const ::flatbuffers::String *indx_freq() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_INDX_FREQ);
+  }
+  const ::flatbuffers::String *indx_units() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_INDX_UNITS);
+  }
+  const ::flatbuffers::String *country_iso() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_COUNTRY_ISO);
+  }
+  const ::flatbuffers::String *indx_source() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_INDX_SOURCE);
+  }
+  const ::flatbuffers::String *seasonality_transformation() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_SEASONALITY_TRANSFORMATION);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyField<uint64_t>(verifier, VT_CORR_ID, 8) &&
+           VerifyOffsetRequired(verifier, VT_ID_BB_GLOBAL) &&
+           verifier.VerifyString(id_bb_global()) &&
+           VerifyOffsetRequired(verifier, VT_PARSEKYABLE_DES) &&
+           verifier.VerifyString(parsekyable_des()) &&
+           VerifyOffset(verifier, VT_DESCRIPTION) &&
+           verifier.VerifyString(description()) &&
+           VerifyOffset(verifier, VT_INDX_FREQ) &&
+           verifier.VerifyString(indx_freq()) &&
+           VerifyOffset(verifier, VT_INDX_UNITS) &&
+           verifier.VerifyString(indx_units()) &&
+           VerifyOffset(verifier, VT_COUNTRY_ISO) &&
+           verifier.VerifyString(country_iso()) &&
+           VerifyOffset(verifier, VT_INDX_SOURCE) &&
+           verifier.VerifyString(indx_source()) &&
+           VerifyOffset(verifier, VT_SEASONALITY_TRANSFORMATION) &&
+           verifier.VerifyString(seasonality_transformation()) &&
+           verifier.EndTable();
+  }
+};
+
+struct MacroReferenceDataBuilder {
+  typedef MacroReferenceData Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_corr_id(uint64_t corr_id) {
+    fbb_.AddElement<uint64_t>(MacroReferenceData::VT_CORR_ID, corr_id, 0);
+  }
+  void add_id_bb_global(::flatbuffers::Offset<::flatbuffers::String> id_bb_global) {
+    fbb_.AddOffset(MacroReferenceData::VT_ID_BB_GLOBAL, id_bb_global);
+  }
+  void add_parsekyable_des(::flatbuffers::Offset<::flatbuffers::String> parsekyable_des) {
+    fbb_.AddOffset(MacroReferenceData::VT_PARSEKYABLE_DES, parsekyable_des);
+  }
+  void add_description(::flatbuffers::Offset<::flatbuffers::String> description) {
+    fbb_.AddOffset(MacroReferenceData::VT_DESCRIPTION, description);
+  }
+  void add_indx_freq(::flatbuffers::Offset<::flatbuffers::String> indx_freq) {
+    fbb_.AddOffset(MacroReferenceData::VT_INDX_FREQ, indx_freq);
+  }
+  void add_indx_units(::flatbuffers::Offset<::flatbuffers::String> indx_units) {
+    fbb_.AddOffset(MacroReferenceData::VT_INDX_UNITS, indx_units);
+  }
+  void add_country_iso(::flatbuffers::Offset<::flatbuffers::String> country_iso) {
+    fbb_.AddOffset(MacroReferenceData::VT_COUNTRY_ISO, country_iso);
+  }
+  void add_indx_source(::flatbuffers::Offset<::flatbuffers::String> indx_source) {
+    fbb_.AddOffset(MacroReferenceData::VT_INDX_SOURCE, indx_source);
+  }
+  void add_seasonality_transformation(::flatbuffers::Offset<::flatbuffers::String> seasonality_transformation) {
+    fbb_.AddOffset(MacroReferenceData::VT_SEASONALITY_TRANSFORMATION, seasonality_transformation);
+  }
+  explicit MacroReferenceDataBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<MacroReferenceData> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<MacroReferenceData>(end);
+    fbb_.Required(o, MacroReferenceData::VT_ID_BB_GLOBAL);
+    fbb_.Required(o, MacroReferenceData::VT_PARSEKYABLE_DES);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<MacroReferenceData> CreateMacroReferenceData(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint64_t corr_id = 0,
+    ::flatbuffers::Offset<::flatbuffers::String> id_bb_global = 0,
+    ::flatbuffers::Offset<::flatbuffers::String> parsekyable_des = 0,
+    ::flatbuffers::Offset<::flatbuffers::String> description = 0,
+    ::flatbuffers::Offset<::flatbuffers::String> indx_freq = 0,
+    ::flatbuffers::Offset<::flatbuffers::String> indx_units = 0,
+    ::flatbuffers::Offset<::flatbuffers::String> country_iso = 0,
+    ::flatbuffers::Offset<::flatbuffers::String> indx_source = 0,
+    ::flatbuffers::Offset<::flatbuffers::String> seasonality_transformation = 0) {
+  MacroReferenceDataBuilder builder_(_fbb);
+  builder_.add_corr_id(corr_id);
+  builder_.add_seasonality_transformation(seasonality_transformation);
+  builder_.add_indx_source(indx_source);
+  builder_.add_country_iso(country_iso);
+  builder_.add_indx_units(indx_units);
+  builder_.add_indx_freq(indx_freq);
+  builder_.add_description(description);
+  builder_.add_parsekyable_des(parsekyable_des);
+  builder_.add_id_bb_global(id_bb_global);
+  return builder_.Finish();
+}
+
+inline ::flatbuffers::Offset<MacroReferenceData> CreateMacroReferenceDataDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint64_t corr_id = 0,
+    const char *id_bb_global = nullptr,
+    const char *parsekyable_des = nullptr,
+    const char *description = nullptr,
+    const char *indx_freq = nullptr,
+    const char *indx_units = nullptr,
+    const char *country_iso = nullptr,
+    const char *indx_source = nullptr,
+    const char *seasonality_transformation = nullptr) {
+  auto id_bb_global__ = id_bb_global ? _fbb.CreateString(id_bb_global) : 0;
+  auto parsekyable_des__ = parsekyable_des ? _fbb.CreateString(parsekyable_des) : 0;
+  auto description__ = description ? _fbb.CreateString(description) : 0;
+  auto indx_freq__ = indx_freq ? _fbb.CreateString(indx_freq) : 0;
+  auto indx_units__ = indx_units ? _fbb.CreateString(indx_units) : 0;
+  auto country_iso__ = country_iso ? _fbb.CreateString(country_iso) : 0;
+  auto indx_source__ = indx_source ? _fbb.CreateString(indx_source) : 0;
+  auto seasonality_transformation__ = seasonality_transformation ? _fbb.CreateString(seasonality_transformation) : 0;
+  return BlpConn::FB::CreateMacroReferenceData(
+      _fbb,
+      corr_id,
+      id_bb_global__,
+      parsekyable_des__,
+      description__,
+      indx_freq__,
+      indx_units__,
+      country_iso__,
+      indx_source__,
+      seasonality_transformation__);
+}
+
 struct MacroHeadlineEvent FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef MacroHeadlineEventBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_EVENT_TYPE = 4,
-    VT_EVENT_SUBTYPE = 6,
-    VT_EVENT_ID = 8,
-    VT_OBSERVATION_PERIOD = 10,
-    VT_RELEASE_START_DT = 12,
-    VT_RELEASE_END_DT = 14,
-    VT_PRIOR_EVENT_ID = 16,
-    VT_PRIOR_OBSERVATION_PERIOD = 18,
-    VT_PRIOR_ECONOMIC_RELEASE_START_DT = 20,
-    VT_PRIOR_ECONOMIC_RELEASE_END_DT = 22,
-    VT_VALUE = 24
+    VT_CORR_ID = 4,
+    VT_EVENT_TYPE = 6,
+    VT_EVENT_SUBTYPE = 8,
+    VT_EVENT_ID = 10,
+    VT_OBSERVATION_PERIOD = 12,
+    VT_RELEASE_START_DT = 14,
+    VT_RELEASE_END_DT = 16,
+    VT_PRIOR_EVENT_ID = 18,
+    VT_PRIOR_OBSERVATION_PERIOD = 20,
+    VT_PRIOR_ECONOMIC_RELEASE_START_DT = 22,
+    VT_PRIOR_ECONOMIC_RELEASE_END_DT = 24,
+    VT_VALUE = 26
   };
+  uint64_t corr_id() const {
+    return GetField<uint64_t>(VT_CORR_ID, 0);
+  }
   BlpConn::FB::EventType event_type() const {
     return static_cast<BlpConn::FB::EventType>(GetField<uint8_t>(VT_EVENT_TYPE, 0));
   }
@@ -763,6 +1006,7 @@ struct MacroHeadlineEvent FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
+           VerifyField<uint64_t>(verifier, VT_CORR_ID, 8) &&
            VerifyField<uint8_t>(verifier, VT_EVENT_TYPE, 1) &&
            VerifyField<uint8_t>(verifier, VT_EVENT_SUBTYPE, 1) &&
            VerifyField<int32_t>(verifier, VT_EVENT_ID, 4) &&
@@ -789,6 +1033,9 @@ struct MacroHeadlineEventBuilder {
   typedef MacroHeadlineEvent Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
+  void add_corr_id(uint64_t corr_id) {
+    fbb_.AddElement<uint64_t>(MacroHeadlineEvent::VT_CORR_ID, corr_id, 0);
+  }
   void add_event_type(BlpConn::FB::EventType event_type) {
     fbb_.AddElement<uint8_t>(MacroHeadlineEvent::VT_EVENT_TYPE, static_cast<uint8_t>(event_type), 0);
   }
@@ -835,6 +1082,7 @@ struct MacroHeadlineEventBuilder {
 
 inline ::flatbuffers::Offset<MacroHeadlineEvent> CreateMacroHeadlineEvent(
     ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint64_t corr_id = 0,
     BlpConn::FB::EventType event_type = BlpConn::FB::EventType_Unknown,
     BlpConn::FB::EventSubType event_subtype = BlpConn::FB::EventSubType_Unknown,
     int32_t event_id = 0,
@@ -847,6 +1095,7 @@ inline ::flatbuffers::Offset<MacroHeadlineEvent> CreateMacroHeadlineEvent(
     ::flatbuffers::Offset<BlpConn::FB::DateTime> prior_economic_release_end_dt = 0,
     ::flatbuffers::Offset<BlpConn::FB::Value> value = 0) {
   MacroHeadlineEventBuilder builder_(_fbb);
+  builder_.add_corr_id(corr_id);
   builder_.add_value(value);
   builder_.add_prior_economic_release_end_dt(prior_economic_release_end_dt);
   builder_.add_prior_economic_release_start_dt(prior_economic_release_start_dt);
@@ -863,6 +1112,7 @@ inline ::flatbuffers::Offset<MacroHeadlineEvent> CreateMacroHeadlineEvent(
 
 inline ::flatbuffers::Offset<MacroHeadlineEvent> CreateMacroHeadlineEventDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint64_t corr_id = 0,
     BlpConn::FB::EventType event_type = BlpConn::FB::EventType_Unknown,
     BlpConn::FB::EventSubType event_subtype = BlpConn::FB::EventSubType_Unknown,
     int32_t event_id = 0,
@@ -878,6 +1128,7 @@ inline ::flatbuffers::Offset<MacroHeadlineEvent> CreateMacroHeadlineEventDirect(
   auto prior_observation_period__ = prior_observation_period ? _fbb.CreateString(prior_observation_period) : 0;
   return BlpConn::FB::CreateMacroHeadlineEvent(
       _fbb,
+      corr_id,
       event_type,
       event_subtype,
       event_id,
@@ -891,155 +1142,197 @@ inline ::flatbuffers::Offset<MacroHeadlineEvent> CreateMacroHeadlineEventDirect(
       value);
 }
 
-struct MacroReferenceData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
-  typedef MacroReferenceDataBuilder Builder;
+struct MacroCalendarEvent FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef MacroCalendarEventBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_ID_BB_GLOBAL = 4,
-    VT_PARSEKYABLE_DES = 6,
-    VT_DESCRIPTION = 8,
-    VT_INDX_FREQ = 10,
-    VT_INDX_UNITS = 12,
-    VT_COUNTRY_ISO = 14,
-    VT_INDX_SOURCE = 16,
-    VT_SEASONALITY_TRANSFORMATION = 18
+    VT_CORR_ID = 4,
+    VT_ID_BB_GLOBAL = 6,
+    VT_PARSEKYABLE_DES = 8,
+    VT_EVENT_TYPE = 10,
+    VT_EVENT_SUBTYPE = 12,
+    VT_DESCRIPTION = 14,
+    VT_EVENT_ID = 16,
+    VT_OBSERVATION_PERIOD = 18,
+    VT_RELEASE_START_DT = 20,
+    VT_RELEASE_END_DT = 22,
+    VT_RELEASE_STATUS = 24,
+    VT_RELEVANCE_VALUE = 26
   };
+  uint64_t corr_id() const {
+    return GetField<uint64_t>(VT_CORR_ID, 0);
+  }
   const ::flatbuffers::String *id_bb_global() const {
     return GetPointer<const ::flatbuffers::String *>(VT_ID_BB_GLOBAL);
   }
   const ::flatbuffers::String *parsekyable_des() const {
     return GetPointer<const ::flatbuffers::String *>(VT_PARSEKYABLE_DES);
   }
+  BlpConn::FB::EventType event_type() const {
+    return static_cast<BlpConn::FB::EventType>(GetField<uint8_t>(VT_EVENT_TYPE, 0));
+  }
+  BlpConn::FB::EventSubType event_subtype() const {
+    return static_cast<BlpConn::FB::EventSubType>(GetField<uint8_t>(VT_EVENT_SUBTYPE, 0));
+  }
   const ::flatbuffers::String *description() const {
     return GetPointer<const ::flatbuffers::String *>(VT_DESCRIPTION);
   }
-  const ::flatbuffers::String *indx_freq() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_INDX_FREQ);
+  int32_t event_id() const {
+    return GetField<int32_t>(VT_EVENT_ID, 0);
   }
-  const ::flatbuffers::String *indx_units() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_INDX_UNITS);
+  const ::flatbuffers::String *observation_period() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_OBSERVATION_PERIOD);
   }
-  const ::flatbuffers::String *country_iso() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_COUNTRY_ISO);
+  const BlpConn::FB::DateTime *release_start_dt() const {
+    return GetPointer<const BlpConn::FB::DateTime *>(VT_RELEASE_START_DT);
   }
-  const ::flatbuffers::String *indx_source() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_INDX_SOURCE);
+  const BlpConn::FB::DateTime *release_end_dt() const {
+    return GetPointer<const BlpConn::FB::DateTime *>(VT_RELEASE_END_DT);
   }
-  const ::flatbuffers::String *seasonality_transformation() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SEASONALITY_TRANSFORMATION);
+  BlpConn::FB::ReleaseStatus release_status() const {
+    return static_cast<BlpConn::FB::ReleaseStatus>(GetField<uint8_t>(VT_RELEASE_STATUS, 0));
+  }
+  double relevance_value() const {
+    return GetField<double>(VT_RELEVANCE_VALUE, 0.0);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
+           VerifyField<uint64_t>(verifier, VT_CORR_ID, 8) &&
            VerifyOffsetRequired(verifier, VT_ID_BB_GLOBAL) &&
            verifier.VerifyString(id_bb_global()) &&
            VerifyOffsetRequired(verifier, VT_PARSEKYABLE_DES) &&
            verifier.VerifyString(parsekyable_des()) &&
+           VerifyField<uint8_t>(verifier, VT_EVENT_TYPE, 1) &&
+           VerifyField<uint8_t>(verifier, VT_EVENT_SUBTYPE, 1) &&
            VerifyOffset(verifier, VT_DESCRIPTION) &&
            verifier.VerifyString(description()) &&
-           VerifyOffset(verifier, VT_INDX_FREQ) &&
-           verifier.VerifyString(indx_freq()) &&
-           VerifyOffset(verifier, VT_INDX_UNITS) &&
-           verifier.VerifyString(indx_units()) &&
-           VerifyOffset(verifier, VT_COUNTRY_ISO) &&
-           verifier.VerifyString(country_iso()) &&
-           VerifyOffset(verifier, VT_INDX_SOURCE) &&
-           verifier.VerifyString(indx_source()) &&
-           VerifyOffset(verifier, VT_SEASONALITY_TRANSFORMATION) &&
-           verifier.VerifyString(seasonality_transformation()) &&
+           VerifyField<int32_t>(verifier, VT_EVENT_ID, 4) &&
+           VerifyOffset(verifier, VT_OBSERVATION_PERIOD) &&
+           verifier.VerifyString(observation_period()) &&
+           VerifyOffset(verifier, VT_RELEASE_START_DT) &&
+           verifier.VerifyTable(release_start_dt()) &&
+           VerifyOffset(verifier, VT_RELEASE_END_DT) &&
+           verifier.VerifyTable(release_end_dt()) &&
+           VerifyField<uint8_t>(verifier, VT_RELEASE_STATUS, 1) &&
+           VerifyField<double>(verifier, VT_RELEVANCE_VALUE, 8) &&
            verifier.EndTable();
   }
 };
 
-struct MacroReferenceDataBuilder {
-  typedef MacroReferenceData Table;
+struct MacroCalendarEventBuilder {
+  typedef MacroCalendarEvent Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
+  void add_corr_id(uint64_t corr_id) {
+    fbb_.AddElement<uint64_t>(MacroCalendarEvent::VT_CORR_ID, corr_id, 0);
+  }
   void add_id_bb_global(::flatbuffers::Offset<::flatbuffers::String> id_bb_global) {
-    fbb_.AddOffset(MacroReferenceData::VT_ID_BB_GLOBAL, id_bb_global);
+    fbb_.AddOffset(MacroCalendarEvent::VT_ID_BB_GLOBAL, id_bb_global);
   }
   void add_parsekyable_des(::flatbuffers::Offset<::flatbuffers::String> parsekyable_des) {
-    fbb_.AddOffset(MacroReferenceData::VT_PARSEKYABLE_DES, parsekyable_des);
+    fbb_.AddOffset(MacroCalendarEvent::VT_PARSEKYABLE_DES, parsekyable_des);
+  }
+  void add_event_type(BlpConn::FB::EventType event_type) {
+    fbb_.AddElement<uint8_t>(MacroCalendarEvent::VT_EVENT_TYPE, static_cast<uint8_t>(event_type), 0);
+  }
+  void add_event_subtype(BlpConn::FB::EventSubType event_subtype) {
+    fbb_.AddElement<uint8_t>(MacroCalendarEvent::VT_EVENT_SUBTYPE, static_cast<uint8_t>(event_subtype), 0);
   }
   void add_description(::flatbuffers::Offset<::flatbuffers::String> description) {
-    fbb_.AddOffset(MacroReferenceData::VT_DESCRIPTION, description);
+    fbb_.AddOffset(MacroCalendarEvent::VT_DESCRIPTION, description);
   }
-  void add_indx_freq(::flatbuffers::Offset<::flatbuffers::String> indx_freq) {
-    fbb_.AddOffset(MacroReferenceData::VT_INDX_FREQ, indx_freq);
+  void add_event_id(int32_t event_id) {
+    fbb_.AddElement<int32_t>(MacroCalendarEvent::VT_EVENT_ID, event_id, 0);
   }
-  void add_indx_units(::flatbuffers::Offset<::flatbuffers::String> indx_units) {
-    fbb_.AddOffset(MacroReferenceData::VT_INDX_UNITS, indx_units);
+  void add_observation_period(::flatbuffers::Offset<::flatbuffers::String> observation_period) {
+    fbb_.AddOffset(MacroCalendarEvent::VT_OBSERVATION_PERIOD, observation_period);
   }
-  void add_country_iso(::flatbuffers::Offset<::flatbuffers::String> country_iso) {
-    fbb_.AddOffset(MacroReferenceData::VT_COUNTRY_ISO, country_iso);
+  void add_release_start_dt(::flatbuffers::Offset<BlpConn::FB::DateTime> release_start_dt) {
+    fbb_.AddOffset(MacroCalendarEvent::VT_RELEASE_START_DT, release_start_dt);
   }
-  void add_indx_source(::flatbuffers::Offset<::flatbuffers::String> indx_source) {
-    fbb_.AddOffset(MacroReferenceData::VT_INDX_SOURCE, indx_source);
+  void add_release_end_dt(::flatbuffers::Offset<BlpConn::FB::DateTime> release_end_dt) {
+    fbb_.AddOffset(MacroCalendarEvent::VT_RELEASE_END_DT, release_end_dt);
   }
-  void add_seasonality_transformation(::flatbuffers::Offset<::flatbuffers::String> seasonality_transformation) {
-    fbb_.AddOffset(MacroReferenceData::VT_SEASONALITY_TRANSFORMATION, seasonality_transformation);
+  void add_release_status(BlpConn::FB::ReleaseStatus release_status) {
+    fbb_.AddElement<uint8_t>(MacroCalendarEvent::VT_RELEASE_STATUS, static_cast<uint8_t>(release_status), 0);
   }
-  explicit MacroReferenceDataBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+  void add_relevance_value(double relevance_value) {
+    fbb_.AddElement<double>(MacroCalendarEvent::VT_RELEVANCE_VALUE, relevance_value, 0.0);
+  }
+  explicit MacroCalendarEventBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  ::flatbuffers::Offset<MacroReferenceData> Finish() {
+  ::flatbuffers::Offset<MacroCalendarEvent> Finish() {
     const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<MacroReferenceData>(end);
-    fbb_.Required(o, MacroReferenceData::VT_ID_BB_GLOBAL);
-    fbb_.Required(o, MacroReferenceData::VT_PARSEKYABLE_DES);
+    auto o = ::flatbuffers::Offset<MacroCalendarEvent>(end);
+    fbb_.Required(o, MacroCalendarEvent::VT_ID_BB_GLOBAL);
+    fbb_.Required(o, MacroCalendarEvent::VT_PARSEKYABLE_DES);
     return o;
   }
 };
 
-inline ::flatbuffers::Offset<MacroReferenceData> CreateMacroReferenceData(
+inline ::flatbuffers::Offset<MacroCalendarEvent> CreateMacroCalendarEvent(
     ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint64_t corr_id = 0,
     ::flatbuffers::Offset<::flatbuffers::String> id_bb_global = 0,
     ::flatbuffers::Offset<::flatbuffers::String> parsekyable_des = 0,
+    BlpConn::FB::EventType event_type = BlpConn::FB::EventType_Unknown,
+    BlpConn::FB::EventSubType event_subtype = BlpConn::FB::EventSubType_Unknown,
     ::flatbuffers::Offset<::flatbuffers::String> description = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> indx_freq = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> indx_units = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> country_iso = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> indx_source = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> seasonality_transformation = 0) {
-  MacroReferenceDataBuilder builder_(_fbb);
-  builder_.add_seasonality_transformation(seasonality_transformation);
-  builder_.add_indx_source(indx_source);
-  builder_.add_country_iso(country_iso);
-  builder_.add_indx_units(indx_units);
-  builder_.add_indx_freq(indx_freq);
+    int32_t event_id = 0,
+    ::flatbuffers::Offset<::flatbuffers::String> observation_period = 0,
+    ::flatbuffers::Offset<BlpConn::FB::DateTime> release_start_dt = 0,
+    ::flatbuffers::Offset<BlpConn::FB::DateTime> release_end_dt = 0,
+    BlpConn::FB::ReleaseStatus release_status = BlpConn::FB::ReleaseStatus_Unknown,
+    double relevance_value = 0.0) {
+  MacroCalendarEventBuilder builder_(_fbb);
+  builder_.add_relevance_value(relevance_value);
+  builder_.add_corr_id(corr_id);
+  builder_.add_release_end_dt(release_end_dt);
+  builder_.add_release_start_dt(release_start_dt);
+  builder_.add_observation_period(observation_period);
+  builder_.add_event_id(event_id);
   builder_.add_description(description);
   builder_.add_parsekyable_des(parsekyable_des);
   builder_.add_id_bb_global(id_bb_global);
+  builder_.add_release_status(release_status);
+  builder_.add_event_subtype(event_subtype);
+  builder_.add_event_type(event_type);
   return builder_.Finish();
 }
 
-inline ::flatbuffers::Offset<MacroReferenceData> CreateMacroReferenceDataDirect(
+inline ::flatbuffers::Offset<MacroCalendarEvent> CreateMacroCalendarEventDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
+    uint64_t corr_id = 0,
     const char *id_bb_global = nullptr,
     const char *parsekyable_des = nullptr,
+    BlpConn::FB::EventType event_type = BlpConn::FB::EventType_Unknown,
+    BlpConn::FB::EventSubType event_subtype = BlpConn::FB::EventSubType_Unknown,
     const char *description = nullptr,
-    const char *indx_freq = nullptr,
-    const char *indx_units = nullptr,
-    const char *country_iso = nullptr,
-    const char *indx_source = nullptr,
-    const char *seasonality_transformation = nullptr) {
+    int32_t event_id = 0,
+    const char *observation_period = nullptr,
+    ::flatbuffers::Offset<BlpConn::FB::DateTime> release_start_dt = 0,
+    ::flatbuffers::Offset<BlpConn::FB::DateTime> release_end_dt = 0,
+    BlpConn::FB::ReleaseStatus release_status = BlpConn::FB::ReleaseStatus_Unknown,
+    double relevance_value = 0.0) {
   auto id_bb_global__ = id_bb_global ? _fbb.CreateString(id_bb_global) : 0;
   auto parsekyable_des__ = parsekyable_des ? _fbb.CreateString(parsekyable_des) : 0;
   auto description__ = description ? _fbb.CreateString(description) : 0;
-  auto indx_freq__ = indx_freq ? _fbb.CreateString(indx_freq) : 0;
-  auto indx_units__ = indx_units ? _fbb.CreateString(indx_units) : 0;
-  auto country_iso__ = country_iso ? _fbb.CreateString(country_iso) : 0;
-  auto indx_source__ = indx_source ? _fbb.CreateString(indx_source) : 0;
-  auto seasonality_transformation__ = seasonality_transformation ? _fbb.CreateString(seasonality_transformation) : 0;
-  return BlpConn::FB::CreateMacroReferenceData(
+  auto observation_period__ = observation_period ? _fbb.CreateString(observation_period) : 0;
+  return BlpConn::FB::CreateMacroCalendarEvent(
       _fbb,
+      corr_id,
       id_bb_global__,
       parsekyable_des__,
+      event_type,
+      event_subtype,
       description__,
-      indx_freq__,
-      indx_units__,
-      country_iso__,
-      indx_source__,
-      seasonality_transformation__);
+      event_id,
+      observation_period__,
+      release_start_dt,
+      release_end_dt,
+      release_status,
+      relevance_value);
 }
 
 struct HeadlineCalendarEvent FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
@@ -1209,187 +1502,6 @@ inline ::flatbuffers::Offset<HeadlineCalendarEvent> CreateHeadlineCalendarEventD
       release_start_dt,
       release_end_dt,
       release_status);
-}
-
-struct MacroCalendarEvent FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
-  typedef MacroCalendarEventBuilder Builder;
-  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_ID_BB_GLOBAL = 4,
-    VT_PARSEKYABLE_DES = 6,
-    VT_EVENT_TYPE = 8,
-    VT_EVENT_SUBTYPE = 10,
-    VT_DESCRIPTION = 12,
-    VT_EVENT_ID = 14,
-    VT_OBSERVATION_PERIOD = 16,
-    VT_RELEASE_START_DT = 18,
-    VT_RELEASE_END_DT = 20,
-    VT_RELEASE_STATUS = 22,
-    VT_RELEVANCE_VALUE = 24
-  };
-  const ::flatbuffers::String *id_bb_global() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_ID_BB_GLOBAL);
-  }
-  const ::flatbuffers::String *parsekyable_des() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_PARSEKYABLE_DES);
-  }
-  BlpConn::FB::EventType event_type() const {
-    return static_cast<BlpConn::FB::EventType>(GetField<uint8_t>(VT_EVENT_TYPE, 0));
-  }
-  BlpConn::FB::EventSubType event_subtype() const {
-    return static_cast<BlpConn::FB::EventSubType>(GetField<uint8_t>(VT_EVENT_SUBTYPE, 0));
-  }
-  const ::flatbuffers::String *description() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_DESCRIPTION);
-  }
-  int32_t event_id() const {
-    return GetField<int32_t>(VT_EVENT_ID, 0);
-  }
-  const ::flatbuffers::String *observation_period() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_OBSERVATION_PERIOD);
-  }
-  const BlpConn::FB::DateTime *release_start_dt() const {
-    return GetPointer<const BlpConn::FB::DateTime *>(VT_RELEASE_START_DT);
-  }
-  const BlpConn::FB::DateTime *release_end_dt() const {
-    return GetPointer<const BlpConn::FB::DateTime *>(VT_RELEASE_END_DT);
-  }
-  BlpConn::FB::ReleaseStatus release_status() const {
-    return static_cast<BlpConn::FB::ReleaseStatus>(GetField<uint8_t>(VT_RELEASE_STATUS, 0));
-  }
-  double relevance_value() const {
-    return GetField<double>(VT_RELEVANCE_VALUE, 0.0);
-  }
-  bool Verify(::flatbuffers::Verifier &verifier) const {
-    return VerifyTableStart(verifier) &&
-           VerifyOffsetRequired(verifier, VT_ID_BB_GLOBAL) &&
-           verifier.VerifyString(id_bb_global()) &&
-           VerifyOffsetRequired(verifier, VT_PARSEKYABLE_DES) &&
-           verifier.VerifyString(parsekyable_des()) &&
-           VerifyField<uint8_t>(verifier, VT_EVENT_TYPE, 1) &&
-           VerifyField<uint8_t>(verifier, VT_EVENT_SUBTYPE, 1) &&
-           VerifyOffset(verifier, VT_DESCRIPTION) &&
-           verifier.VerifyString(description()) &&
-           VerifyField<int32_t>(verifier, VT_EVENT_ID, 4) &&
-           VerifyOffset(verifier, VT_OBSERVATION_PERIOD) &&
-           verifier.VerifyString(observation_period()) &&
-           VerifyOffset(verifier, VT_RELEASE_START_DT) &&
-           verifier.VerifyTable(release_start_dt()) &&
-           VerifyOffset(verifier, VT_RELEASE_END_DT) &&
-           verifier.VerifyTable(release_end_dt()) &&
-           VerifyField<uint8_t>(verifier, VT_RELEASE_STATUS, 1) &&
-           VerifyField<double>(verifier, VT_RELEVANCE_VALUE, 8) &&
-           verifier.EndTable();
-  }
-};
-
-struct MacroCalendarEventBuilder {
-  typedef MacroCalendarEvent Table;
-  ::flatbuffers::FlatBufferBuilder &fbb_;
-  ::flatbuffers::uoffset_t start_;
-  void add_id_bb_global(::flatbuffers::Offset<::flatbuffers::String> id_bb_global) {
-    fbb_.AddOffset(MacroCalendarEvent::VT_ID_BB_GLOBAL, id_bb_global);
-  }
-  void add_parsekyable_des(::flatbuffers::Offset<::flatbuffers::String> parsekyable_des) {
-    fbb_.AddOffset(MacroCalendarEvent::VT_PARSEKYABLE_DES, parsekyable_des);
-  }
-  void add_event_type(BlpConn::FB::EventType event_type) {
-    fbb_.AddElement<uint8_t>(MacroCalendarEvent::VT_EVENT_TYPE, static_cast<uint8_t>(event_type), 0);
-  }
-  void add_event_subtype(BlpConn::FB::EventSubType event_subtype) {
-    fbb_.AddElement<uint8_t>(MacroCalendarEvent::VT_EVENT_SUBTYPE, static_cast<uint8_t>(event_subtype), 0);
-  }
-  void add_description(::flatbuffers::Offset<::flatbuffers::String> description) {
-    fbb_.AddOffset(MacroCalendarEvent::VT_DESCRIPTION, description);
-  }
-  void add_event_id(int32_t event_id) {
-    fbb_.AddElement<int32_t>(MacroCalendarEvent::VT_EVENT_ID, event_id, 0);
-  }
-  void add_observation_period(::flatbuffers::Offset<::flatbuffers::String> observation_period) {
-    fbb_.AddOffset(MacroCalendarEvent::VT_OBSERVATION_PERIOD, observation_period);
-  }
-  void add_release_start_dt(::flatbuffers::Offset<BlpConn::FB::DateTime> release_start_dt) {
-    fbb_.AddOffset(MacroCalendarEvent::VT_RELEASE_START_DT, release_start_dt);
-  }
-  void add_release_end_dt(::flatbuffers::Offset<BlpConn::FB::DateTime> release_end_dt) {
-    fbb_.AddOffset(MacroCalendarEvent::VT_RELEASE_END_DT, release_end_dt);
-  }
-  void add_release_status(BlpConn::FB::ReleaseStatus release_status) {
-    fbb_.AddElement<uint8_t>(MacroCalendarEvent::VT_RELEASE_STATUS, static_cast<uint8_t>(release_status), 0);
-  }
-  void add_relevance_value(double relevance_value) {
-    fbb_.AddElement<double>(MacroCalendarEvent::VT_RELEVANCE_VALUE, relevance_value, 0.0);
-  }
-  explicit MacroCalendarEventBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
-        : fbb_(_fbb) {
-    start_ = fbb_.StartTable();
-  }
-  ::flatbuffers::Offset<MacroCalendarEvent> Finish() {
-    const auto end = fbb_.EndTable(start_);
-    auto o = ::flatbuffers::Offset<MacroCalendarEvent>(end);
-    fbb_.Required(o, MacroCalendarEvent::VT_ID_BB_GLOBAL);
-    fbb_.Required(o, MacroCalendarEvent::VT_PARSEKYABLE_DES);
-    return o;
-  }
-};
-
-inline ::flatbuffers::Offset<MacroCalendarEvent> CreateMacroCalendarEvent(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> id_bb_global = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> parsekyable_des = 0,
-    BlpConn::FB::EventType event_type = BlpConn::FB::EventType_Unknown,
-    BlpConn::FB::EventSubType event_subtype = BlpConn::FB::EventSubType_Unknown,
-    ::flatbuffers::Offset<::flatbuffers::String> description = 0,
-    int32_t event_id = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> observation_period = 0,
-    ::flatbuffers::Offset<BlpConn::FB::DateTime> release_start_dt = 0,
-    ::flatbuffers::Offset<BlpConn::FB::DateTime> release_end_dt = 0,
-    BlpConn::FB::ReleaseStatus release_status = BlpConn::FB::ReleaseStatus_Unknown,
-    double relevance_value = 0.0) {
-  MacroCalendarEventBuilder builder_(_fbb);
-  builder_.add_relevance_value(relevance_value);
-  builder_.add_release_end_dt(release_end_dt);
-  builder_.add_release_start_dt(release_start_dt);
-  builder_.add_observation_period(observation_period);
-  builder_.add_event_id(event_id);
-  builder_.add_description(description);
-  builder_.add_parsekyable_des(parsekyable_des);
-  builder_.add_id_bb_global(id_bb_global);
-  builder_.add_release_status(release_status);
-  builder_.add_event_subtype(event_subtype);
-  builder_.add_event_type(event_type);
-  return builder_.Finish();
-}
-
-inline ::flatbuffers::Offset<MacroCalendarEvent> CreateMacroCalendarEventDirect(
-    ::flatbuffers::FlatBufferBuilder &_fbb,
-    const char *id_bb_global = nullptr,
-    const char *parsekyable_des = nullptr,
-    BlpConn::FB::EventType event_type = BlpConn::FB::EventType_Unknown,
-    BlpConn::FB::EventSubType event_subtype = BlpConn::FB::EventSubType_Unknown,
-    const char *description = nullptr,
-    int32_t event_id = 0,
-    const char *observation_period = nullptr,
-    ::flatbuffers::Offset<BlpConn::FB::DateTime> release_start_dt = 0,
-    ::flatbuffers::Offset<BlpConn::FB::DateTime> release_end_dt = 0,
-    BlpConn::FB::ReleaseStatus release_status = BlpConn::FB::ReleaseStatus_Unknown,
-    double relevance_value = 0.0) {
-  auto id_bb_global__ = id_bb_global ? _fbb.CreateString(id_bb_global) : 0;
-  auto parsekyable_des__ = parsekyable_des ? _fbb.CreateString(parsekyable_des) : 0;
-  auto description__ = description ? _fbb.CreateString(description) : 0;
-  auto observation_period__ = observation_period ? _fbb.CreateString(observation_period) : 0;
-  return BlpConn::FB::CreateMacroCalendarEvent(
-      _fbb,
-      id_bb_global__,
-      parsekyable_des__,
-      event_type,
-      event_subtype,
-      description__,
-      event_id,
-      observation_period__,
-      release_start_dt,
-      release_end_dt,
-      release_status,
-      relevance_value);
 }
 
 struct LogMessage FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {

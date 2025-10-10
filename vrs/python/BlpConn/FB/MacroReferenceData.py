@@ -25,111 +25,124 @@ class MacroReferenceData(object):
         self._tab = flatbuffers.table.Table(buf, pos)
 
     # MacroReferenceData
-    def IdBbGlobal(self):
+    def CorrId(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
         if o != 0:
-            return self._tab.String(o + self._tab.Pos)
-        return None
+            return self._tab.Get(flatbuffers.number_types.Uint64Flags, o + self._tab.Pos)
+        return 0
 
     # MacroReferenceData
-    def ParsekyableDes(self):
+    def IdBbGlobal(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
         if o != 0:
             return self._tab.String(o + self._tab.Pos)
         return None
 
     # MacroReferenceData
-    def Description(self):
+    def ParsekyableDes(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
         if o != 0:
             return self._tab.String(o + self._tab.Pos)
         return None
 
     # MacroReferenceData
-    def IndxFreq(self):
+    def Description(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
         if o != 0:
             return self._tab.String(o + self._tab.Pos)
         return None
 
     # MacroReferenceData
-    def IndxUnits(self):
+    def IndxFreq(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(12))
         if o != 0:
             return self._tab.String(o + self._tab.Pos)
         return None
 
     # MacroReferenceData
-    def CountryIso(self):
+    def IndxUnits(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(14))
         if o != 0:
             return self._tab.String(o + self._tab.Pos)
         return None
 
     # MacroReferenceData
-    def IndxSource(self):
+    def CountryIso(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(16))
         if o != 0:
             return self._tab.String(o + self._tab.Pos)
         return None
 
     # MacroReferenceData
-    def SeasonalityTransformation(self):
+    def IndxSource(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(18))
         if o != 0:
             return self._tab.String(o + self._tab.Pos)
         return None
 
+    # MacroReferenceData
+    def SeasonalityTransformation(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(20))
+        if o != 0:
+            return self._tab.String(o + self._tab.Pos)
+        return None
+
 def MacroReferenceDataStart(builder):
-    builder.StartObject(8)
+    builder.StartObject(9)
 
 def Start(builder):
     MacroReferenceDataStart(builder)
 
+def MacroReferenceDataAddCorrId(builder, corrId):
+    builder.PrependUint64Slot(0, corrId, 0)
+
+def AddCorrId(builder, corrId):
+    MacroReferenceDataAddCorrId(builder, corrId)
+
 def MacroReferenceDataAddIdBbGlobal(builder, idBbGlobal):
-    builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(idBbGlobal), 0)
+    builder.PrependUOffsetTRelativeSlot(1, flatbuffers.number_types.UOffsetTFlags.py_type(idBbGlobal), 0)
 
 def AddIdBbGlobal(builder, idBbGlobal):
     MacroReferenceDataAddIdBbGlobal(builder, idBbGlobal)
 
 def MacroReferenceDataAddParsekyableDes(builder, parsekyableDes):
-    builder.PrependUOffsetTRelativeSlot(1, flatbuffers.number_types.UOffsetTFlags.py_type(parsekyableDes), 0)
+    builder.PrependUOffsetTRelativeSlot(2, flatbuffers.number_types.UOffsetTFlags.py_type(parsekyableDes), 0)
 
 def AddParsekyableDes(builder, parsekyableDes):
     MacroReferenceDataAddParsekyableDes(builder, parsekyableDes)
 
 def MacroReferenceDataAddDescription(builder, description):
-    builder.PrependUOffsetTRelativeSlot(2, flatbuffers.number_types.UOffsetTFlags.py_type(description), 0)
+    builder.PrependUOffsetTRelativeSlot(3, flatbuffers.number_types.UOffsetTFlags.py_type(description), 0)
 
 def AddDescription(builder, description):
     MacroReferenceDataAddDescription(builder, description)
 
 def MacroReferenceDataAddIndxFreq(builder, indxFreq):
-    builder.PrependUOffsetTRelativeSlot(3, flatbuffers.number_types.UOffsetTFlags.py_type(indxFreq), 0)
+    builder.PrependUOffsetTRelativeSlot(4, flatbuffers.number_types.UOffsetTFlags.py_type(indxFreq), 0)
 
 def AddIndxFreq(builder, indxFreq):
     MacroReferenceDataAddIndxFreq(builder, indxFreq)
 
 def MacroReferenceDataAddIndxUnits(builder, indxUnits):
-    builder.PrependUOffsetTRelativeSlot(4, flatbuffers.number_types.UOffsetTFlags.py_type(indxUnits), 0)
+    builder.PrependUOffsetTRelativeSlot(5, flatbuffers.number_types.UOffsetTFlags.py_type(indxUnits), 0)
 
 def AddIndxUnits(builder, indxUnits):
     MacroReferenceDataAddIndxUnits(builder, indxUnits)
 
 def MacroReferenceDataAddCountryIso(builder, countryIso):
-    builder.PrependUOffsetTRelativeSlot(5, flatbuffers.number_types.UOffsetTFlags.py_type(countryIso), 0)
+    builder.PrependUOffsetTRelativeSlot(6, flatbuffers.number_types.UOffsetTFlags.py_type(countryIso), 0)
 
 def AddCountryIso(builder, countryIso):
     MacroReferenceDataAddCountryIso(builder, countryIso)
 
 def MacroReferenceDataAddIndxSource(builder, indxSource):
-    builder.PrependUOffsetTRelativeSlot(6, flatbuffers.number_types.UOffsetTFlags.py_type(indxSource), 0)
+    builder.PrependUOffsetTRelativeSlot(7, flatbuffers.number_types.UOffsetTFlags.py_type(indxSource), 0)
 
 def AddIndxSource(builder, indxSource):
     MacroReferenceDataAddIndxSource(builder, indxSource)
 
 def MacroReferenceDataAddSeasonalityTransformation(builder, seasonalityTransformation):
-    builder.PrependUOffsetTRelativeSlot(7, flatbuffers.number_types.UOffsetTFlags.py_type(seasonalityTransformation), 0)
+    builder.PrependUOffsetTRelativeSlot(8, flatbuffers.number_types.UOffsetTFlags.py_type(seasonalityTransformation), 0)
 
 def AddSeasonalityTransformation(builder, seasonalityTransformation):
     MacroReferenceDataAddSeasonalityTransformation(builder, seasonalityTransformation)

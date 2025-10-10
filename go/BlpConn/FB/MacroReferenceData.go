@@ -41,15 +41,19 @@ func (rcv *MacroReferenceData) Table() flatbuffers.Table {
 	return rcv._tab
 }
 
-func (rcv *MacroReferenceData) IdBbGlobal() []byte {
+func (rcv *MacroReferenceData) CorrId() uint64 {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(4))
 	if o != 0 {
-		return rcv._tab.ByteVector(o + rcv._tab.Pos)
+		return rcv._tab.GetUint64(o + rcv._tab.Pos)
 	}
-	return nil
+	return 0
 }
 
-func (rcv *MacroReferenceData) ParsekyableDes() []byte {
+func (rcv *MacroReferenceData) MutateCorrId(n uint64) bool {
+	return rcv._tab.MutateUint64Slot(4, n)
+}
+
+func (rcv *MacroReferenceData) IdBbGlobal() []byte {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(6))
 	if o != 0 {
 		return rcv._tab.ByteVector(o + rcv._tab.Pos)
@@ -57,7 +61,7 @@ func (rcv *MacroReferenceData) ParsekyableDes() []byte {
 	return nil
 }
 
-func (rcv *MacroReferenceData) Description() []byte {
+func (rcv *MacroReferenceData) ParsekyableDes() []byte {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(8))
 	if o != 0 {
 		return rcv._tab.ByteVector(o + rcv._tab.Pos)
@@ -65,7 +69,7 @@ func (rcv *MacroReferenceData) Description() []byte {
 	return nil
 }
 
-func (rcv *MacroReferenceData) IndxFreq() []byte {
+func (rcv *MacroReferenceData) Description() []byte {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(10))
 	if o != 0 {
 		return rcv._tab.ByteVector(o + rcv._tab.Pos)
@@ -73,7 +77,7 @@ func (rcv *MacroReferenceData) IndxFreq() []byte {
 	return nil
 }
 
-func (rcv *MacroReferenceData) IndxUnits() []byte {
+func (rcv *MacroReferenceData) IndxFreq() []byte {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(12))
 	if o != 0 {
 		return rcv._tab.ByteVector(o + rcv._tab.Pos)
@@ -81,7 +85,7 @@ func (rcv *MacroReferenceData) IndxUnits() []byte {
 	return nil
 }
 
-func (rcv *MacroReferenceData) CountryIso() []byte {
+func (rcv *MacroReferenceData) IndxUnits() []byte {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(14))
 	if o != 0 {
 		return rcv._tab.ByteVector(o + rcv._tab.Pos)
@@ -89,7 +93,7 @@ func (rcv *MacroReferenceData) CountryIso() []byte {
 	return nil
 }
 
-func (rcv *MacroReferenceData) IndxSource() []byte {
+func (rcv *MacroReferenceData) CountryIso() []byte {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(16))
 	if o != 0 {
 		return rcv._tab.ByteVector(o + rcv._tab.Pos)
@@ -97,7 +101,7 @@ func (rcv *MacroReferenceData) IndxSource() []byte {
 	return nil
 }
 
-func (rcv *MacroReferenceData) SeasonalityTransformation() []byte {
+func (rcv *MacroReferenceData) IndxSource() []byte {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(18))
 	if o != 0 {
 		return rcv._tab.ByteVector(o + rcv._tab.Pos)
@@ -105,32 +109,43 @@ func (rcv *MacroReferenceData) SeasonalityTransformation() []byte {
 	return nil
 }
 
+func (rcv *MacroReferenceData) SeasonalityTransformation() []byte {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(20))
+	if o != 0 {
+		return rcv._tab.ByteVector(o + rcv._tab.Pos)
+	}
+	return nil
+}
+
 func MacroReferenceDataStart(builder *flatbuffers.Builder) {
-	builder.StartObject(8)
+	builder.StartObject(9)
+}
+func MacroReferenceDataAddCorrId(builder *flatbuffers.Builder, corrId uint64) {
+	builder.PrependUint64Slot(0, corrId, 0)
 }
 func MacroReferenceDataAddIdBbGlobal(builder *flatbuffers.Builder, idBbGlobal flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(0, flatbuffers.UOffsetT(idBbGlobal), 0)
+	builder.PrependUOffsetTSlot(1, flatbuffers.UOffsetT(idBbGlobal), 0)
 }
 func MacroReferenceDataAddParsekyableDes(builder *flatbuffers.Builder, parsekyableDes flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(1, flatbuffers.UOffsetT(parsekyableDes), 0)
+	builder.PrependUOffsetTSlot(2, flatbuffers.UOffsetT(parsekyableDes), 0)
 }
 func MacroReferenceDataAddDescription(builder *flatbuffers.Builder, description flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(2, flatbuffers.UOffsetT(description), 0)
+	builder.PrependUOffsetTSlot(3, flatbuffers.UOffsetT(description), 0)
 }
 func MacroReferenceDataAddIndxFreq(builder *flatbuffers.Builder, indxFreq flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(3, flatbuffers.UOffsetT(indxFreq), 0)
+	builder.PrependUOffsetTSlot(4, flatbuffers.UOffsetT(indxFreq), 0)
 }
 func MacroReferenceDataAddIndxUnits(builder *flatbuffers.Builder, indxUnits flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(4, flatbuffers.UOffsetT(indxUnits), 0)
+	builder.PrependUOffsetTSlot(5, flatbuffers.UOffsetT(indxUnits), 0)
 }
 func MacroReferenceDataAddCountryIso(builder *flatbuffers.Builder, countryIso flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(5, flatbuffers.UOffsetT(countryIso), 0)
+	builder.PrependUOffsetTSlot(6, flatbuffers.UOffsetT(countryIso), 0)
 }
 func MacroReferenceDataAddIndxSource(builder *flatbuffers.Builder, indxSource flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(6, flatbuffers.UOffsetT(indxSource), 0)
+	builder.PrependUOffsetTSlot(7, flatbuffers.UOffsetT(indxSource), 0)
 }
 func MacroReferenceDataAddSeasonalityTransformation(builder *flatbuffers.Builder, seasonalityTransformation flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(7, flatbuffers.UOffsetT(seasonalityTransformation), 0)
+	builder.PrependUOffsetTSlot(8, flatbuffers.UOffsetT(seasonalityTransformation), 0)
 }
 func MacroReferenceDataEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	return builder.EndObject()

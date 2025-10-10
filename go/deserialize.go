@@ -75,8 +75,8 @@ func DeserializeMacroReferenceData(fbEvent *FB.MacroReferenceData) MacroReferenc
 
 func DeserializeMacroHeadlineEvent(fbEvent *FB.MacroHeadlineEvent) MacroHeadlineEvent {
 	return MacroHeadlineEvent{
-		EventType:         				uint8(fbEvent.EventType()),
-		EventSubType:      				uint8(fbEvent.EventSubtype()),
+		EventType:         				EventType(fbEvent.EventType()),
+		EventSubType:      				EventSubType(fbEvent.EventSubtype()),
 		EventID:           				uint64(fbEvent.EventId()),
 		ObservationPeriod: 				string(fbEvent.ObservationPeriod()),
 		ReleaseStartDT:    				DeserializeDateTime(fbEvent.ReleaseStartDt(nil)),
@@ -93,14 +93,14 @@ func DeserializeMacroCalendarEvent(fbEvent * FB.MacroCalendarEvent) MacroCalenda
 	return MacroCalendarEvent{
 		IDBBGlobal:        		string(fbEvent.IdBbGlobal()),
 		ParsekyableDes:    		string(fbEvent.ParsekyableDes()),
-		EventType:			   	uint8(fbEvent.EventType()),
-		EventSubType:		   	uint8(fbEvent.EventSubtype()),
+		EventType:			   	EventType(fbEvent.EventType()),
+		EventSubType:		   	EventSubType(fbEvent.EventSubtype()),
 		Description:       		string(fbEvent.Description()),
 		EventID:			   	uint64(fbEvent.EventId()),
 		ObservationPeriod:	  	string(fbEvent.ObservationPeriod()),
 		ReleaseStartDT:		   	DeserializeDateTime(fbEvent.ReleaseStartDt(nil)),
 		ReleaseEndDT:		   	DeserializeDateTime(fbEvent.ReleaseEndDt(nil)),
-		ReleaseStatus: 			uint8(fbEvent.ReleaseStatus()),
+		ReleaseStatus: 			ReleaseStatus(fbEvent.ReleaseStatus()),
 		RelevanceValue:			fbEvent.RelevanceValue(),	
 	}
 }

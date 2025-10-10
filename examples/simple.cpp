@@ -13,7 +13,7 @@ int main() {
     ctx.subscribe(request1);
     SubscriptionRequest request2 = {
         .topic = "INJCJC Index",
-        .correlation_id = 1,
+        .correlation_id = 105,
     };
     ctx.subscribe(request2);
     std::this_thread::sleep_for(std::chrono::seconds(10));

@@ -12,6 +12,8 @@ const (
 	SessionStatusTypeSessionStarted        SessionStatusType = 2
 	SessionStatusTypeSessionConnectionDown SessionStatusType = 3
 	SessionStatusTypeSessionTerminated     SessionStatusType = 4
+	SessionStatusTypeSessionInvalidOptions SessionStatusType = 5
+	SessionStatusTypeSessionFailure        SessionStatusType = 6
 	SessionStatusTypeSessionAnother        SessionStatusType = 99
 )
 
@@ -21,6 +23,8 @@ var EnumNamesSessionStatusType = map[SessionStatusType]string{
 	SessionStatusTypeSessionStarted:        "SessionStarted",
 	SessionStatusTypeSessionConnectionDown: "SessionConnectionDown",
 	SessionStatusTypeSessionTerminated:     "SessionTerminated",
+	SessionStatusTypeSessionInvalidOptions: "SessionInvalidOptions",
+	SessionStatusTypeSessionFailure:        "SessionFailure",
 	SessionStatusTypeSessionAnother:        "SessionAnother",
 }
 
@@ -30,6 +34,8 @@ var EnumValuesSessionStatusType = map[string]SessionStatusType{
 	"SessionStarted":        SessionStatusTypeSessionStarted,
 	"SessionConnectionDown": SessionStatusTypeSessionConnectionDown,
 	"SessionTerminated":     SessionStatusTypeSessionTerminated,
+	"SessionInvalidOptions": SessionStatusTypeSessionInvalidOptions,
+	"SessionFailure":        SessionStatusTypeSessionFailure,
 	"SessionAnother":        SessionStatusTypeSessionAnother,
 }
 

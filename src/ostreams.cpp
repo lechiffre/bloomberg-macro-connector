@@ -167,7 +167,8 @@ std::ostream& operator<<(std::ostream& os, const LogMessage& log_message) {
 }
 
 std::ostream& operator<<(std::ostream& os, const MacroReferenceData& data) {
-    os << "MacroReferenceData { id_bb_global: " << data.id_bb_global
+    os << "MacroReferenceData { corr_id: " << data.corr_id
+         << ", id_bb_global: " << data.id_bb_global
          << ", parsekyable_des: " << data.parsekyable_des
             << ", description: " << data.description
             << ", indx_freq: " << data.indx_freq
@@ -181,7 +182,8 @@ std::ostream& operator<<(std::ostream& os, const MacroReferenceData& data) {
 }
 
 std::ostream& operator<<(std::ostream& os, const MacroHeadlineEvent& event) {
-    os << "MacroHeadlineEvent { event_type: " << eventTypeToString(event.event_type)
+    os << "MacroHeadlineEvent { corr_id: " << event.corr_id
+       << ", event_type: " << eventTypeToString(event.event_type)
        << ", event_subtype: " << eventSubTypeToString(event.event_subtype)
        << ", event_id: " << event.event_id
        << ", observation_period: " << event.observation_period
@@ -201,7 +203,8 @@ std::ostream& operator<<(std::ostream& os, const MacroHeadlineEvent& event) {
 }
 
 std::ostream& operator<<(std::ostream& os, const MacroCalendarEvent& event) {
-    os << "MacroCalendarEvent { id_bb_global: " << event.id_bb_global
+    os << "MacroCalendarEvent { corr_id: " << event.corr_id
+       << ", id_bb_global: " << event.id_bb_global
        << ", parsekyable_des: " << event.parsekyable_des
        << ", event_type: " << eventTypeToString(event.event_type)
        << ", event_subtype: " << eventSubTypeToString(event.event_subtype)

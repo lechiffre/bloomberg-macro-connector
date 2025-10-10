@@ -17,6 +17,7 @@ std::vector<MacroReferenceData> createMacroReferenceDataTestData() {
 
     // Valid case #1
     MacroReferenceData valid_data;
+    valid_data.corr_id = 10;
     valid_data.id_bb_global = "BBG002SBJ900";
     valid_data.parsekyable_des = "TEST_INDEX_0";
     valid_data.description = "Valid Description";
@@ -28,6 +29,7 @@ std::vector<MacroReferenceData> createMacroReferenceDataTestData() {
     data.push_back(valid_data);
 
     // Valid case #2
+    valid_data.corr_id = 11;
     valid_data.id_bb_global = "BBG002SBK123";
     valid_data.parsekyable_des = "TEST_INDEX_1";
     valid_data.description = "Another Valid Description";
@@ -39,6 +41,7 @@ std::vector<MacroReferenceData> createMacroReferenceDataTestData() {
     data.push_back(valid_data);
 
     // Valid case #3
+    valid_data.corr_id = 12;
     valid_data.id_bb_global = "BBG002SBX456";
     valid_data.parsekyable_des = "TEST_INDEX_2";
     valid_data.description = "Yet Another Valid Description";
@@ -57,6 +60,7 @@ std::vector<MacroHeadlineEvent> createMacroHeadlineEventTestData() {
 
     // Valid case #1
     MacroHeadlineEvent valid_event;
+    valid_event.corr_id = 11;
     valid_event.event_type = EventType::Actual;
     valid_event.event_subtype = EventSubType::New;
     valid_event.event_id = 1000;
@@ -71,6 +75,7 @@ std::vector<MacroHeadlineEvent> createMacroHeadlineEventTestData() {
     events.push_back(valid_event);
 
     // Valid case #2
+    valid_event.corr_id = 12;
     valid_event.event_type = EventType::Revision;
     valid_event.event_subtype = EventSubType::Update;
     valid_event.event_id = 1001;
@@ -85,6 +90,7 @@ std::vector<MacroHeadlineEvent> createMacroHeadlineEventTestData() {
     events.push_back(valid_event);
 
     // Valid case #3
+    valid_event.corr_id = 13;
     valid_event.event_type = EventType::Calendar;
     valid_event.event_subtype = EventSubType::Unitpaint;
     valid_event.event_id = 1002;
@@ -106,6 +112,7 @@ std::vector<MacroCalendarEvent> createMacroCalendarEventTestData() {
 
     // Valid case #1
     MacroCalendarEvent valid_event;
+    valid_event.corr_id = 11;
     valid_event.id_bb_global = "BBG002SBQ800";
     valid_event.parsekyable_des = "CALENDAR_INDEX_0";
     valid_event.event_type = EventType::Calendar;
@@ -120,6 +127,7 @@ std::vector<MacroCalendarEvent> createMacroCalendarEventTestData() {
     events.push_back(valid_event);
     
     // Valid case #2
+    valid_event.corr_id = 12;
     valid_event.id_bb_global = "BBG002SBQ801";
     valid_event.parsekyable_des = "CALENDAR_INDEX_1";
     valid_event.event_type = EventType::Calendar;
@@ -134,6 +142,7 @@ std::vector<MacroCalendarEvent> createMacroCalendarEventTestData() {
     events.push_back(valid_event);
 
     // Valid case #3
+    valid_event.corr_id = 13;
     valid_event.id_bb_global = "BBG002SBQ802";
     valid_event.parsekyable_des = "CALENDAR_INDEX_2";
     valid_event.event_type = EventType::Calendar;
@@ -156,7 +165,7 @@ TEST_P(MacroReferenceTest, MacroReferenceData) {
     const auto& original_data = GetParam();
 
     flatbuffers::FlatBufferBuilder builder;
-    auto serialized_data = serializeMacroReferenceData(builder, original_data);
+    auto serialized_data = serializeMacroReferenceData(builder, 10, original_data);
     builder.Finish(serialized_data);
 
     // Deserialize the object
@@ -180,7 +189,7 @@ TEST_P(MacroHeadlineEventTest, MacroHeadlineEvent) {
     const auto& original_event = GetParam();
     // Serialize the object
     flatbuffers::FlatBufferBuilder builder;
-    auto serialized_event = serializeMacroHeadlineEvent(builder, original_event);
+    auto serialized_event = serializeMacroHeadlineEvent(builder, 10, original_event);
     builder.Finish(serialized_event);
 
     // Deserialize the object
@@ -213,7 +222,7 @@ TEST_P(MacroCalendarEventTest, MacroCalendarEvent) {
 
     // Serialize the object
     flatbuffers::FlatBufferBuilder builder;
-    auto serialized_event = serializeMacroCalendarEvent(builder, original_event);
+    auto serialized_event = serializeMacroCalendarEvent(builder, 10, original_event);
     builder.Finish(serialized_event);
 
     // Deserialize the object

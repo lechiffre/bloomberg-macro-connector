@@ -17,12 +17,32 @@ enum ModuleType: uint8 {
     ModuleAnother = 99
 }
 
+enum SubscriptionStatusType: uint8 {
+  SubscriptionUnknown = 0,
+  SubscriptionStarted,
+  SubscriptionStreamsActivated,
+  SubscriptionTerminated,
+  SubscriptionSuccess,
+  SubscriptionFailure,
+  SubscriptionAnother = 99,
+}
+
+enum ServiceStatusType: uint8 {
+  ServiceUnknown = 0,
+  ServiceOpened,
+  ServiceClosed,
+  ServiceFailure,
+  ServiceAnother = 99,
+}
+
 enum SessionStatusType: uint8 {
     SessionUnknown = 0,
     SessionConnectionUp = 1,
     SessionStarted = 2,
     SessionConnectionDown = 3,
     SessionTerminated = 4,
+    SessionInvalidOptions = 5,
+    SessionFailure = 6,
     SessionAnother = 99,
 }
 

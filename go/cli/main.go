@@ -7,7 +7,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-
 	"github.com/chzyer/readline"
 )
 
@@ -16,10 +15,10 @@ const (
 	UNSUBSCRIBE = "unsubscribe"
 )
 
-func eventRequest(ctx blpconngo.Context, subscriptionType blpconngo.BlpConnSubscriptionType, corr_id uint64, topic string, action string) {
+func eventRequest(ctx blpconngo.Context, corr_id uint64, topic string, action string) {
 	request := blpconngo.NewSubscriptionRequest()
 	request.SetTopic(topic)
-	request.SetSubscription_type(subscriptionType)
+	// request.SetSubscription_type(subscriptionType)
 	request.SetCorrelation_id(corr_id)
 
 	if action == SUBSCRIBE {
@@ -36,7 +35,7 @@ func processCommand(ctx blpconngo.Context, line string) {
 		return
 	}
 
-	cmd, evt, corrStr, topic := parts[0], parts[1], parts[2], strings.Join(parts[3:], " ")
+	cmd, corrStr, topic := parts[0], parts[1], strings.Join(parts[2:], " ")
 	corrID, err := strconv.ParseUint(corrStr, 10, 64)
 	if err != nil {
 		fmt.Println("Invalid correlation ID")
@@ -44,24 +43,12 @@ func processCommand(ctx blpconngo.Context, line string) {
 	}
 
 	switch cmd {
-	case SUBSCRIBE:
-		if evt == "calendar" {
-			eventRequest(ctx, blpconngo.SubscriptionType_ReleaseCalendar, corrID, topic, SUBSCRIBE)
-		} else if evt == "economic" {
-			eventRequest(ctx, blpconngo.SubscriptionType_HeadlineActuals, corrID, topic, SUBSCRIBE)
-		} else {
-			fmt.Println("Undefined event type")
-		}
-	case UNSUBSCRIBE:
-		if evt == "calendar" {
-			eventRequest(ctx, blpconngo.SubscriptionType_ReleaseCalendar, corrID, topic, UNSUBSCRIBE)
-		} else if evt == "economic" {
-			eventRequest(ctx, blpconngo.SubscriptionType_HeadlineActuals, corrID, topic, UNSUBSCRIBE)
-		} else {
-			fmt.Println("Undefined event type")
-		}
-	default:
-		fmt.Println("Undefined command")
+		case SUBSCRIBE:
+			eventRequest(ctx, corrID, topic, SUBSCRIBE)
+		case UNSUBSCRIBE:
+			eventRequest(ctx, corrID, topic, UNSUBSCRIBE)
+		default:
+			fmt.Println("Undefined command")
 	}
 }
 

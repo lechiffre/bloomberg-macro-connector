@@ -60,11 +60,56 @@ func DeserializeHeadlineCalendarEvent(fbEvent *FB.HeadlineCalendarEvent) Headlin
 	}
 }
 
+func DeserializeMacroReferenceData(fbEvent *FB.MacroReferenceData) MacroReferenceData {
+	return MacroReferenceData{
+		IDBBGlobal:        			string(fbEvent.IdBbGlobal()),
+		ParsekyableDes:    			string(fbEvent.ParsekyableDes()),
+		Description:       			string(fbEvent.Description()),
+		IndxFreq:					string(fbEvent.IndxFreq()),
+		IndxUnits:					string(fbEvent.IndxUnits()),
+		CountryIso:					string(fbEvent.CountryIso()),
+		IndxSource:					string(fbEvent.IndxSource()),
+		SeasonalityTransformation:	string(fbEvent.SeasonalityTransformation()),
+	}
+}
+
+func DeserializeMacroHeadlineEvent(fbEvent *FB.MacroHeadlineEvent) MacroHeadlineEvent {
+	return MacroHeadlineEvent{
+		EventType:         				uint8(fbEvent.EventType()),
+		EventSubType:      				uint8(fbEvent.EventSubtype()),
+		EventID:           				uint64(fbEvent.EventId()),
+		ObservationPeriod: 				string(fbEvent.ObservationPeriod()),
+		ReleaseStartDT:    				DeserializeDateTime(fbEvent.ReleaseStartDt(nil)),
+		ReleaseEndDT:      				DeserializeDateTime(fbEvent.ReleaseEndDt(nil)),
+		PriorEventID:                	uint64(fbEvent.PriorEventId()),
+		PriorObservationPeriod:      	string(fbEvent.PriorObservationPeriod()),
+		PriorEconomicReleaseStartDT: 	DeserializeDateTime(fbEvent.PriorEconomicReleaseStartDt(nil)),
+		PriorEconomicReleaseEndDT:   	DeserializeDateTime(fbEvent.PriorEconomicReleaseEndDt(nil)),
+		Value:                       	DeserializeValue(fbEvent.Value(nil)),
+	}
+}
+
+func DeserializeMacroCalendarEvent(fbEvent * FB.MacroCalendarEvent) MacroCalendarEvent {
+	return MacroCalendarEvent{
+		IDBBGlobal:        		string(fbEvent.IdBbGlobal()),
+		ParsekyableDes:    		string(fbEvent.ParsekyableDes()),
+		EventType:			   	uint8(fbEvent.EventType()),
+		EventSubType:		   	uint8(fbEvent.EventSubtype()),
+		Description:       		string(fbEvent.Description()),
+		EventID:			   	uint64(fbEvent.EventId()),
+		ObservationPeriod:	  	string(fbEvent.ObservationPeriod()),
+		ReleaseStartDT:		   	DeserializeDateTime(fbEvent.ReleaseStartDt(nil)),
+		ReleaseEndDT:		   	DeserializeDateTime(fbEvent.ReleaseEndDt(nil)),
+		ReleaseStatus: 			uint8(fbEvent.ReleaseStatus()),
+		RelevanceValue:			fbEvent.RelevanceValue(),	
+	}
+}
+
 func DeserializeLogMessage(fbLogMessage *FB.LogMessage) LogMessageType {
 	return LogMessageType{
 		LogDT:      DeserializeDateTime(fbLogMessage.LogDt(nil)),
-		Module: fbLogMessage.Module(),
-		Status: fbLogMessage.Status(),
+		Module: 	fbLogMessage.Module(),
+		Status: 	fbLogMessage.Status(),
 		Message:    string(fbLogMessage.Message()),
 	}
 }

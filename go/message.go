@@ -127,6 +127,45 @@ type HeadlineEconomicEvent struct {
 	PriorEconomicReleaseEndDT   time.Time
 }
 
+type MacroReferenceData struct {
+	IDBBGlobal					string
+	ParsekyableDes    			string
+	Description       			string
+	IndxFreq		  			string
+	IndxUnits		  			string
+	CountryIso		  			string
+	IndxSource	      			string
+	SeasonalityTransformation	string
+}
+
+type MacroHeadlineEvent struct {
+	EventType         			uint8
+	EventSubType      			uint8
+	EventID           			uint64
+	ObservationPeriod 			string
+	ReleaseStartDT    			time.Time
+	ReleaseEndDT      			time.Time
+	PriorEventID                uint64
+	PriorObservationPeriod      string
+	PriorEconomicReleaseStartDT time.Time
+	PriorEconomicReleaseEndDT   time.Time
+	Value                       ValueType
+}
+
+type MacroCalendarEvent struct {
+	IDBBGlobal					string
+	ParsekyableDes    			string
+	EventType         			uint8
+	EventSubType      			uint8
+	Description       			string
+	EventID           			uint64
+	ObservationPeriod 			string
+	ReleaseStartDT    			time.Time
+	ReleaseEndDT      			time.Time
+	ReleaseStatus 				uint8 
+	RelevanceValue				float64
+}
+
 type HeadlineCalendarEvent struct {
 	HeadlineBaseEvent
 	ReleaseStatus uint8 

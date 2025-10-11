@@ -62,13 +62,13 @@ func DeserializeHeadlineCalendarEvent(fbEvent *FB.HeadlineCalendarEvent) Headlin
 
 func DeserializeMacroReferenceData(fbEvent *FB.MacroReferenceData) MacroReferenceData {
 	return MacroReferenceData{
-		CorrId:						int64(fbEvent.CorrId()),
+		CorrID:						int64(fbEvent.CorrId()),
 		IDBBGlobal:        			string(fbEvent.IdBbGlobal()),
 		ParsekyableDes:    			string(fbEvent.ParsekyableDes()),
 		Description:       			string(fbEvent.Description()),
 		IndxFreq:					string(fbEvent.IndxFreq()),
 		IndxUnits:					string(fbEvent.IndxUnits()),
-		CountryIso:					string(fbEvent.CountryIso()),
+		CountryISO:					string(fbEvent.CountryIso()),
 		IndxSource:					string(fbEvent.IndxSource()),
 		SeasonalityTransformation:	string(fbEvent.SeasonalityTransformation()),
 	}
@@ -76,7 +76,7 @@ func DeserializeMacroReferenceData(fbEvent *FB.MacroReferenceData) MacroReferenc
 
 func DeserializeMacroHeadlineEvent(fbEvent *FB.MacroHeadlineEvent) MacroHeadlineEvent {
 	return MacroHeadlineEvent{
-		CorrId:							int64(fbEvent.CorrId()),
+		CorrID:							int64(fbEvent.CorrId()),
 		EventType:         				EventType(fbEvent.EventType()),
 		EventSubType:      				EventSubType(fbEvent.EventSubtype()),
 		EventID:           				uint64(fbEvent.EventId()),
@@ -93,7 +93,7 @@ func DeserializeMacroHeadlineEvent(fbEvent *FB.MacroHeadlineEvent) MacroHeadline
 
 func DeserializeMacroCalendarEvent(fbEvent * FB.MacroCalendarEvent) MacroCalendarEvent {
 	return MacroCalendarEvent{
-		CorrId:					int64(fbEvent.CorrId()),
+		CorrID:					int64(fbEvent.CorrId()),
 		IDBBGlobal:        		string(fbEvent.IdBbGlobal()),
 		ParsekyableDes:    		string(fbEvent.ParsekyableDes()),
 		EventType:			   	EventType(fbEvent.EventType()),

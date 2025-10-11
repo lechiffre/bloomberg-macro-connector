@@ -1,5 +1,6 @@
 all:
-	sh install.sh
+	GOBIN=${PWD}/bin go install ./simple
+	GOBIN=${PWD}/bin go install ./cli
 
 setup:
 	go install golang.org/x/tools/cmd/stringer@latest
@@ -11,3 +12,5 @@ setup:
 	stringer -type=EventSubType
 	stringer -type=EventType
 
+test:
+	go test ./tests/deserialize_test.go

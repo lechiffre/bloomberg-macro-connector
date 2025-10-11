@@ -802,8 +802,8 @@ struct MacroReferenceData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
     VT_INDX_SOURCE = 18,
     VT_SEASONALITY_TRANSFORMATION = 20
   };
-  uint64_t corr_id() const {
-    return GetField<uint64_t>(VT_CORR_ID, 0);
+  int64_t corr_id() const {
+    return GetField<int64_t>(VT_CORR_ID, 0);
   }
   const ::flatbuffers::String *id_bb_global() const {
     return GetPointer<const ::flatbuffers::String *>(VT_ID_BB_GLOBAL);
@@ -831,7 +831,7 @@ struct MacroReferenceData FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyField<uint64_t>(verifier, VT_CORR_ID, 8) &&
+           VerifyField<int64_t>(verifier, VT_CORR_ID, 8) &&
            VerifyOffsetRequired(verifier, VT_ID_BB_GLOBAL) &&
            verifier.VerifyString(id_bb_global()) &&
            VerifyOffsetRequired(verifier, VT_PARSEKYABLE_DES) &&
@@ -856,8 +856,8 @@ struct MacroReferenceDataBuilder {
   typedef MacroReferenceData Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_corr_id(uint64_t corr_id) {
-    fbb_.AddElement<uint64_t>(MacroReferenceData::VT_CORR_ID, corr_id, 0);
+  void add_corr_id(int64_t corr_id) {
+    fbb_.AddElement<int64_t>(MacroReferenceData::VT_CORR_ID, corr_id, 0);
   }
   void add_id_bb_global(::flatbuffers::Offset<::flatbuffers::String> id_bb_global) {
     fbb_.AddOffset(MacroReferenceData::VT_ID_BB_GLOBAL, id_bb_global);
@@ -898,7 +898,7 @@ struct MacroReferenceDataBuilder {
 
 inline ::flatbuffers::Offset<MacroReferenceData> CreateMacroReferenceData(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    uint64_t corr_id = 0,
+    int64_t corr_id = 0,
     ::flatbuffers::Offset<::flatbuffers::String> id_bb_global = 0,
     ::flatbuffers::Offset<::flatbuffers::String> parsekyable_des = 0,
     ::flatbuffers::Offset<::flatbuffers::String> description = 0,
@@ -922,7 +922,7 @@ inline ::flatbuffers::Offset<MacroReferenceData> CreateMacroReferenceData(
 
 inline ::flatbuffers::Offset<MacroReferenceData> CreateMacroReferenceDataDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    uint64_t corr_id = 0,
+    int64_t corr_id = 0,
     const char *id_bb_global = nullptr,
     const char *parsekyable_des = nullptr,
     const char *description = nullptr,
@@ -968,8 +968,8 @@ struct MacroHeadlineEvent FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
     VT_PRIOR_ECONOMIC_RELEASE_END_DT = 24,
     VT_VALUE = 26
   };
-  uint64_t corr_id() const {
-    return GetField<uint64_t>(VT_CORR_ID, 0);
+  int64_t corr_id() const {
+    return GetField<int64_t>(VT_CORR_ID, 0);
   }
   BlpConn::FB::EventType event_type() const {
     return static_cast<BlpConn::FB::EventType>(GetField<uint8_t>(VT_EVENT_TYPE, 0));
@@ -1006,7 +1006,7 @@ struct MacroHeadlineEvent FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyField<uint64_t>(verifier, VT_CORR_ID, 8) &&
+           VerifyField<int64_t>(verifier, VT_CORR_ID, 8) &&
            VerifyField<uint8_t>(verifier, VT_EVENT_TYPE, 1) &&
            VerifyField<uint8_t>(verifier, VT_EVENT_SUBTYPE, 1) &&
            VerifyField<int32_t>(verifier, VT_EVENT_ID, 4) &&
@@ -1033,8 +1033,8 @@ struct MacroHeadlineEventBuilder {
   typedef MacroHeadlineEvent Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_corr_id(uint64_t corr_id) {
-    fbb_.AddElement<uint64_t>(MacroHeadlineEvent::VT_CORR_ID, corr_id, 0);
+  void add_corr_id(int64_t corr_id) {
+    fbb_.AddElement<int64_t>(MacroHeadlineEvent::VT_CORR_ID, corr_id, 0);
   }
   void add_event_type(BlpConn::FB::EventType event_type) {
     fbb_.AddElement<uint8_t>(MacroHeadlineEvent::VT_EVENT_TYPE, static_cast<uint8_t>(event_type), 0);
@@ -1082,7 +1082,7 @@ struct MacroHeadlineEventBuilder {
 
 inline ::flatbuffers::Offset<MacroHeadlineEvent> CreateMacroHeadlineEvent(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    uint64_t corr_id = 0,
+    int64_t corr_id = 0,
     BlpConn::FB::EventType event_type = BlpConn::FB::EventType_Unknown,
     BlpConn::FB::EventSubType event_subtype = BlpConn::FB::EventSubType_Unknown,
     int32_t event_id = 0,
@@ -1112,7 +1112,7 @@ inline ::flatbuffers::Offset<MacroHeadlineEvent> CreateMacroHeadlineEvent(
 
 inline ::flatbuffers::Offset<MacroHeadlineEvent> CreateMacroHeadlineEventDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    uint64_t corr_id = 0,
+    int64_t corr_id = 0,
     BlpConn::FB::EventType event_type = BlpConn::FB::EventType_Unknown,
     BlpConn::FB::EventSubType event_subtype = BlpConn::FB::EventSubType_Unknown,
     int32_t event_id = 0,
@@ -1158,8 +1158,8 @@ struct MacroCalendarEvent FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
     VT_RELEASE_STATUS = 24,
     VT_RELEVANCE_VALUE = 26
   };
-  uint64_t corr_id() const {
-    return GetField<uint64_t>(VT_CORR_ID, 0);
+  int64_t corr_id() const {
+    return GetField<int64_t>(VT_CORR_ID, 0);
   }
   const ::flatbuffers::String *id_bb_global() const {
     return GetPointer<const ::flatbuffers::String *>(VT_ID_BB_GLOBAL);
@@ -1196,7 +1196,7 @@ struct MacroCalendarEvent FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyField<uint64_t>(verifier, VT_CORR_ID, 8) &&
+           VerifyField<int64_t>(verifier, VT_CORR_ID, 8) &&
            VerifyOffsetRequired(verifier, VT_ID_BB_GLOBAL) &&
            verifier.VerifyString(id_bb_global()) &&
            VerifyOffsetRequired(verifier, VT_PARSEKYABLE_DES) &&
@@ -1222,8 +1222,8 @@ struct MacroCalendarEventBuilder {
   typedef MacroCalendarEvent Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_corr_id(uint64_t corr_id) {
-    fbb_.AddElement<uint64_t>(MacroCalendarEvent::VT_CORR_ID, corr_id, 0);
+  void add_corr_id(int64_t corr_id) {
+    fbb_.AddElement<int64_t>(MacroCalendarEvent::VT_CORR_ID, corr_id, 0);
   }
   void add_id_bb_global(::flatbuffers::Offset<::flatbuffers::String> id_bb_global) {
     fbb_.AddOffset(MacroCalendarEvent::VT_ID_BB_GLOBAL, id_bb_global);
@@ -1273,7 +1273,7 @@ struct MacroCalendarEventBuilder {
 
 inline ::flatbuffers::Offset<MacroCalendarEvent> CreateMacroCalendarEvent(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    uint64_t corr_id = 0,
+    int64_t corr_id = 0,
     ::flatbuffers::Offset<::flatbuffers::String> id_bb_global = 0,
     ::flatbuffers::Offset<::flatbuffers::String> parsekyable_des = 0,
     BlpConn::FB::EventType event_type = BlpConn::FB::EventType_Unknown,
@@ -1303,7 +1303,7 @@ inline ::flatbuffers::Offset<MacroCalendarEvent> CreateMacroCalendarEvent(
 
 inline ::flatbuffers::Offset<MacroCalendarEvent> CreateMacroCalendarEventDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    uint64_t corr_id = 0,
+    int64_t corr_id = 0,
     const char *id_bb_global = nullptr,
     const char *parsekyable_des = nullptr,
     BlpConn::FB::EventType event_type = BlpConn::FB::EventType_Unknown,

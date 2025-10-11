@@ -23,8 +23,9 @@ flatbuffers::Offset<FB::DateTime> serializeDateTime(
 }
 
 flatbuffers::Offset<FB::DateTime> extractDateTime(
-    flatbuffers::FlatBufferBuilder& builder, const blpapi::Datetime& blpDatetime) {
-    // Remove validation, assume blpDatetime is correct
+        flatbuffers::FlatBufferBuilder& builder,
+        const blpapi::Datetime& blpDatetime)
+{
     std::tm timeStruct = {};
     timeStruct.tm_year = blpDatetime.year() - 1900;
     timeStruct.tm_mon = blpDatetime.month() - 1;   // tm_mon is 0-based
@@ -34,10 +35,10 @@ flatbuffers::Offset<FB::DateTime> extractDateTime(
     timeStruct.tm_sec = blpDatetime.seconds();
 
     std::time_t timeSinceEpoch = std::mktime(&timeStruct);
-    uint64_t microseconds = static_cast<uint64_t>(timeSinceEpoch) * 1000000 + blpDatetime.microseconds();
-
-    // Create and return the FlatBuffers DateTime object
-    return FB::CreateDateTime(builder, microseconds, static_cast<int16_t>(blpDatetime.offset()));
+    uint64_t microseconds = static_cast<uint64_t>(timeSinceEpoch) * 1000000 +
+        blpDatetime.microseconds();
+    return FB::CreateDateTime(builder, microseconds,
+            static_cast<int16_t>(blpDatetime.offset()));
 }
 
 flatbuffers::Offset<FB::Value> serializeValue(
@@ -63,9 +64,12 @@ static int getIntFromElement(const blpapi::Element& elem) {
 }
 
 flatbuffers::Offset<FB::Value> extractValue(
-    flatbuffers::FlatBufferBuilder& builder, const blpapi::Element& elem, const blpapi::Name name) {
+        flatbuffers::FlatBufferBuilder& builder, const blpapi::Element& elem, 
+        const blpapi::Name name)
+{
     if (!elem.hasElement(name)) {
-        return FB::CreateValue(builder, 0, std::nan(""), std::nan(""), std::nan(""), std::nan(""), std::nan(""), std::nan(""));
+        return FB::CreateValue(builder, 0, std::nan(""), std::nan(""),
+                std::nan(""), std::nan(""), std::nan(""), std::nan(""));
     }
 
     const blpapi::Element subElem = elem.getElement(name);
@@ -73,16 +77,29 @@ flatbuffers::Offset<FB::Value> extractValue(
 
     if (choice.name() == SINGLE) {
         double value = getFloatFromElement(choice);
-        return FB::CreateValue(builder, 1, value, value, value, value, value, 0.0);
+        return FB::CreateValue(builder, 1, value, value, value, value, value,
+                0.0);
     } else if (choice.name() == DISTRIBUTION) {
-        int number = choice.hasElement(NUMBER) ? getIntFromElement(choice.getElement(NUMBER)) : 0;
-        double average = choice.hasElement(AVERAGE) ? getFloatFromElement(choice.getElement(AVERAGE)) : std::nan("");
-        double low = choice.hasElement(LOW) ? getFloatFromElement(choice.getElement(LOW)) : std::nan("");
-        double high = choice.hasElement(HIGH) ? getFloatFromElement(choice.getElement(HIGH)) : std::nan("");
-        double median = choice.hasElement(MEDIAN) ? getFloatFromElement(choice.getElement(MEDIAN)) : std::nan("");
-        double stdDev = choice.hasElement(STANDARD_DEVIATION) ? getFloatFromElement(choice.getElement(STANDARD_DEVIATION)) : std::nan("");
-
-        return FB::CreateValue(builder, number, std::nan(""), low, high, median, average, stdDev);
+        int number = choice.hasElement(NUMBER) 
+            ? getIntFromElement(choice.getElement(NUMBER)) 
+            : 0;
+        double average = choice.hasElement(AVERAGE)
+            ? getFloatFromElement(choice.getElement(AVERAGE))
+            : std::nan("");
+        double low = choice.hasElement(LOW) 
+            ? getFloatFromElement(choice.getElement(LOW)) 
+            : std::nan("");
+        double high = choice.hasElement(HIGH) 
+            ? getFloatFromElement(choice.getElement(HIGH)) 
+            : std::nan("");
+        double median = choice.hasElement(MEDIAN) 
+            ? getFloatFromElement(choice.getElement(MEDIAN)) 
+            : std::nan("");
+        double stdDev = choice.hasElement(STANDARD_DEVIATION) 
+            ? getFloatFromElement(choice.getElement(STANDARD_DEVIATION)) 
+            : std::nan("");
+        return FB::CreateValue(builder, number, std::nan(""), low, high, median,
+                average, stdDev);
     }
 
     throw std::runtime_error("Unexpected choice type in extractValue.");
@@ -98,13 +115,11 @@ flatbuffers::Offset<FB::HeadlineEconomicEvent> serializeHeadlineEconomicEvent(
     auto release_start_dt = serializeDateTime(builder, event.release_start_dt);
     auto release_end_dt = serializeDateTime(builder, event.release_end_dt);
     auto prior_observation_period = builder.CreateString(event.prior_observation_period);
-
     auto value = serializeValue(builder, event.value);
     auto prior_value = serializeValue(builder, event.prior_value);
     auto prior_release_start_dt = serializeDateTime(builder, event.prior_economic_release_start_dt);
     auto prior_release_end_dt = serializeDateTime(builder, event.prior_economic_release_end_dt);
     END_PROFILE_FUNCTION()
-    // All fields are mapped correctly, types are cast to FlatBuffers enums
     return FB::CreateHeadlineEconomicEvent(
         builder,
         id_bb_global,
@@ -126,7 +141,7 @@ flatbuffers::Offset<FB::HeadlineEconomicEvent> serializeHeadlineEconomicEvent(
 }
 
 flatbuffers::Offset<FB::MacroReferenceData> serializeMacroReferenceData(
-        flatbuffers::FlatBufferBuilder& builder, uint64_t corrId,
+        flatbuffers::FlatBufferBuilder& builder,
         const MacroReferenceData& data) {
     PROFILE_FUNCTION()
     auto id_bb_global = builder.CreateString(data.id_bb_global);
@@ -140,7 +155,7 @@ flatbuffers::Offset<FB::MacroReferenceData> serializeMacroReferenceData(
             data.seasonality_transformation);
     END_PROFILE_FUNCTION()
     return FB::CreateMacroReferenceData(builder,
-            corrId,
+            data.corr_id,
             id_bb_global,
             parsekyable_des,
             description,
@@ -152,7 +167,7 @@ flatbuffers::Offset<FB::MacroReferenceData> serializeMacroReferenceData(
 }
 
 flatbuffers::Offset<FB::MacroHeadlineEvent> serializeMacroHeadlineEvent(
-        flatbuffers::FlatBufferBuilder& builder, uint64_t corrId,
+        flatbuffers::FlatBufferBuilder& builder,
         const MacroHeadlineEvent& event) {
     PROFILE_FUNCTION()
     auto observation_period = builder.CreateString(event.observation_period);
@@ -168,7 +183,7 @@ flatbuffers::Offset<FB::MacroHeadlineEvent> serializeMacroHeadlineEvent(
     END_PROFILE_FUNCTION()
     return FB::CreateMacroHeadlineEvent(
             builder,
-            corrId,
+            event.corr_id,
             static_cast<FB::EventType>(event.event_type),
             static_cast<FB::EventSubType>(event.event_subtype),
             event.event_id,
@@ -183,7 +198,7 @@ flatbuffers::Offset<FB::MacroHeadlineEvent> serializeMacroHeadlineEvent(
 }
 
 flatbuffers::Offset<FB::MacroCalendarEvent> serializeMacroCalendarEvent(
-        flatbuffers::FlatBufferBuilder& builder, uint64_t corrId,
+        flatbuffers::FlatBufferBuilder& builder,
         const MacroCalendarEvent& event) {
     PROFILE_FUNCTION()
     auto id_bb_global = builder.CreateString(event.id_bb_global);
@@ -195,7 +210,7 @@ flatbuffers::Offset<FB::MacroCalendarEvent> serializeMacroCalendarEvent(
     END_PROFILE_FUNCTION()
     return FB::CreateMacroCalendarEvent(
         builder,
-        corrId,
+        event.corr_id,
         id_bb_global,
         parsekyable_des,
         static_cast<FB::EventType>(event.event_type),
@@ -240,15 +255,20 @@ flatbuffers::Offset<FB::LogMessage> serializeLogMessage(
     auto message = builder.CreateString(log_message.message);
     auto log_dt = serializeDateTime(builder, log_message.log_dt);
     END_PROFILE_FUNCTION()
-    return FB::CreateLogMessage(builder, log_dt, log_message.module, // Fix: Serialize the module field
-        log_message.status, log_message.correlation_id, message); // Fix: Serialize the correlation_id field
+    return FB::CreateLogMessage(
+            builder,
+            log_dt,
+            log_message.module, // Fix: Serialize the module field
+            log_message.status,
+            log_message.correlation_id,
+            message); // Fix: Serialize the correlation_id field
 }
 
 flatbuffers::FlatBufferBuilder buildBufferMacroReferenceData(
-        uint64_t corrId, MacroReferenceData& data) {
+        MacroReferenceData& data) {
     PROFILE_FUNCTION()
     flatbuffers::FlatBufferBuilder builder;
-    auto fb_macro_data = serializeMacroReferenceData(builder, corrId, data).Union();
+    auto fb_macro_data = serializeMacroReferenceData(builder, data).Union();
     auto fb_main = FB::CreateMain(builder,
             FB::Message::Message_MacroReferenceData, fb_macro_data);
     builder.Finish(fb_main);
@@ -257,11 +277,10 @@ flatbuffers::FlatBufferBuilder buildBufferMacroReferenceData(
 }
 
 flatbuffers::FlatBufferBuilder buildBufferMacroHeadlineEvent(
-        uint64_t corrId, MacroHeadlineEvent& event) {
+        MacroHeadlineEvent& event) {
     PROFILE_FUNCTION()
     flatbuffers::FlatBufferBuilder builder;
-    auto fb_macro_headline = serializeMacroHeadlineEvent(builder, corrId,
-            event).Union();
+    auto fb_macro_headline = serializeMacroHeadlineEvent(builder, event).Union();
     auto fb_main = FB::CreateMain(builder,
             FB::Message::Message_MacroHeadlineEvent, fb_macro_headline);
     builder.Finish(fb_main);
@@ -270,11 +289,10 @@ flatbuffers::FlatBufferBuilder buildBufferMacroHeadlineEvent(
 }
 
 flatbuffers::FlatBufferBuilder buildBufferMacroCalendarEvent(
-        uint64_t corrId, MacroCalendarEvent& event) {
+        MacroCalendarEvent& event) {
     PROFILE_FUNCTION()
     flatbuffers::FlatBufferBuilder builder;
-    auto fb_macro_calendar = serializeMacroCalendarEvent(builder, corrId,
-            event).Union();
+    auto fb_macro_calendar = serializeMacroCalendarEvent(builder, event).Union();
     auto fb_main = FB::CreateMain(builder,
         FB::Message::Message_MacroCalendarEvent, fb_macro_calendar);
     builder.Finish(fb_main);

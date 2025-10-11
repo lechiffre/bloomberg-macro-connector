@@ -28,7 +28,7 @@ class MacroReferenceData(object):
     def CorrId(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
         if o != 0:
-            return self._tab.Get(flatbuffers.number_types.Uint64Flags, o + self._tab.Pos)
+            return self._tab.Get(flatbuffers.number_types.Int64Flags, o + self._tab.Pos)
         return 0
 
     # MacroReferenceData
@@ -94,7 +94,7 @@ def Start(builder):
     MacroReferenceDataStart(builder)
 
 def MacroReferenceDataAddCorrId(builder, corrId):
-    builder.PrependUint64Slot(0, corrId, 0)
+    builder.PrependInt64Slot(0, corrId, 0)
 
 def AddCorrId(builder, corrId):
     MacroReferenceDataAddCorrId(builder, corrId)

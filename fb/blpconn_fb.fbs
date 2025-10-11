@@ -112,7 +112,7 @@ table HeadlineEconomicEvent {
 }
 
 table MacroReferenceData {
-    corr_id: uint64;
+    corr_id: int64;
     id_bb_global: string (required);
     parsekyable_des: string (required);
     description: string;
@@ -124,7 +124,7 @@ table MacroReferenceData {
 }
 
 table MacroHeadlineEvent {
-    corr_id: uint64;
+    corr_id: int64;
     event_type: EventType;
     event_subtype: EventSubType;
     event_id: int;
@@ -139,7 +139,7 @@ table MacroHeadlineEvent {
 }
 
 table MacroCalendarEvent {
-    corr_id: uint64;
+    corr_id: int64;
     id_bb_global: string (required);
     parsekyable_des: string (required);
     event_type: EventType;

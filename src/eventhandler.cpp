@@ -38,7 +38,7 @@ static void sendNotification(flatbuffers::FlatBufferBuilder& builder, Logger *lo
     logger->notify(buffer, size);
 }
 
-void processMacroEvent(uint64_t corrId, const blpapi::Element& elem,
+void processMacroEvent(int64_t corrId, const blpapi::Element& elem,
         Logger& logger) {
     PROFILE_FUNCTION()
     if (elem.name() == MACRO_HEADLINE_EVENT) {
@@ -107,7 +107,7 @@ bool processSubscriptionData(const blpapi::Event& event, blpapi::Session *sessio
         blpapi::Message msg = msgIter.message();
         blpapi::Element elem = msg.asElement();
         blpapi::CorrelationId id = msg.correlationId();
-        uint64_t corrId = id.valueType() == blpapi::CorrelationId::ValueType::INT_VALUE
+        int64_t corrId = id.valueType() == blpapi::CorrelationId::ValueType::INT_VALUE
             ? id.asInteger() : 0;
         if (elem.name() == MACRO_EVENT) {
             for (std::size_t i = 0; i < elem.numValues(); ++i) {
@@ -122,11 +122,10 @@ bool processSubscriptionData(const blpapi::Event& event, blpapi::Session *sessio
                 processEconomicEvent(sub_elem, logger);
             }
         } else {
-            uint64_t correlation_id = msg.correlationId().asInteger();
             logger.log(
                 static_cast<uint8_t>(Module::Heartbeat),
                 0,
-                correlation_id,
+                corrId,
                 "Subscription Heartbeat");
         }
     }
@@ -184,7 +183,7 @@ bool processSubscriptionStatus(const blpapi::Event& event, blpapi::Session *sess
     const uint8_t module = static_cast<uint8_t>(Module::Subscription);
     while (msgIter.next()) {
         blpapi::Message msg = msgIter.message();
-        uint64_t correlation_id = msg.correlationId().asInteger();
+        int64_t correlation_id = msg.correlationId().asInteger();
         blpapi::Element elem = msg.asElement();
         std::ostringstream oss;
         oss << elem;

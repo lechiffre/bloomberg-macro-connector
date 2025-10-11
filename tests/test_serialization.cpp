@@ -165,7 +165,7 @@ TEST_P(MacroReferenceTest, MacroReferenceData) {
     const auto& original_data = GetParam();
 
     flatbuffers::FlatBufferBuilder builder;
-    auto serialized_data = serializeMacroReferenceData(builder, 10, original_data);
+    auto serialized_data = serializeMacroReferenceData(builder, original_data);
     builder.Finish(serialized_data);
 
     // Deserialize the object
@@ -189,7 +189,7 @@ TEST_P(MacroHeadlineEventTest, MacroHeadlineEvent) {
     const auto& original_event = GetParam();
     // Serialize the object
     flatbuffers::FlatBufferBuilder builder;
-    auto serialized_event = serializeMacroHeadlineEvent(builder, 10, original_event);
+    auto serialized_event = serializeMacroHeadlineEvent(builder, original_event);
     builder.Finish(serialized_event);
 
     // Deserialize the object
@@ -222,7 +222,7 @@ TEST_P(MacroCalendarEventTest, MacroCalendarEvent) {
 
     // Serialize the object
     flatbuffers::FlatBufferBuilder builder;
-    auto serialized_event = serializeMacroCalendarEvent(builder, 10, original_event);
+    auto serialized_event = serializeMacroCalendarEvent(builder, original_event);
     builder.Finish(serialized_event);
 
     // Deserialize the object

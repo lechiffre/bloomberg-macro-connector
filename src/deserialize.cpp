@@ -66,6 +66,7 @@ MacroReferenceData toMacroReferenceData(
         const BlpConn::FB::MacroReferenceData* fb_data) {
     PROFILE_FUNCTION()
     BlpConn::MacroReferenceData data;
+    data.corr_id = fb_data->corr_id();
     data.id_bb_global = fb_data->id_bb_global()->str();
     data.parsekyable_des = fb_data->parsekyable_des()->str();
     data.description = fb_data->description()->str();
@@ -82,6 +83,7 @@ MacroHeadlineEvent toMacroHeadlineEvent(
         const BlpConn::FB::MacroHeadlineEvent* fb_event) {
     PROFILE_FUNCTION()
     BlpConn::MacroHeadlineEvent event;
+    event.corr_id = fb_event->corr_id();
     event.event_type = static_cast<BlpConn::EventType>(
             fb_event->event_type());
     event.event_subtype = static_cast<BlpConn::EventSubType>(
@@ -107,6 +109,7 @@ MacroCalendarEvent toMacroCalendarEvent(
         const BlpConn::FB::MacroCalendarEvent* fb_event) {
     PROFILE_FUNCTION()
     BlpConn::MacroCalendarEvent event;
+    event.corr_id = fb_event->corr_id();
     event.id_bb_global = fb_event->id_bb_global()->str();
     event.parsekyable_des = fb_event->parsekyable_des()->str();
     event.event_type = static_cast<BlpConn::EventType>(

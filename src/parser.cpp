@@ -492,7 +492,7 @@ flatbuffers::Offset<FB::HeadlineCalendarEvent> serializeHeadlineCalendarEvent(
 }
 
 flatbuffers::Offset<FB::MacroReferenceData> serializeMacroReferenceData(
-        flatbuffers::FlatBufferBuilder& builder, uint64_t corrId,
+        flatbuffers::FlatBufferBuilder& builder, int64_t corrId,
         const blpapi::Element& elem) {
     auto id_bb_global = fbString(builder, elem, ID_BB_GLOBAL);
     auto parsekyable_des = fbString(builder, elem, PARSEKYABLE_DES);
@@ -509,7 +509,7 @@ flatbuffers::Offset<FB::MacroReferenceData> serializeMacroReferenceData(
 }
 
 flatbuffers::Offset<FB::MacroHeadlineEvent> serializeMacroHeadlineEvent(
-        flatbuffers::FlatBufferBuilder& builder, uint64_t corrId,
+        flatbuffers::FlatBufferBuilder& builder, int64_t corrId,
         const blpapi::Element& elem) {
     int event_type = elem.hasElement(EVENT_TYPE)
                          ? eventTypeFromString(getString(elem, EVENT_TYPE))
@@ -557,7 +557,7 @@ flatbuffers::Offset<FB::MacroHeadlineEvent> serializeMacroHeadlineEvent(
 }
 
 flatbuffers::Offset<FB::MacroCalendarEvent> serializeMacroCalendarEvent(
-        flatbuffers::FlatBufferBuilder& builder, uint64_t corrId,
+        flatbuffers::FlatBufferBuilder& builder, int64_t corrId,
         const blpapi::Element& elem) {
     auto id_bb_global = fbString(builder, elem, ID_BB_GLOBAL);
     auto parsekyable_des = fbString(builder, elem, PARSEKYABLE_DES);
@@ -612,7 +612,7 @@ flatbuffers::FlatBufferBuilder buildBufferCalendarEvent(
 }
 
 flatbuffers::FlatBufferBuilder buildBufferMacroReferenceData(
-        uint64_t corrId, const blpapi::Element& elem) {
+        int64_t corrId, const blpapi::Element& elem) {
     flatbuffers::FlatBufferBuilder builder;
     auto fb_macro_reference = serializeMacroReferenceData(builder, corrId,
             elem).Union();
@@ -623,7 +623,7 @@ flatbuffers::FlatBufferBuilder buildBufferMacroReferenceData(
 }
 
 flatbuffers::FlatBufferBuilder buildBufferMacroHeadlineEvent(
-        uint64_t corrId, const blpapi::Element& elem) {
+        int64_t corrId, const blpapi::Element& elem) {
     flatbuffers::FlatBufferBuilder builder;
     auto fb_macro_headline = serializeMacroHeadlineEvent(builder, corrId,
             elem).Union();
@@ -634,7 +634,7 @@ flatbuffers::FlatBufferBuilder buildBufferMacroHeadlineEvent(
 }
 
 flatbuffers::FlatBufferBuilder buildBufferMacroCalendarEvent(
-        uint64_t corrId, const blpapi::Element& elem) {
+        int64_t corrId, const blpapi::Element& elem) {
     flatbuffers::FlatBufferBuilder builder;
     auto fb_macro_calendar = serializeMacroCalendarEvent(builder, corrId,
             elem).Union();
@@ -725,7 +725,7 @@ HeadlineCalendarEvent parseHeadlineCalendarEvent(const blpapi::Element& elem) {
     return message;
 }
 
-MacroReferenceData parseMacroReferenceData(uint64_t corrId,
+MacroReferenceData parseMacroReferenceData(int64_t corrId,
         const blpapi::Element& elem) {
     PROFILE_FUNCTION()
     MacroReferenceData message;
@@ -758,7 +758,7 @@ MacroReferenceData parseMacroReferenceData(uint64_t corrId,
     return message;
 }
 
-MacroHeadlineEvent parseMacroHeadlineEvent(uint64_t corrId,
+MacroHeadlineEvent parseMacroHeadlineEvent(int64_t corrId,
         const blpapi::Element& elem) {
     PROFILE_FUNCTION()
     MacroHeadlineEvent message;
@@ -803,7 +803,7 @@ MacroHeadlineEvent parseMacroHeadlineEvent(uint64_t corrId,
     return message;
 }
 
-MacroCalendarEvent parseMacroCalendarEvent(uint64_t corrId,
+MacroCalendarEvent parseMacroCalendarEvent(int64_t corrId,
         const blpapi::Element& elem) {
     PROFILE_FUNCTION()
     MacroCalendarEvent message;

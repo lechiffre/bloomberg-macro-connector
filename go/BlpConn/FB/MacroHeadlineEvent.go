@@ -41,16 +41,16 @@ func (rcv *MacroHeadlineEvent) Table() flatbuffers.Table {
 	return rcv._tab
 }
 
-func (rcv *MacroHeadlineEvent) CorrId() uint64 {
+func (rcv *MacroHeadlineEvent) CorrId() int64 {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(4))
 	if o != 0 {
-		return rcv._tab.GetUint64(o + rcv._tab.Pos)
+		return rcv._tab.GetInt64(o + rcv._tab.Pos)
 	}
 	return 0
 }
 
-func (rcv *MacroHeadlineEvent) MutateCorrId(n uint64) bool {
-	return rcv._tab.MutateUint64Slot(4, n)
+func (rcv *MacroHeadlineEvent) MutateCorrId(n int64) bool {
+	return rcv._tab.MutateInt64Slot(4, n)
 }
 
 func (rcv *MacroHeadlineEvent) EventType() EventType {
@@ -185,8 +185,8 @@ func (rcv *MacroHeadlineEvent) Value(obj *Value) *Value {
 func MacroHeadlineEventStart(builder *flatbuffers.Builder) {
 	builder.StartObject(12)
 }
-func MacroHeadlineEventAddCorrId(builder *flatbuffers.Builder, corrId uint64) {
-	builder.PrependUint64Slot(0, corrId, 0)
+func MacroHeadlineEventAddCorrId(builder *flatbuffers.Builder, corrId int64) {
+	builder.PrependInt64Slot(0, corrId, 0)
 }
 func MacroHeadlineEventAddEventType(builder *flatbuffers.Builder, eventType EventType) {
 	builder.PrependByteSlot(1, byte(eventType), 0)

@@ -41,16 +41,16 @@ func (rcv *MacroCalendarEvent) Table() flatbuffers.Table {
 	return rcv._tab
 }
 
-func (rcv *MacroCalendarEvent) CorrId() uint64 {
+func (rcv *MacroCalendarEvent) CorrId() int64 {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(4))
 	if o != 0 {
-		return rcv._tab.GetUint64(o + rcv._tab.Pos)
+		return rcv._tab.GetInt64(o + rcv._tab.Pos)
 	}
 	return 0
 }
 
-func (rcv *MacroCalendarEvent) MutateCorrId(n uint64) bool {
-	return rcv._tab.MutateUint64Slot(4, n)
+func (rcv *MacroCalendarEvent) MutateCorrId(n int64) bool {
+	return rcv._tab.MutateInt64Slot(4, n)
 }
 
 func (rcv *MacroCalendarEvent) IdBbGlobal() []byte {
@@ -174,8 +174,8 @@ func (rcv *MacroCalendarEvent) MutateRelevanceValue(n float64) bool {
 func MacroCalendarEventStart(builder *flatbuffers.Builder) {
 	builder.StartObject(12)
 }
-func MacroCalendarEventAddCorrId(builder *flatbuffers.Builder, corrId uint64) {
-	builder.PrependUint64Slot(0, corrId, 0)
+func MacroCalendarEventAddCorrId(builder *flatbuffers.Builder, corrId int64) {
+	builder.PrependInt64Slot(0, corrId, 0)
 }
 func MacroCalendarEventAddIdBbGlobal(builder *flatbuffers.Builder, idBbGlobal flatbuffers.UOffsetT) {
 	builder.PrependUOffsetTSlot(1, flatbuffers.UOffsetT(idBbGlobal), 0)

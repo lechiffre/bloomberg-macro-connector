@@ -86,7 +86,7 @@ std::string fbGetNextFileName(const std::string& dir) {
  * @param size The size of the buffer.
  * @param filename The name of the file to write to.
  */
-void fbBufferToFile(uint8_t* buffer, size_t size, const std::string& filename) {
+void fbBufferToFile(const uint8_t* buffer, size_t size, const std::string& filename) {
     if (!buffer) {
         std::cerr << "Buffer is null" << std::endl;
         throw std::runtime_error("Buffer is null");

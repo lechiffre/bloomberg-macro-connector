@@ -141,7 +141,7 @@ type HeadlineEconomicEvent struct {
 }
 
 type MacroReferenceData struct {
-	CorrId						uint64  `json:"corr_id"`
+	CorrId						int64  `json:"corr_id"`
 	IDBBGlobal					string  `json:"id_bb_global"`
 	ParsekyableDes    			string	`json:"parsekyable_des"`
 	Description       			string  `json:"description"`
@@ -153,7 +153,7 @@ type MacroReferenceData struct {
 }
 
 type MacroHeadlineEvent struct {
-	CorrId						uint64  		`json:"corr_id"`
+	CorrId						int64  		`json:"corr_id"`
 	EventType         			EventType		`json:"event_type"`
 	EventSubType      			EventSubType	`json:"event_subtype"`
 	EventID           			uint64			`json:"event_id"`
@@ -168,7 +168,7 @@ type MacroHeadlineEvent struct {
 }
 
 type MacroCalendarEvent struct {
-	CorrId						uint64  		`json:"corr_id"`
+	CorrId						int64  		`json:"corr_id"`
 	IDBBGlobal					string  		`json:"id_bb_global"`
 	ParsekyableDes    			string 			`json:"parsekyable_des"`
 	EventType         			EventType		`json:"event_type"`

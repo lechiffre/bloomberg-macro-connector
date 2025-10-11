@@ -12,7 +12,7 @@ TEST(Context, Subscription) {
     ctx.addNotificationHandler(defaultObserver);
     SubscriptionRequest request = {
             .topic = "CATBTOTB Index",
-            .correlation_id = 1
+            .correlation_id = 12
     };
     EXPECT_EQ(ctx.subscribe(request), 0);
     std::this_thread::sleep_for(std::chrono::seconds(10));

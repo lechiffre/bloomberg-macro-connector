@@ -1,11 +1,13 @@
 package blpconngo
 
 import (
-	"encoding/json"
+	_ "encoding/json"
 	"blpconngo/BlpConn/FB"
 	flatbuffers "github.com/google/flatbuffers/go"
 	"fmt"
 )
+
+var referenceMap = NewReferenceMap()
 
 func NativeHandler(bufferSlice []byte) {
 	main := FB.GetRootAsMain(bufferSlice, 0)
@@ -16,16 +18,6 @@ func NativeHandler(bufferSlice []byte) {
 	unionTable := new(flatbuffers.Table)
 	if main.Message(unionTable) {
 		switch main.MessageType() {
-			case FB.MessageHeadlineEconomicEvent:
-				var fbEvent = new(FB.HeadlineEconomicEvent)
-				fbEvent.Init(unionTable.Bytes, unionTable.Pos)
-				event := DeserializeHeadlineEconomicEvent(fbEvent)
-				fmt.Println(event)
-			case FB.MessageHeadlineCalendarEvent:
-				var fbEvent = new(FB.HeadlineCalendarEvent)
-				fbEvent.Init(unionTable.Bytes, unionTable.Pos)
-				event := DeserializeHeadlineCalendarEvent(fbEvent)
-				fmt.Println(event)
 			case FB.MessageLogMessage:
 				var fbEvent = new(FB.LogMessage)
 				fbEvent.Init(unionTable.Bytes, unionTable.Pos)
@@ -35,35 +27,23 @@ func NativeHandler(bufferSlice []byte) {
 				var fbEvent = new(FB.MacroReferenceData)
 				fbEvent.Init(unionTable.Bytes, unionTable.Pos)
 				event := DeserializeMacroReferenceData(fbEvent)
-				fmt.Println("MacroReferenceData")
+				referenceMap.Add(event)
+				fmt.Println("Macro Reference Data:")
 				fmt.Println(event)
-				data, err := json.Marshal(event); if err != nil {
-					fmt.Println("Error parsing MacroReferenceData")
-					break;
-				}
-				fmt.Println(string(data))
 			case FB.MessageMacroHeadlineEvent:
 				var fbEvent = new(FB.MacroHeadlineEvent)
 				fbEvent.Init(unionTable.Bytes, unionTable.Pos)
-				event := DeserializeMacroHeadlineEvent(fbEvent)
-				fmt.Println("MacroHeadlineEvent")
+				_event := DeserializeMacroHeadlineEvent(fbEvent)
+				event := referenceMap.fillHeadlineEvent(_event)
+				fmt.Println("Macro Headline Event:")
 				fmt.Println(event)
-				data, err := json.Marshal(event); if err != nil {
-					fmt.Println("Error parsing MacroHeadlineEvent")
-					break;
-				}
-				fmt.Println(string(data))
 			case FB.MessageMacroCalendarEvent:
 				var fbEvent = new(FB.MacroCalendarEvent)
 				fbEvent.Init(unionTable.Bytes, unionTable.Pos)
-				event := DeserializeMacroCalendarEvent(fbEvent)
-				fmt.Println("MacroCalendarEvent")
+				_event := DeserializeMacroCalendarEvent(fbEvent)
+				event := referenceMap.fillCalendarEvent(_event)
+				fmt.Println("Macro Calendar Event:")
 				fmt.Println(event)
-				data, err := json.Marshal(event); if err != nil {
-					fmt.Println("Error parsing MacroCalendarEvent")
-					break;
-				}
-				fmt.Println(string(data))
 			default:
 				fmt.Println("Unknown message type")
 		}

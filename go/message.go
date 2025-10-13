@@ -140,6 +140,11 @@ type HeadlineEconomicEvent struct {
 	PriorEconomicReleaseEndDT   time.Time
 }
 
+type HeadlineCalendarEvent struct {
+	HeadlineBaseEvent
+	ReleaseStatus uint8 
+}
+
 type MacroReferenceData struct {
 	CorrID						int64  `json:"corr_id"`
 	IDBBGlobal					string  `json:"id_bb_global"`
@@ -182,9 +187,26 @@ type MacroCalendarEvent struct {
 	RelevanceValue				float64			`json:"relevance_value"`
 }
 
-type HeadlineCalendarEvent struct {
-	HeadlineBaseEvent
-	ReleaseStatus uint8 
+type HeadlineEvent struct {
+	MacroHeadlineEvent
+	IDBBGlobal					string  `json:"id_bb_global"`
+	ParsekyableDes    			string	`json:"parsekyable_des"`
+	Description       			string  `json:"description"`
+	IndxFreq		  			string	`json:"indx_freq"`
+	IndxUnits		  			string	`json:"indx_units"`
+	CountryISO		  			string	`json:"country_iso"`
+	IndxSource	      			string	`json:"indx_source"`
+	SeasonalityTransformation	string	`json:"seasonality_transformation"`
+}
+
+type CalendarEvent struct {
+	MacroCalendarEvent
+	Description       			string  `json:"description"`
+	IndxFreq		  			string	`json:"indx_freq"`
+	IndxUnits		  			string	`json:"indx_units"`
+	CountryISO		  			string	`json:"country_iso"`
+	IndxSource	      			string	`json:"indx_source"`
+	SeasonalityTransformation	string	`json:"seasonality_transformation"`
 }
 
 func ToNativeTime(microseconds uint64, offset int16) time.Time {
@@ -192,4 +214,75 @@ func ToNativeTime(microseconds uint64, offset int16) time.Time {
 	nanoseconds := int64((microseconds % 1e6) * 1e3)
 	location := time.FixedZone("UTC", int(offset)*60)
 	return time.Unix(seconds, nanoseconds).In(location)
+}
+
+type ReferenceMap struct {
+	items map[int64]MacroReferenceData
+}
+
+func NewReferenceMap() ReferenceMap {
+	return ReferenceMap{
+		items: make(map[int64]MacroReferenceData),
+	}
+}
+
+func (refMap ReferenceMap) Add(ref MacroReferenceData) {
+	refMap.items[ref.CorrID] = ref
+}
+
+func (refMap ReferenceMap) fillHeadlineEvent(event MacroHeadlineEvent) HeadlineEvent {
+	ref, ok := refMap.items[event.CorrID] 
+	if !ok {
+		return HeadlineEvent{
+			MacroHeadlineEvent: event,
+			IDBBGlobal: "",
+			ParsekyableDes: "",
+			Description: "",
+			IndxFreq: "",
+			IndxUnits: "",
+			CountryISO: "",
+			IndxSource: "",
+			SeasonalityTransformation: "",
+		}
+	}
+	return HeadlineEvent{
+		MacroHeadlineEvent: event,
+		IDBBGlobal: ref.IDBBGlobal,
+		ParsekyableDes: ref.ParsekyableDes,
+		Description: ref.Description,
+		IndxFreq: ref.IndxFreq,
+		IndxUnits: ref.IndxUnits,
+		CountryISO: ref.CountryISO,
+		IndxSource: ref.IndxSource,
+		SeasonalityTransformation: ref.SeasonalityTransformation,
+	}
+}
+
+func (refMap ReferenceMap) fillCalendarEvent(event MacroCalendarEvent) CalendarEvent {
+	ref, ok := refMap.items[event.CorrID] 
+	var result CalendarEvent
+	if !ok {
+		result = CalendarEvent{
+			MacroCalendarEvent: event,
+			Description: "",
+			IndxFreq: "",
+			IndxUnits: "",
+			CountryISO: "",
+			IndxSource: "",
+			SeasonalityTransformation: "",
+		}
+	} else {
+		result = CalendarEvent{
+			MacroCalendarEvent: event,
+			Description: ref.Description,
+			IndxFreq: ref.IndxFreq,
+			IndxUnits: ref.IndxUnits,
+			CountryISO: ref.CountryISO,
+			IndxSource: ref.IndxSource,
+			SeasonalityTransformation: ref.SeasonalityTransformation,
+		}
+	}
+	result.IDBBGlobal = ref.IDBBGlobal
+	result.ParsekyableDes = ref.ParsekyableDes
+	return result
 }

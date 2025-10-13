@@ -1,6 +1,7 @@
 all:
 	GOBIN=${PWD}/bin go install ./simple
 	GOBIN=${PWD}/bin go install ./cli
+	GOBIN=${PWD}/bin go install ./example
 
 setup:
 	go install golang.org/x/tools/cmd/stringer@latest

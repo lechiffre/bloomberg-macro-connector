@@ -45,6 +45,14 @@ static const blpapi::Name PRIOR_OBSERVATION_PERIOD("PRIOR_OBSERVATION_PERIOD");
 static const blpapi::Name PRIOR_EVENT_ID("PRIOR_EVENT_ID");
 static const blpapi::Name RELEASE_STATUS("RELEASE_STATUS");
 
+static const blpapi::Name INDX_FREQ("INDX_FREQ");
+static const blpapi::Name INDX_UNITS("INDX_UNITS");
+static const blpapi::Name COUNTRY_ISO("COUNTRY_ISO");
+static const blpapi::Name INDX_SOURCE("INDX_SOURCE");
+static const blpapi::Name SEASONALITY_TRANSFORMATION(
+        "SEASONALITY_AND_TRANSFORMATION");
+static const blpapi::Name RELEVANCE_VALUE("RELEVANCE_VALUE");
+
 struct DateTimeInterval {
     DateTimeType start;
     DateTimeType end;
@@ -483,6 +491,106 @@ flatbuffers::Offset<FB::HeadlineCalendarEvent> serializeHeadlineCalendarEvent(
         static_cast<FB::ReleaseStatus>(release_status));
 }
 
+flatbuffers::Offset<FB::MacroReferenceData> serializeMacroReferenceData(
+        flatbuffers::FlatBufferBuilder& builder, int64_t corrId,
+        const blpapi::Element& elem) {
+    auto id_bb_global = fbString(builder, elem, ID_BB_GLOBAL);
+    auto parsekyable_des = fbString(builder, elem, PARSEKYABLE_DES);
+    auto description = fbString(builder, elem, DESCRIPTION);
+    auto indx_freq = fbString(builder, elem, INDX_FREQ);
+    auto indx_units = fbString(builder, elem, INDX_UNITS);
+    auto country_iso = fbString(builder, elem, COUNTRY_ISO);
+    auto indx_source = fbString(builder, elem, INDX_SOURCE);
+    auto seasonality_transformation =
+        fbString(builder, elem, SEASONALITY_TRANSFORMATION);
+    return FB::CreateMacroReferenceData(
+        builder, corrId, id_bb_global, parsekyable_des, description, indx_freq,
+        indx_units, country_iso, indx_source, seasonality_transformation);
+}
+
+flatbuffers::Offset<FB::MacroHeadlineEvent> serializeMacroHeadlineEvent(
+        flatbuffers::FlatBufferBuilder& builder, int64_t corrId,
+        const blpapi::Element& elem) {
+    int event_type = elem.hasElement(EVENT_TYPE)
+                         ? eventTypeFromString(getString(elem, EVENT_TYPE))
+                         : 0;
+    int event_subtype =
+        elem.hasElement(EVENT_SUBTYPE)
+            ? eventSubTypeFromString(getString(elem, EVENT_SUBTYPE))
+            : 0;
+    int32_t event_id = getInt32(elem, EVENT_ID);
+    auto observation_period = fbString(builder, elem, OBSERVATION_PERIOD);
+
+    flatbuffers::Offset<FB::DateTime> release_start_dt, release_end_dt;
+    extractReleaseDateTimes(builder, elem, ECO_RELEASE_DT, release_start_dt,
+                            release_end_dt);
+
+    int32_t prior_event_id = 0;
+    auto prior_observation_period = builder.CreateString("");
+    flatbuffers::Offset<FB::DateTime> prior_release_start_dt =
+        serializeDatetime(builder, blpapi::Datetime());
+    flatbuffers::Offset<FB::DateTime> prior_release_end_dt =
+        serializeDatetime(builder, blpapi::Datetime());
+    if (elem.hasElement(REVISION_METADATA)) {
+        blpapi::Element revElem = elem.getElement(REVISION_METADATA);
+        if (revElem.hasElement(PRIOR_EVENT_ID)) {
+            prior_event_id = getInt32(revElem, PRIOR_EVENT_ID);
+        }
+        if (revElem.hasElement(PRIOR_OBSERVATION_PERIOD)) {
+            prior_observation_period =
+                fbString(builder, revElem, PRIOR_OBSERVATION_PERIOD);
+        }
+        if (revElem.hasElement(PRIOR_ECONOMIC_RELEASE_DT)) {
+            extractReleaseDateTimes(builder, revElem,
+                                    PRIOR_ECONOMIC_RELEASE_DT,
+                                    prior_release_start_dt,
+                                    prior_release_end_dt);
+        }
+    }
+    auto value = serializeValue(builder, elem, VALUE);
+    return FB::CreateMacroHeadlineEvent(
+        builder, corrId, static_cast<FB::EventType>(event_type),
+        static_cast<FB::EventSubType>(event_subtype), event_id,
+        observation_period, release_start_dt, release_end_dt, prior_event_id,
+        prior_observation_period, prior_release_start_dt,
+        prior_release_end_dt, value);
+}
+
+flatbuffers::Offset<FB::MacroCalendarEvent> serializeMacroCalendarEvent(
+        flatbuffers::FlatBufferBuilder& builder, int64_t corrId,
+        const blpapi::Element& elem) {
+    auto id_bb_global = fbString(builder, elem, ID_BB_GLOBAL);
+    auto parsekyable_des = fbString(builder, elem, PARSEKYABLE_DES);
+    int event_type = elem.hasElement(EVENT_TYPE)
+                         ? eventTypeFromString(getString(elem, EVENT_TYPE))
+                         : 0;
+    int event_subtype =
+        elem.hasElement(EVENT_SUBTYPE)
+            ? eventSubTypeFromString(getString(elem, EVENT_SUBTYPE))
+            : 0;
+    auto description = fbString(builder, elem, DESCRIPTION);
+    int32_t event_id = getInt32(elem, EVENT_ID);
+    auto observation_period = fbString(builder, elem, OBSERVATION_PERIOD);
+    flatbuffers::Offset<FB::DateTime> release_start_dt, release_end_dt;
+    extractReleaseDateTimes(builder, elem, ECO_RELEASE_DT, release_start_dt,
+                            release_end_dt);
+    int release_status =
+        elem.hasElement(RELEASE_STATUS)
+            ? releaseStatusFromString(getString(elem, RELEASE_STATUS))
+            : 0;
+
+    double relevance_value = getFloatFromString(elem, RELEVANCE_VALUE);
+
+    return FB::CreateMacroCalendarEvent(
+        builder, corrId, id_bb_global, parsekyable_des,
+        static_cast<FB::EventType>(event_type),
+        static_cast<FB::EventSubType>(event_subtype),
+        description,
+        event_id,
+        observation_period, release_start_dt, release_end_dt,
+        static_cast<FB::ReleaseStatus>(release_status), relevance_value);
+}
+
 flatbuffers::FlatBufferBuilder buildBufferEconomicEvent(
     const blpapi::Element& elem) {
     flatbuffers::FlatBufferBuilder builder;
@@ -499,6 +607,39 @@ flatbuffers::FlatBufferBuilder buildBufferCalendarEvent(
     auto fb_event = serializeHeadlineCalendarEvent(builder, elem).Union();
     auto fb_main = FB::CreateMain(
         builder, FB::Message::Message_HeadlineCalendarEvent, fb_event);
+    builder.Finish(fb_main);
+    return builder;
+}
+
+flatbuffers::FlatBufferBuilder buildBufferMacroReferenceData(
+        int64_t corrId, const blpapi::Element& elem) {
+    flatbuffers::FlatBufferBuilder builder;
+    auto fb_macro_reference = serializeMacroReferenceData(builder, corrId,
+            elem).Union();
+    auto fb_main = FB::CreateMain(
+        builder, FB::Message::Message_MacroReferenceData, fb_macro_reference);
+    builder.Finish(fb_main);
+    return builder;
+}
+
+flatbuffers::FlatBufferBuilder buildBufferMacroHeadlineEvent(
+        int64_t corrId, const blpapi::Element& elem) {
+    flatbuffers::FlatBufferBuilder builder;
+    auto fb_macro_headline = serializeMacroHeadlineEvent(builder, corrId,
+            elem).Union();
+    auto fb_main = FB::CreateMain(
+        builder, FB::Message::Message_MacroHeadlineEvent, fb_macro_headline);
+    builder.Finish(fb_main);
+    return builder;
+}
+
+flatbuffers::FlatBufferBuilder buildBufferMacroCalendarEvent(
+        int64_t corrId, const blpapi::Element& elem) {
+    flatbuffers::FlatBufferBuilder builder;
+    auto fb_macro_calendar = serializeMacroCalendarEvent(builder, corrId,
+            elem).Union();
+    auto fb_main = FB::CreateMain(
+        builder, FB::Message::Message_MacroCalendarEvent, fb_macro_calendar);
     builder.Finish(fb_main);
     return builder;
 }
@@ -579,6 +720,129 @@ HeadlineCalendarEvent parseHeadlineCalendarEvent(const blpapi::Element& elem) {
     if (elem.hasElement(RELEASE_STATUS)) {
         std::string s = elem.getElement(RELEASE_STATUS).getValueAsString();
         message.release_status = stringToReleaseStatus(s);
+    }
+    END_PROFILE_FUNCTION()
+    return message;
+}
+
+MacroReferenceData parseMacroReferenceData(int64_t corrId,
+        const blpapi::Element& elem) {
+    PROFILE_FUNCTION()
+    MacroReferenceData message;
+    // Required fields
+    message.corr_id = corrId;
+    message.id_bb_global = elem.getElement(ID_BB_GLOBAL).getValueAsString();
+    message.parsekyable_des =
+        elem.getElement(PARSEKYABLE_DES).getValueAsString();
+    // Optional fields
+    if (elem.hasElement(DESCRIPTION)) {
+        message.description = elem.getElement(DESCRIPTION).getValueAsString();
+    }
+    if (elem.hasElement(INDX_FREQ)) {
+        message.indx_freq = elem.getElement(INDX_FREQ).getValueAsString();
+    }
+    if (elem.hasElement(INDX_UNITS)) {
+        message.indx_units = elem.getElement(INDX_UNITS).getValueAsString();
+    }
+    if (elem.hasElement(COUNTRY_ISO)) {
+        message.country_iso = elem.getElement(COUNTRY_ISO).getValueAsString();
+    }
+    if (elem.hasElement(INDX_SOURCE)) {
+        message.indx_source = elem.getElement(INDX_SOURCE).getValueAsString();
+    }
+    if (elem.hasElement(SEASONALITY_TRANSFORMATION)) {
+        message.seasonality_transformation =
+            elem.getElement(SEASONALITY_TRANSFORMATION).getValueAsString();
+    }
+    END_PROFILE_FUNCTION()
+    return message;
+}
+
+MacroHeadlineEvent parseMacroHeadlineEvent(int64_t corrId,
+        const blpapi::Element& elem) {
+    PROFILE_FUNCTION()
+    MacroHeadlineEvent message;
+    message.corr_id = corrId;
+    if (elem.hasElement(EVENT_TYPE)) {
+        std::string s = elem.getElement(EVENT_TYPE).getValueAsString();
+        message.event_type = stringToEventType(s);
+    }
+    if (elem.hasElement(EVENT_SUBTYPE)) {
+        std::string s = elem.getElement(EVENT_SUBTYPE).getValueAsString();
+        message.event_subtype = stringToEventSubType(s);
+    }
+    if (elem.hasElement(EVENT_ID)) {
+        message.event_id = elem.getElement(EVENT_ID).getValueAsInt32();
+    }
+    if (elem.hasElement(OBSERVATION_PERIOD)) {
+        message.observation_period =
+            elem.getElement(OBSERVATION_PERIOD).getValueAsString();
+    }
+    if (elem.hasElement(ECO_RELEASE_DT)) {
+        DateTimeInterval interval = getReleaseDT(elem, ECO_RELEASE_DT);
+        message.release_start_dt = interval.start;
+        message.release_end_dt = interval.end;
+    }
+    if (elem.hasElement(PRIOR_EVENT_ID)) {
+        message.prior_event_id = elem.getElement(PRIOR_EVENT_ID).getValueAsInt32();
+    }
+    if (elem.hasElement(PRIOR_OBSERVATION_PERIOD)) {
+        message.prior_observation_period =
+            elem.getElement(PRIOR_OBSERVATION_PERIOD).getValueAsString();
+    }
+    if (elem.hasElement(PRIOR_ECONOMIC_RELEASE_DT)) {
+        DateTimeInterval interval =
+            getReleaseDT(elem, PRIOR_ECONOMIC_RELEASE_DT);
+        message.prior_economic_release_start_dt = interval.start;
+        message.prior_economic_release_end_dt = interval.end;
+    }
+    if (elem.hasElement(VALUE)) {
+        message.value = getValue(elem, VALUE);
+    }
+    END_PROFILE_FUNCTION()
+    return message;
+}
+
+MacroCalendarEvent parseMacroCalendarEvent(int64_t corrId,
+        const blpapi::Element& elem) {
+    PROFILE_FUNCTION()
+    MacroCalendarEvent message;
+    // Required fields
+    message.corr_id = corrId;
+    message.id_bb_global = elem.getElement(ID_BB_GLOBAL).getValueAsString();
+    message.parsekyable_des =
+        elem.getElement(PARSEKYABLE_DES).getValueAsString();
+    // Optional fields
+    if (elem.hasElement(EVENT_TYPE)) {
+        std::string s = elem.getElement(EVENT_TYPE).getValueAsString();
+        message.event_type = stringToEventType(s);
+    }
+    if (elem.hasElement(EVENT_SUBTYPE)) {
+        std::string s = elem.getElement(EVENT_SUBTYPE).getValueAsString();
+        message.event_subtype = stringToEventSubType(s);
+    }
+    if (elem.hasElement(DESCRIPTION)) {
+        message.description = elem.getElement(DESCRIPTION).getValueAsString();
+    }
+    if (elem.hasElement(EVENT_ID)) {
+        message.event_id = elem.getElement(EVENT_ID).getValueAsInt32();
+    }
+    if (elem.hasElement(OBSERVATION_PERIOD)) {
+        message.observation_period =
+            elem.getElement(OBSERVATION_PERIOD).getValueAsString();
+    }
+    if (elem.hasElement(ECO_RELEASE_DT)) {
+        DateTimeInterval interval = getReleaseDT(elem, ECO_RELEASE_DT);
+        message.release_start_dt = interval.start;
+        message.release_end_dt = interval.end;
+    }
+    if (elem.hasElement(RELEASE_STATUS)) {
+        std::string s = elem.getElement(RELEASE_STATUS).getValueAsString();
+        message.release_status = stringToReleaseStatus(s);
+    }
+    if (elem.hasElement(RELEVANCE_VALUE)) {
+        message.relevance_value =
+            getFloatFromStringElement(elem.getElement(RELEVANCE_VALUE));
     }
     END_PROFILE_FUNCTION()
     return message;

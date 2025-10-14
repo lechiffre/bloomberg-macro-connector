@@ -46,3 +46,7 @@
 
 - Support to convert directly from blpapi::Element to flatbuffers
 - Profiling support
+
+0.3.0 - 2025-10-13:
+
+- Support for the new macro economic events feed.

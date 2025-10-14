@@ -3,6 +3,7 @@
 #include "blpconn_logger.h"
 #include "blpconn_message.h"
 #include "blpconn_deserialize.h"
+#include "blpconn_serialize.h"
 
 namespace BlpConn {
 
@@ -11,6 +12,8 @@ void Logger::addNotificationHandler(ObserverFunc fnc) noexcept {
 }
 
 void Logger::notify(const uint8_t* buffer, size_t size) {
+    // auto filename = fbGetNextFileName("data/");
+    // fbBufferToFile(buffer, size, filename);
     PROFILE_FUNCTION();
     for (const auto& callback : callbacks_) {
         callback(buffer, size);

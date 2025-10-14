@@ -6,4 +6,7 @@ class Message(object):
     NONE = 0
     HeadlineEconomicEvent = 1
     HeadlineCalendarEvent = 2
-    LogMessage = 3
+    MacroReferenceData = 3
+    MacroHeadlineEvent = 4
+    MacroCalendarEvent = 5
+    LogMessage = 6

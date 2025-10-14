@@ -19,7 +19,8 @@ static json readConfiguration(const std::string& config_path) {
     try {
         file >> config;
     } catch (const json::parse_error& e) {
-        throw std::runtime_error("Failed to parse JSON format in " + config_path);
+        throw std::runtime_error("Failed to parse JSON format in " +
+                config_path);
     }
     return config;
 }
@@ -74,6 +75,7 @@ static blpapi::SessionOptions defineSessionOptions(const json& config) {
     std::string default_service = config["default_service"];
     sessionOptions.setDefaultServices(default_service.c_str());
     sessionOptions.setDefaultSubscriptionService(default_service.c_str());
+
     return sessionOptions;
 }
 

@@ -7,7 +7,6 @@
 #include "blpconn_message.h"
 #include "blpconn_deserialize.h"
 
-
 namespace BlpConn {
 
 static const uint8_t module = static_cast<uint8_t>(Module::System);
@@ -21,14 +20,60 @@ static const blpapi::Name SUBSCRIPTION_STARTED("SubscriptionStarted");
 static const blpapi::Name SUBSCRIPTION_STREAMS_ACTIVATED("SubscriptionStreamsActivated");
 static const blpapi::Name SUBSCRIPTION_TERMINATED("SubscriptionTerminated");
 static const blpapi::Name SUBSCRIPTION_FAILURE("SubscriptionFailure");
+
+// TODO to be remove
 static const blpapi::Name ECONOMIC_EVENT("EconomicEvent");
 static const blpapi::Name HEADLINE_ECONOMIC_EVENT("HeadlineEconomicEvent");
 static const blpapi::Name HEADLINE_CALENDAR_EVENT("HeadlineCalendarEvent");
+
+// New events
+static const blpapi::Name MACRO_EVENT("MacroEvent");
+static const blpapi::Name MACRO_REFERENCE_DATA("MacroReferenceData");
+static const blpapi::Name MACRO_HEADLINE_EVENT("MacroHeadlineEvent");
+static const blpapi::Name MACRO_CALENDAR_EVENT("MacroCalendarEvent");
 
 static void sendNotification(flatbuffers::FlatBufferBuilder& builder, Logger *logger) {
     uint8_t * buffer = builder.GetBufferPointer();
     int size = builder.GetSize();
     logger->notify(buffer, size);
+}
+
+void processMacroEvent(int64_t corrId, const blpapi::Element& elem,
+        Logger& logger) {
+    PROFILE_FUNCTION()
+    if (elem.name() == MACRO_HEADLINE_EVENT) {
+        try {
+            auto builder = buildBufferMacroHeadlineEvent(corrId, elem);
+            sendNotification(builder, &logger);
+        } catch (const std::exception& e) {
+            std::string err = "Error processing MacroHeadlineEvent: ";
+            err += e.what();
+            logger.log(module, 0, 0, err);
+        }
+    } else if (elem.name() == MACRO_CALENDAR_EVENT) {
+        try {
+            auto builder = buildBufferMacroCalendarEvent(corrId, elem);
+            sendNotification(builder, &logger);
+        } catch (const std::exception& e) {
+            std::string err = "Error processing MacroCalendarEvent: ";
+            err += e.what();
+            logger.log(module, 0, 0, err);
+        }
+    } else if (elem.name() == MACRO_REFERENCE_DATA) {
+        try {
+            auto builder = buildBufferMacroReferenceData(corrId, elem);
+            sendNotification(builder, &logger);
+        } catch (const std::exception& e) {
+            std::string err = "Error processing MacroReferenceData: ";
+            err += e.what();
+            logger.log(module, 0, 0, err);
+        }
+    } else {
+        std::string e = "Unknown macro event type: ";
+        e += elem.name().string();
+        logger.log(module, 0, 0, e);
+    }
+    END_PROFILE_FUNCTION()
 }
 
 void processEconomicEvent(const blpapi::Element& elem, Logger& logger) {
@@ -61,17 +106,26 @@ bool processSubscriptionData(const blpapi::Event& event, blpapi::Session *sessio
     while (msgIter.next()) {
         blpapi::Message msg = msgIter.message();
         blpapi::Element elem = msg.asElement();
-        if (elem.name() == ECONOMIC_EVENT) {
+        blpapi::CorrelationId id = msg.correlationId();
+        int64_t corrId = id.valueType() == blpapi::CorrelationId::ValueType::INT_VALUE
+            ? id.asInteger() : 0;
+        if (elem.name() == MACRO_EVENT) {
+            for (std::size_t i = 0; i < elem.numValues(); ++i) {
+                blpapi::Element sub_elem = elem.getElement(i);
+                processMacroEvent(corrId, sub_elem, logger);
+            }
+        }
+        // TODO this branch will be removed
+        else if (elem.name() == ECONOMIC_EVENT) {
             for (std::size_t i = 0; i < elem.numValues(); ++i) {
                 blpapi::Element sub_elem = elem.getElement(i);
                 processEconomicEvent(sub_elem, logger);
             }
         } else {
-            uint64_t correlation_id = msg.correlationId().asInteger();
             logger.log(
                 static_cast<uint8_t>(Module::Heartbeat),
                 0,
-                correlation_id,
+                corrId,
                 "Subscription Heartbeat");
         }
     }
@@ -129,7 +183,7 @@ bool processSubscriptionStatus(const blpapi::Event& event, blpapi::Session *sess
     const uint8_t module = static_cast<uint8_t>(Module::Subscription);
     while (msgIter.next()) {
         blpapi::Message msg = msgIter.message();
-        uint64_t correlation_id = msg.correlationId().asInteger();
+        int64_t correlation_id = msg.correlationId().asInteger();
         blpapi::Element elem = msg.asElement();
         std::ostringstream oss;
         oss << elem;

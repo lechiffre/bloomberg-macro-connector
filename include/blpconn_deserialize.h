@@ -9,6 +9,12 @@ namespace BlpConn {
 
 HeadlineCalendarEvent parseHeadlineCalendarEvent(const blpapi::Element &elem);
 HeadlineEconomicEvent parseHeadlineEconomicEvent(const blpapi::Element &elem);
+MacroReferenceData parseMacroReferenceData(int64_t corrId,
+        const blpapi::Element &elem);
+MacroHeadlineEvent parseMacroHeadlineEvent(int64_t corrId,
+        const blpapi::Element &elem);
+MacroCalendarEvent parseMacroCalendarEvent(int64_t corrId,
+        const blpapi::Element &elem);
 
 DateTimeType convertToDateTime(const blpapi::Datetime &dt);
 
@@ -26,22 +32,48 @@ std::ostream &operator<<(std::ostream &os, const ValueType &value);
 std::ostream &operator<<(std::ostream &os, const HeadlineBaseEvent &event);
 std::ostream &operator<<(std::ostream &os, const HeadlineEconomicEvent &event);
 std::ostream &operator<<(std::ostream &os, const HeadlineCalendarEvent &event);
+std::ostream &operator<<(std::ostream &os, const MacroReferenceData &data);
+std::ostream &operator<<(std::ostream &os, const MacroHeadlineEvent &event);
+std::ostream &operator<<(std::ostream &os, const MacroCalendarEvent &event);
 std::ostream &operator<<(std::ostream &os, const LogMessage &log_message);
 
 HeadlineEconomicEvent
 toHeadlineEconomicEvent(const FB::HeadlineEconomicEvent *fb_event);
 HeadlineCalendarEvent
 toHeadlineCalendarEvent(const FB::HeadlineCalendarEvent *fb_event);
+
 LogMessage toLogMessage(const FB::LogMessage *fb_log_message);
+
+
+MacroReferenceData toMacroReferenceData(
+        const BlpConn::FB::MacroReferenceData* fb_data);
+MacroHeadlineEvent toMacroHeadlineEvent(
+        const BlpConn::FB::MacroHeadlineEvent* fb_event);
+MacroCalendarEvent toMacroCalendarEvent(
+        const BlpConn::FB::MacroCalendarEvent* fb_event);
 
 flatbuffers::FlatBufferBuilder
 buildBufferEconomicEvent(HeadlineEconomicEvent &event);
+
 flatbuffers::FlatBufferBuilder
 buildBufferEconomicEvent(const blpapi::Element &elem);
+
 flatbuffers::FlatBufferBuilder
 buildBufferCalendarEvent(HeadlineCalendarEvent &event);
+
 flatbuffers::FlatBufferBuilder
 buildBufferCalendarEvent(const blpapi::Element &elem);
+
+
+flatbuffers::FlatBufferBuilder buildBufferMacroReferenceData(int64_t corrId,
+        const blpapi::Element& elem);
+
+flatbuffers::FlatBufferBuilder buildBufferMacroHeadlineEvent(int64_t corrId,
+        const blpapi::Element& elem);
+
+flatbuffers::FlatBufferBuilder buildBufferMacroCalendarEvent(int64_t corrId,
+        const blpapi::Element& elem);
+
 flatbuffers::FlatBufferBuilder buildBufferLogMessage(LogMessage &log_message);
 
 // Utility functions

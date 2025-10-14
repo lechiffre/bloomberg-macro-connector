@@ -5,7 +5,7 @@
   "primary_host": "PRIMARY_HOST_URL",
   "secondary_host": "SECONDARY_HOST_URL",
   "port": 8194,
-  "default_service": "//blp/economic-data",
+  "default_service": "//blp/macro-indicators",
   "app_name": "YOUR_APP_NAME",
   "mode": "test"
 }

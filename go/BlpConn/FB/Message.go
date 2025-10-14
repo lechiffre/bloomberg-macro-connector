@@ -10,13 +10,19 @@ const (
 	MessageNONE                  Message = 0
 	MessageHeadlineEconomicEvent Message = 1
 	MessageHeadlineCalendarEvent Message = 2
-	MessageLogMessage            Message = 3
+	MessageMacroReferenceData    Message = 3
+	MessageMacroHeadlineEvent    Message = 4
+	MessageMacroCalendarEvent    Message = 5
+	MessageLogMessage            Message = 6
 )
 
 var EnumNamesMessage = map[Message]string{
 	MessageNONE:                  "NONE",
 	MessageHeadlineEconomicEvent: "HeadlineEconomicEvent",
 	MessageHeadlineCalendarEvent: "HeadlineCalendarEvent",
+	MessageMacroReferenceData:    "MacroReferenceData",
+	MessageMacroHeadlineEvent:    "MacroHeadlineEvent",
+	MessageMacroCalendarEvent:    "MacroCalendarEvent",
 	MessageLogMessage:            "LogMessage",
 }
 
@@ -24,6 +30,9 @@ var EnumValuesMessage = map[string]Message{
 	"NONE":                  MessageNONE,
 	"HeadlineEconomicEvent": MessageHeadlineEconomicEvent,
 	"HeadlineCalendarEvent": MessageHeadlineCalendarEvent,
+	"MacroReferenceData":    MessageMacroReferenceData,
+	"MacroHeadlineEvent":    MessageMacroHeadlineEvent,
+	"MacroCalendarEvent":    MessageMacroCalendarEvent,
 	"LogMessage":            MessageLogMessage,
 }
 

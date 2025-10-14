@@ -1,10 +1,15 @@
 package blpconngo
 
 import (
+	_ "encoding/json"
 	"blpconngo/BlpConn/FB"
 	flatbuffers "github.com/google/flatbuffers/go"
 	"fmt"
 )
+
+// A reference map is created to handle the extension of the
+// economic and calendar event data.
+var referenceMap = NewReferenceMap()
 
 func NativeHandler(bufferSlice []byte) {
 	main := FB.GetRootAsMain(bufferSlice, 0)
@@ -15,20 +20,40 @@ func NativeHandler(bufferSlice []byte) {
 	unionTable := new(flatbuffers.Table)
 	if main.Message(unionTable) {
 		switch main.MessageType() {
-			case FB.MessageHeadlineEconomicEvent:
-				var fbEvent = new(FB.HeadlineEconomicEvent)
-				fbEvent.Init(unionTable.Bytes, unionTable.Pos)
-				event := DeserializeHeadlineEconomicEvent(fbEvent)
-				fmt.Println(event)
-			case FB.MessageHeadlineCalendarEvent:
-				var fbEvent = new(FB.HeadlineCalendarEvent)
-				fbEvent.Init(unionTable.Bytes, unionTable.Pos)
-				event := DeserializeHeadlineCalendarEvent(fbEvent)
-				fmt.Println(event)
 			case FB.MessageLogMessage:
 				var fbEvent = new(FB.LogMessage)
 				fbEvent.Init(unionTable.Bytes, unionTable.Pos)
 				event := DeserializeLogMessage(fbEvent)
+				// Cheching if the message is related to a subscription
+				// status and if it is reporting a failure. In that
+				// case, the reference data for that subscription is
+				// removed from the reference map.
+				if event.Module == ModuleSubscription {
+					if SubscriptionStatus(event.Status) == SubscriptionFailure {
+						referenceMap.Remove(event.CorrelationID);
+					}
+				}
+				fmt.Println(event)
+			case FB.MessageMacroReferenceData:
+				var fbEvent = new(FB.MacroReferenceData)
+				fbEvent.Init(unionTable.Bytes, unionTable.Pos)
+				event := DeserializeMacroReferenceData(fbEvent)
+				referenceMap.Add(event)
+				fmt.Println("Macro Reference Data:")
+				fmt.Println(event)
+			case FB.MessageMacroHeadlineEvent:
+				var fbEvent = new(FB.MacroHeadlineEvent)
+				fbEvent.Init(unionTable.Bytes, unionTable.Pos)
+				_event := DeserializeMacroHeadlineEvent(fbEvent)
+				event := referenceMap.fillHeadlineEvent(_event)
+				fmt.Println("Macro Headline Event:")
+				fmt.Println(event)
+			case FB.MessageMacroCalendarEvent:
+				var fbEvent = new(FB.MacroCalendarEvent)
+				fbEvent.Init(unionTable.Bytes, unionTable.Pos)
+				_event := DeserializeMacroCalendarEvent(fbEvent)
+				event := referenceMap.fillCalendarEvent(_event)
+				fmt.Println("Macro Calendar Event:")
 				fmt.Println(event)
 			default:
 				fmt.Println("Unknown message type")

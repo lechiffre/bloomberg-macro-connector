@@ -8,4 +8,6 @@ class SessionStatusType(object):
     SessionStarted = 2
     SessionConnectionDown = 3
     SessionTerminated = 4
+    SessionInvalidOptions = 5
+    SessionFailure = 6
     SessionAnother = 99

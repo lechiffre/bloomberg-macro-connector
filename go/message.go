@@ -5,8 +5,11 @@ import (
 	"time"
 )
 
+
+type ModuleType uint8
+
 const (
-	ModuleUnknown uint8 = iota
+	ModuleUnknown ModuleType = iota
 	ModuleSystem
 	ModuleSession
 	ModuleSubscription
@@ -15,9 +18,10 @@ const (
 	ModuleAnother = 99
 )
 
+type SessionStatus uint8
 
 const (
-	SessionUnknown uint8 = iota
+	SessionUnknown SessionStatus = iota
 	SessionConnectionUp
 	SessionStarted
 	SessionConnectionDown
@@ -27,8 +31,10 @@ const (
 	SessionAnother = 99
 )
 
+type SubscriptionStatus uint8
+
 const (
-	SubscriptionUnknown uint8 = iota
+	SubscriptionUnknown SubscriptionStatus = iota
 	SubscriptionStarted
 	SubscriptionStreamsActivated
 	SubscriptionTerminated
@@ -37,23 +43,29 @@ const (
 	SubscriptionAnother = 99
 )
 
+type ServiceStatus uint8
+
 const (
-	ServiceUnknown uint8 = iota
+	ServiceUnknown ServiceStatus = iota
 	ServiceOpened
 	ServiceClosed
 	ServiceFailure
 	ServiceAnother = 99
 )
 
+type ReleaseStatus uint8
+
 const (
-	ReleaseStatusUnknown uint8 = iota
+	ReleaseStatusUnknown ReleaseStatus = iota
 	ReleaseStatusReleased
 	ReleaseStatusScheduled
 	ReleaseStatusAnother = 99
 )
 
+type EventSubType uint8
+
 const (
-	EventSubTypeUnknown uint8 = iota
+	EventSubTypeUnknown EventSubType = iota
 	EventSubTypeNew
 	EventSubTypeUpdate
 	EventSubTypeUnitpaint
@@ -61,8 +73,10 @@ const (
 	EventSubTypeAnother = 99
 )
 
+type EventType uint8
+
 const (
-	EventTypeUnknown uint8 = iota
+	EventTypeUnknown EventType = iota
 	EventTypeActual
 	EventTypeRevision
 	EventTypeEstimate
@@ -77,7 +91,7 @@ type DateTimeType struct {
 
 type LogMessageType struct {
 	LogDT         time.Time
-	Module        uint8
+	Module        ModuleType
 	Status        uint8
 	CorrelationID uint64
 	Message       string
@@ -105,36 +119,143 @@ func NewValueType() ValueType {
 	}
 }
 
-type HeadlineBaseEvent struct {
-	IDBBGlobal        string
-	ParsekyableDes    string
-	Description       string
-	EventType         uint8
-	EventSubType      uint8
-	EventID           uint64
-	ObservationPeriod string
-	ReleaseStartDT    time.Time
-	ReleaseEndDT      time.Time
+type MacroReferenceData struct {
+	CorrelationID						uint64  `json:"corr_id"`
+	IDBBGlobal					string  `json:"id_bb_global"`
+	ParsekyableDes    			string	`json:"parsekyable_des"`
+	Description       			string  `json:"description"`
+	IndxFreq		  			string	`json:"indx_freq"`
+	IndxUnits		  			string	`json:"indx_units"`
+	CountryISO		  			string	`json:"country_iso"`
+	IndxSource	      			string	`json:"indx_source"`
+	SeasonalityTransformation	string	`json:"seasonality_transformation"`
 }
 
-type HeadlineEconomicEvent struct {
-	HeadlineBaseEvent
-	Value                       ValueType
-	PriorValue                  ValueType
-	PriorEventID                uint64
-	PriorObservationPeriod      string
-	PriorEconomicReleaseStartDT time.Time
-	PriorEconomicReleaseEndDT   time.Time
+type MacroHeadlineEvent struct {
+	CorrelationID						uint64  		`json:"corr_id"`
+	EventType         			EventType		`json:"event_type"`
+	EventSubType      			EventSubType	`json:"event_subtype"`
+	EventID           			uint64			`json:"event_id"`
+	ObservationPeriod 			string			`json:"observation_period"`
+	ReleaseStartDT    			time.Time		`json:"release_start_dt"`
+	ReleaseEndDT      			time.Time		`json:"release_end_dt"`
+	PriorEventID                uint64			`json:"prior_event_id"`
+	PriorObservationPeriod      string			`json:"prior_observation_period"`
+	PriorEconomicReleaseStartDT time.Time		`json:"prior_economic_release_start_dt"`
+	PriorEconomicReleaseEndDT   time.Time		`json:"prior_economic_release_end_dt"`
+	Value                       ValueType		`json:"value"`
 }
 
-type HeadlineCalendarEvent struct {
-	HeadlineBaseEvent
-	ReleaseStatus uint8 
+type MacroCalendarEvent struct {
+	CorrelationID						uint64  		`json:"corr_id"`
+	IDBBGlobal					string  		`json:"id_bb_global"`
+	ParsekyableDes    			string 			`json:"parsekyable_des"`
+	EventType         			EventType		`json:"event_type"`
+	EventSubType      			EventSubType    `json:"event_subtype"`
+	Description       			string  `json:"description"`
+	EventID           			uint64			`json:"event_id"`
+	ObservationPeriod 			string			`json:"observation_period"`
+	ReleaseStartDT    			time.Time		`json:"release_start_dt"`
+	ReleaseEndDT      			time.Time		`json:"release_end_dt"`
+	ReleaseStatus				ReleaseStatus	`json:"release_status"`
+	RelevanceValue				float64			`json:"relevance_value"`
 }
 
-func ToNativeTime(microseconds uint64, offset int16) time.Time {
-	seconds := int64(microseconds / 1e6)
-	nanoseconds := int64((microseconds % 1e6) * 1e3)
-	location := time.FixedZone("UTC", int(offset)*60)
-	return time.Unix(seconds, nanoseconds).In(location)
+type HeadlineEvent struct {
+	MacroHeadlineEvent
+	IDBBGlobal					string  `json:"id_bb_global"`
+	ParsekyableDes    			string	`json:"parsekyable_des"`
+	Description       			string  `json:"description"`
+	IndxFreq		  			string	`json:"indx_freq"`
+	IndxUnits		  			string	`json:"indx_units"`
+	CountryISO		  			string	`json:"country_iso"`
+	IndxSource	      			string	`json:"indx_source"`
+	SeasonalityTransformation	string	`json:"seasonality_transformation"`
+}
+
+type CalendarEvent struct {
+	MacroCalendarEvent
+	Description       			string  `json:"description"`
+	IndxFreq		  			string	`json:"indx_freq"`
+	IndxUnits		  			string	`json:"indx_units"`
+	CountryISO		  			string	`json:"country_iso"`
+	IndxSource	      			string	`json:"indx_source"`
+	SeasonalityTransformation	string	`json:"seasonality_transformation"`
+}
+
+type ReferenceMap struct {
+	items map[uint64]MacroReferenceData
+}
+
+func NewReferenceMap() ReferenceMap {
+	return ReferenceMap{
+		items: make(map[uint64]MacroReferenceData),
+	}
+}
+
+func (refMap ReferenceMap) Add(ref MacroReferenceData) {
+	refMap.items[ref.CorrelationID] = ref
+}
+
+func (refMap ReferenceMap) Remove(corrID uint64) {
+	if _, ok := refMap.items[corrID]; ok {
+		delete(refMap.items, corrID)
+	}
+}
+
+func (refMap ReferenceMap) fillHeadlineEvent(event MacroHeadlineEvent) HeadlineEvent {
+	ref, ok := refMap.items[event.CorrelationID] 
+	if !ok {
+		return HeadlineEvent{
+			MacroHeadlineEvent: event,
+			IDBBGlobal: "",
+			ParsekyableDes: "",
+			Description: "",
+			IndxFreq: "",
+			IndxUnits: "",
+			CountryISO: "",
+			IndxSource: "",
+			SeasonalityTransformation: "",
+		}
+	}
+	return HeadlineEvent{
+		MacroHeadlineEvent: event,
+		IDBBGlobal: ref.IDBBGlobal,
+		ParsekyableDes: ref.ParsekyableDes,
+		Description: ref.Description,
+		IndxFreq: ref.IndxFreq,
+		IndxUnits: ref.IndxUnits,
+		CountryISO: ref.CountryISO,
+		IndxSource: ref.IndxSource,
+		SeasonalityTransformation: ref.SeasonalityTransformation,
+	}
+}
+
+func (refMap ReferenceMap) fillCalendarEvent(event MacroCalendarEvent) CalendarEvent {
+	ref, ok := refMap.items[event.CorrelationID] 
+	var result CalendarEvent
+	if !ok {
+		result = CalendarEvent{
+			MacroCalendarEvent: event,
+			Description: "",
+			IndxFreq: "",
+			IndxUnits: "",
+			CountryISO: "",
+			IndxSource: "",
+			SeasonalityTransformation: "",
+		}
+	} else {
+		result = CalendarEvent{
+			MacroCalendarEvent: event,
+			Description: ref.Description,
+			IndxFreq: ref.IndxFreq,
+			IndxUnits: ref.IndxUnits,
+			CountryISO: ref.CountryISO,
+			IndxSource: ref.IndxSource,
+			SeasonalityTransformation: ref.SeasonalityTransformation,
+		}
+	}
+	result.IDBBGlobal = ref.IDBBGlobal
+	result.ParsekyableDes = ref.ParsekyableDes
+	return result
 }

@@ -23,29 +23,12 @@ using namespace BloombergLP;
 namespace BlpConn {
 
 /**
- * The EventType enum defines the types of events that can be
- * subscribed to. The client program can choose one or more
- * event types when subscribing to a data feed.
- */
-enum class SubscriptionType {
-  HeadlineActuals,
-  ReleaseCalendar,
-  HeadlineSurveys
-};
-
-/**
  * Bloomberg's let subscriptors to request data using
  * different identification standards.
  */
 enum class TopicType {
   Ticker, // Generic identifier
-  Cusip,  // Request by CUSIP
-  Sedol,  // Request by SEDOL
-  Isin,   // Request by ISIN
-  Bsid,   // Request by Bloomberg Security Identifier
-  Buid,   // Request by Bloomberg Unique Identifier
-  Eid,    // Request by Entitlement ID
-  Figi,   // Request by Financial Instrument Global Identifier
+  Bbgid   // Bloomberg Id or FIGI
 };
 
 /**
@@ -61,9 +44,6 @@ enum class TopicType {
  * topic_type: It indicates the standard or form used to represent the
  * topic.Check TopicType enum to see possible values subscription_type
  *
- * subscription_type: it indicates what kind of subscription you're
- * requiring, for example a calender headline.
- *
  * options: additional parameters passed as options
  *
  * correlation_id: a integer representing an id for the subscription. This
@@ -71,10 +51,9 @@ enum class TopicType {
  * the subscritpion.
  */
 struct SubscriptionRequest {
-  std::string service;
+  // std::string service;
   std::string topic;
   TopicType topic_type = TopicType::Ticker;
-  SubscriptionType subscription_type = SubscriptionType::HeadlineActuals;
   std::string options = "";
   uint64_t correlation_id = 0;
 
@@ -82,9 +61,9 @@ struct SubscriptionRequest {
    * Converts struct attributes to an URI following standard
    * defined by Bloomberg. Example:
    *
-   *   "//blpapi/economic-data/headline-actuals/ticker/CATBTOTB Index"
+   *   "//blpapi/macro-indicators/ticker/CATBTOTB Index"
    */
-  const std::string toUri();
+  std::string toUri() const;
 };
 
 /**

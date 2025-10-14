@@ -8,12 +8,12 @@ int main() {
     Context ctx;
     std::string config_path = "./config.json";
     ctx.initializeSession(config_path);
+    ctx.addNotificationHandler(defaultObserver);
     SubscriptionRequest request1 = {.topic = "CATBTOTB Index"};
     ctx.subscribe(request1);
     SubscriptionRequest request2 = {
         .topic = "INJCJC Index",
-        .subscription_type = SubscriptionType::ReleaseCalendar,
-        .correlation_id = 1,
+        .correlation_id = 105,
     };
     ctx.subscribe(request2);
     std::this_thread::sleep_for(std::chrono::seconds(10));

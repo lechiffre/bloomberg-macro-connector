@@ -1,54 +1,33 @@
+#include <cstring>
 #include "blpconn.h"
 #include "blpconn_message.h"
 
 
 namespace BlpConn {
 
-const std::string SubscriptionRequest::toUri() {
-    std::string uri = "";
-    switch (subscription_type) {
-        case SubscriptionType::HeadlineActuals:
-            uri += "/headline-actuals";
-            break;
-        case SubscriptionType::ReleaseCalendar:
-            uri += "/release-calendar";
-            break;
-        case SubscriptionType::HeadlineSurveys:
-            uri += "/headline-surveys";
-            break;
-    }
+static const char* toString(TopicType topic_type) noexcept {
     switch (topic_type) {
         case TopicType::Ticker:
-            uri += "/ticker/";
-            break;
-        case TopicType::Cusip:
-            uri += "/cusip/";
-            break;
-        case TopicType::Sedol:
-            uri += "/sedol/";
-            break;
-        case TopicType::Isin:
-            uri += "/isin/";
-            break;
-        case TopicType::Bsid:
-            uri += "/bsid/";
-            break;
-        case TopicType::Buid:
-            uri += "/buid/";
-            break;
-        case TopicType::Eid:
-            uri += "/eid/";
-            break;
-        case TopicType::Figi:   
-            uri += "/figi/";
-            break;
-        default:
-            uri += "/ticker/";
-            break;
+            return "ticker";
+        case TopicType::Bbgid:
+            return "bbgid";
     }
-    uri += topic;
+    return "unknown";
+}
+
+std::string SubscriptionRequest::toUri() const {
+    const char* topic_type_str = toString(topic_type);
+    size_t len = 2 + std::strlen(topic_type_str) + topic.length() +
+        (!options.empty() ? 1 + options.length() : 0);
+    std::string uri;
+    uri.reserve(len);
+    uri += "/";
+    uri.append(topic_type_str);
+    uri += "/";
+    uri.append(topic);
     if (!options.empty()) {
-        uri += "?" + options;
+        uri += "?";
+        uri.append(options);
     }
     return uri;
 }

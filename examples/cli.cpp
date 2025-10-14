@@ -12,10 +12,9 @@ enum {
     UNSUBSCRIBE
 };
 
-void eventRequest(Context& ctx, SubscriptionType subscription_type, uint64_t corr, const std::string& rem, int action) {
+void eventRequest(Context& ctx, uint64_t corr, const std::string& rem, int action) {
     SubscriptionRequest request = {
         .topic = rem,
-        .subscription_type = subscription_type,
         .correlation_id = corr,
     };
     if (action == SUBSCRIBE) {
@@ -27,51 +26,32 @@ void eventRequest(Context& ctx, SubscriptionType subscription_type, uint64_t cor
 
 void processCommand(Context& ctx, const std::string& line) {
     size_t pos = line.find(' ');
+    // Command
     if (pos == line.npos) {
         std::cout << "Invalidad command" << std::endl;
         return;
     }
     std::string cmd = line.substr(0, pos);
+    boost::algorithm::trim(cmd);
+    // Correlation ID
     std::string rem = line.substr(pos);
     boost::trim(rem);
-    pos = rem.find(' ');
-    if (pos == line.npos) {
-        std::cout << "Invalidad event" << std::endl;
-        return;
-    }
-    std::string evt = rem.substr(0, pos);
-    rem = rem.substr(pos);
-    boost::trim(rem);
+    
     pos = rem.find(' ');
     if (pos == line.npos) {
         std::cout << "Invalidad event" << std::endl;
         return;
     }
     std::string corr = rem.substr(0, pos);
-    std::string par = rem.substr(pos);
-    boost::algorithm::trim(cmd);
-    boost::algorithm::trim(evt);
     boost::algorithm::trim(corr);
+    std::string par = rem.substr(pos);
     boost::algorithm::trim(par);
-    std::cout << cmd << ":" << evt << ":" << par << std::endl;
+    
     if (cmd == "subscribe") {
-        if (evt == "calendar") {
-            eventRequest(ctx, SubscriptionType::ReleaseCalendar, std::stoi(corr), par, SUBSCRIBE); 
-        } else if (evt == "economic") {
-            eventRequest(ctx, SubscriptionType::HeadlineActuals, std::stoi(corr), par, SUBSCRIBE); 
-        } else {
-            std::cout << "Not defined command" << std::endl;
-        }
-    } else if (cmd == "unsubscribe") {
-        if (evt == "calendar") {
-            eventRequest(ctx, SubscriptionType::ReleaseCalendar, std::stoi(corr), par, UNSUBSCRIBE); 
-        } else if (evt == "economic") {
-            eventRequest(ctx, SubscriptionType::HeadlineActuals, std::stoi(corr), par, UNSUBSCRIBE); 
-        } else {
-            std::cout << "Not defined command" << std::endl;
-        }
+        eventRequest(ctx, std::stoi(corr), par, SUBSCRIBE); 
+    } else {
+        eventRequest(ctx, std::stoi(corr), par, UNSUBSCRIBE); 
     }
-    return;
 }
 
 void run(Context& ctx) {

@@ -1,10 +1,11 @@
 all:
 	GOBIN=${PWD}/bin go install ./simple
 	GOBIN=${PWD}/bin go install ./cli
-	GOBIN=${PWD}/bin go install ./example
+	GOBIN=${PWD}/bin go install ./managed
 
 setup:
 	go install golang.org/x/tools/cmd/stringer@latest
+	go get golang.org/x/tools/cmd/godoc
 	stringer -type=ModuleType
 	stringer -type=SessionStatus 
 	stringer -type=SubscriptionStatus 
@@ -15,3 +16,7 @@ setup:
 
 test:
 	go test ./tests/deserialize_test.go
+
+doc:
+	go doc --all > API.txt
+

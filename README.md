@@ -15,7 +15,7 @@ B-PIPE. The process is as follows:
    session is responsible for managing the connection and communication with
    the server. The session opens a service. A service is a specific
    functionality provided by Bloomberg. In this case, the service is
-   `//blp/macro-indicadors`.
+   `//blp/macro-indicators`.
 2. **Subscribe**: The client program sends a subscription request to the
    service. The request contains the information about the data the client
    wants to receive. The request is sent to the server, and responses are
@@ -24,7 +24,7 @@ B-PIPE. The process is as follows:
    These functions are called when the server sends notifications about the
    service status and the subscription data. The observer functions are
    responsible for processing the notifications and updating the client program
-   with the new data.
+   state with the new data.
 4. **Unsubscribe**: The client program can unsubscribe from the service at any
    time. Subscriptions are identified by a correlation ID assigned by the
    client program. The correlation ID is used to identify the subscription and
@@ -37,6 +37,11 @@ B-PIPE. The process is as follows:
    longer needed. This will close the connection to the server and free up any
    resources used by the session.
 
+The Go library includes a managed context to automatically keep record
+of the active subscriptions and their correlation IDs. As a consequence,
+the client program doesn't need to deal with these details (see "Managed
+Context").
+
 ## Application Context
 
 The first step is to initialize a context, which includes:
@@ -45,25 +50,26 @@ The first step is to initialize a context, which includes:
 * Opening a session
 * Activating the default service: `//blp/macro-indicators`
 
-Once the the connection has been initialized, the client program can start
+Once the connection has been initialized, the client program can start
 subscribing to data feeds and managing responses and notifications.
 
-The session should be shutdown when the client program is finished. In C++, if
-the context is active at the end of the program, it will be shutdown
-automatically. In Go, the context must be shutdown explicitly using `defer`.
+The session should be shutdown when the client program is finished. In
+C++, if the context is active at the end of the program, it will be
+shutdown automatically. In Go, the context must be shutdown explicitly
+using `defer`.
 
 During the client program execution, a context can be initialized and shutdown
-as many times as needed. This can be helpfull if for any reason the connection
+as many times as needed. This can be helpful if for any reason the connection
 to the Bloomberg servers is lost. There are two mechanisms the client can use
 to monitor the context status:
 
 * The function `isConnected()` which returns true if the context is connected
   to the server.
-* Monitoring log messages of type `Hearbeat`, which are sent periodically by
+* Monitoring log messages of type `Heartbeat`, which are sent periodically by
   the server to indicate that the connection is still active. More about
   processing notifications below.
 
-Here is an example of managing the applcation context:
+Here is an example of managing the application context:
 
 ```go
 package main
@@ -76,10 +82,10 @@ import (
 func main() {
     ctx := blpconngo.NewContext()
     ctx.AddNotificationHandler(blpconngo.Callback)
-    configPath : = "./config.json"
+    configPath := "./config.json"
     res := ctx.InitializeSession(configPath)
-    if !res{log.Fatal(
-        "Failed to initialize session")
+    if !res {
+        log.Fatal("Failed to initialize session")
     }
     defer ctx.ShutdownSession()
     // The session is now active and ready to process subscription requests
@@ -88,13 +94,13 @@ func main() {
 
 ## Configuration
 
-In the previous section, the first step on initializing the context is settin
-the authetication parameters .Those and other application global values are
-defined in a configuration file .The path of the configuration file is passed
-to the `InitializeSession` function .The configuration file is a JSON file.A
-`config - example.json` file is included with source code.
+In the previous section, the first step on initializing the context is set in
+the authentication parameters. Those and other application global values are
+defined in a configuration file. The path of the configuration file is passed
+to the `InitializeSession` function. The configuration file is a JSON file. A
+`config-example.json` file is included with source code.
 
-This is an example of a configuration file :
+This is an example of a configuration file:
 
 ```json
 {
@@ -110,13 +116,13 @@ This is an example of a configuration file :
 }
 ```
 
-In this case, it is assumed that the certificates are located in the folder `./
-credentials`.
+In this case, it is assumed that the certificates are located in the folder
+`./credentials`.
 
 Parameters to define are:
 
-* `client_certificate`: Path to the file with the client certificate
-* `root_certificate`: Path to the file with the root certificate
+* `client_certificate`: Path to the file of the client certificate
+* `root_certificate`: Path to the file of the root certificate
 * `password`: Password to access Bloomberg's services
 * `primary_host`: Name of Bloomberg's primary host
 * `secondary_host`: Name of Bloomberg's secondary host
@@ -125,30 +131,30 @@ Parameters to define are:
 * `app_name`: Bloomberg's designated application name
 * `mode`: Mode of operation. It can be `prod` or `test`
 
-**Note** : The `mode` configuration parameter only has effect if the code has
-been compiled with the `ENABLE_PROFILING` option .
+**Note**: The `mode` configuration parameter only has effect if the code has
+been compiled with the `ENABLE_PROFILING` option.
 
 ## Subscription Request
 
 The main task provided by the library is let the client to subscribe /
-unsubscribe to real time data about economic events .The characteristics of the
-required information are defined in a subscription request .Once the
+unsubscribe to real time data about economic events. Characteristics of the
+required data are defined in a subscription request. Once the
 subscription has been activated, your application will start receiving updates
-and notifications about your request .
+and notifications about your request.
 
 A request contains :
 
-* `service`: One of the services offered by Bloomberg.At this moment, the only
-  service enabled is `macro-indicators`.
-* `topic_type`: The standard used to encode the entity or security you are
-  requesting information about . The most commonly used is "Ticker." Other
-  types include CUSIP and FIGI.
-* `topic`: The specific identifier that represents the entity or security you
-  are requesting information about.
-* `options`: Some requests may require complementary information, such as a
-  period of time. This attribute is used to encode those additional parameters.
-* `correlation_id`: A number to identify the request.This number must be
-  assigned by the user.
+* `service`: One of the services offered by Bloomberg.At this moment,
+  the only service enabled is `macro-indicators`.
+* `topic_type`: The standard used to encode the entity or security you
+  are requesting information about . The most commonly used is "Ticker",
+  but it can also be "Bbgid".
+* `topic`: The specific identifier that represents the entity or
+  security you are requesting information about.
+* `options`: Some requests may require complementary information, such
+  as a period of time. This attribute is used to encode those additional
+  parameters.
+* `correlation_id`: A number to identify the request.
 
 As an example, this is the definition of a subscription request:
 
@@ -161,9 +167,9 @@ As an example, this is the definition of a subscription request:
 }
 ```
 
-The correlation ID is required to follow up the request.Related notifications
+The correlation ID is required to follow up the request. Related notifications
 will be tagged with the same correlation ID. The client program can use this ID
-to identify the request and process the notifications accordingly.Moreover, to
+to identify the request and process the notifications accordingly. Moreover, to
 stop the subscription, the correlation ID is link to the original request.
 
 For subscription and topic types, the library provides predefined enumerations
@@ -191,10 +197,71 @@ ctx.Subscribe(request)
 ctx.Unsubscribe(request)
 ```
 
+## Managed Context (Go)
+
+As it was mentioned above, the Go library has an additional layer, the
+managed context. The automatically manage the correlation id
+assignation, as well as take care to close the open subscriptions when the
+context is shutdown. The to do subscriptions, the client program only
+needs to provide the identification ticker or bbgid.
+
+Here as minimal example of a session using the managed context. Observe
+that to do the subscription, only the ticker identification is provided.
+Once requested, the subscription can be cancelled at any moment, or let
+the contexto the do it automatically when the function
+`ManagedShutdown` is exceuted.
+
+```go
+package main
+
+import (
+	"blpconngo"
+	"log"
+)
+
+func main() {
+	ctx := blpconngo.NewManagedContext()
+	configPath := "./config.json"
+	ctx.AddNotificationHandler(blpconngo.Callback)
+	if ok := ctx.InitializeSession(configPath); !ok {
+		log.Fatal("Failed to initialize session")
+	}
+	defer ctx.ManagedShutdown()
+    for ... {
+        ...
+	    ctx.SubscribeTicker("INJCJC Index")
+        ...
+    }
+}
+```
+
+The managed context layer provides the following functions:
+
+* `NewManagedContext()`: To create a new context.
+* `ManagedShutdown()`: To close the context,
+  cancelling the pending subscriptions and closing the connection to the
+  Bloomberg server.
+* `SubscribeTicker(ticker string)`: To create a new subscription using a
+  ticker identifier.
+* `SubscribeBbgid(bbgid string)`: To create a new subscription using a
+  bbgid identifier.
+* `UnsubscribeTicker(ticker string)`: To cancel a subscription opened using a
+  ticker identifier.
+* `UnsubscribeBbgid(bbgid string)`: To cancel a subscription opened
+  using a bbgid identifier.
+* `RemoveTicker(ticker string)`: To remove from memory a ticker
+  subscription when the notification manager has received an alert that
+  the subscription has ended for a reason different than an
+  unsubscription.
+* `RemoveBbgid(ticker string)`: To remove from memory a ticker
+  subscription when the notification manager has received an alert that
+  the subscription has ended for a reason different than an
+  unsubscription.
+
 ## Observer Functions 
 
 To receive notifications, the library requires the client program to register
-one or more observer functions. An observer function is be used as a callback:
+one or more observer functions. An observer function is used as a callback:
 every time a new event occurs, a notification will be delivered to the client
 program.
 
@@ -210,7 +277,7 @@ the data.  Examples of deserialization functions are provided below.
 In C++ and Go, default observer functions are provided. They catch all notitications
 and print them to the standard output.
 
-This how to register an observer function in C++:
+This ia how to register an observer function in C++:
 
 ```c++
 void defaultObserver(const uint8_t *buffer, size_t size) {
@@ -226,8 +293,26 @@ ctx.AddNotificationHandler(defaultObserver);
 Notifications can be any of the following types:
 
 * `LogMessage`: A general message.
-* `HeadlineEconomicEvent`: A message related to an economic event.
-* `HeadlineCalendarEvent`: A message related to a calendar event.
+* `MacroReferenceData`: Reference data for subsequent events.
+* `MacroHeadlineEvent`: An economic event
+* `MacroCalendarEvent`: A calendar event
+
+## Extended event types
+
+In addition, the Go library provides extended data types to represent
+economic and calendar events that include the reference data. To use
+this feature, the library provides a `ReferenceMap` type that keep track
+of the received reference data and function to map the basic event types
+to the extended event types.
+
+* `HeadlineEvent`
+* `CalendarEvent`
+
+The client program is responsible to create a new ReferenceMap object,
+store references when they arrive, as well as to extend economic and
+calendar events. The source code includes by default a notification
+handler that shows to use this features (review the source code file
+`handler.go`)
 
 ## Log Messages
 
@@ -237,171 +322,212 @@ fields:
 
 * `module`: The module that generated the message.
 * `status`: An indication about the status of the module or an event.
-* `correlation_id`: The correlation ID of the subscription that generated the message.
+  Once the module has event identified, this field needs to be converted
+  to the appropiated status data type (see below).
+* `correlation_id`: The correlation ID of the subscription that
+  generated the message.
 * `message`: A human-readable message.
 
-It is expected that the client program will receive log messages and take
-appropiate actions in response to them. For example, if the session is down, the
-client program should try to reconnect. If the subscription is terminated, the
-client program should try to resubscribe. If the service is closed, the client
-program should try to reopen the service.
+It is expected that the client program will receive log messages and
+take appropiate actions in response to them. For example, if the session
+is down, the client program should try to reconnect. If the subscription
+is terminated, the client program cat try to resubscribe. If the service
+is closed, the client program may try to reopen the service.
 
-The `module` field can take any of this values:
+In Go, the `module` field can take any of this values:
 
-```c++
-enum class Module: uint8_t {
-    Unknown = 0,
-    System,
-    Session,
-    Subscription,
-    Service,
-    Heartbeat,
-    Another = 99,
-};
+```go
+type ModuleType uint8
+
+const (
+    ModuleUnknown ModuleType = iota
+    ModuleSystem
+    ModuleSession
+    ModuleSubscription
+    ModuleService
+    ModuleHeartbeat
+    ModuleAnother = 99
+)
 ```
 
 The module `Session` can take the following values:
 
-```c++
-enum class SessionStatus: uint8_t {
-    Unknown = 0,
-    ConnectionUp,
-    Started,
-    ConnectionDown,
-    Terminated,
-    InvalidOptions,
-    Failure,
-    Another = 99,
-};
+```go
+type SessionStatus uint8
+const (
+    SessionUnknown SessionStatus = iota
+    SessionConnectionUp
+    SessionStarted
+    SessionConnectionDown
+    SessionTerminated
+    SessionInvalidOptions
+    SessionFailure
+    SessionAnother = 99
+)
 ```
 
-The moduel `Service` can take the following values:
+The module `Service` can take the following values:
 
-```c++
-enum class ServiceStatus: uint8_t {
-    Unknown = 0,
-    Opened,
-    Closed,
-    Failure,
-    Another = 99,
-};
+```go
+type ServiceStatus uint8
+
+const (
+    ServiceUnknown ServiceStatus = iota
+    ServiceOpened
+    ServiceClosed
+    ServiceFailure
+    ServiceAnother = 99
+)
 ```
 
 The module `Subscription` can take the following values:
 
 ```c++
-enum class SubscriptionStatus: uint8_t {
-    Unknown = 0,
-    Started,
-    StreamsActivated,
-    Terminated,
-    Success,
-    Failure,
-    Another = 99,
-};
+type SubscriptionStatus uint8   
+
+const (                                                                          
+    SubscriptionUnknown SubscriptionStatus = iota                                
+    SubscriptionStarted                                                          
+    SubscriptionStreamsActivated                                                 
+    SubscriptionTerminated                                                       
+    SubscriptionSuccess                                                          
+    SubscriptionFailure                                                          
+    SubscriptionAnother = 99                                                     
+)  
 ```
+
 The `Heartbeat` module is used to indicate that the session is still active. The
 remaining fields are not used in this case.
 
 ## Economic Events
 
-Related to the data messages, all economic events share these fields:
+Related to the data messages, all events share these reference fields (in Go):
 
-* `id_bb_global`: A Bloomberg global ID
-* `parsekyable_des`: Encoded description
-* `description`: Human-readable description
-* `event_type`
-* `event_subtype`
-* `event_id`: An identification number
-* `observation_period`: The time frame the event corresponds to
-* `release_start_dt`: Time when the data release starts
-* `release_end_dt`: Time when the data release ends. If the event corresponds
-  to a single moment, then start and end times are the same.
+* `CorrelationID`: used to associated subscriptions.
+* `IDBBGlobal`: A Bloomberg global ID
+* `ParsekyableDes`: Encoded description
+* `Description`: Human-readable description
+* `IndxFreq`: Index frequency
+* `IndxUnits`: Index units
+* `CountryISO`: ISO code of the country where the event occurs
+* `IndxSource`: Index source
+* `SeasonalityTransformation`
 
-Headlines for economic events have these additional fields:
+Basic headline events have this fields:
 
-* `value`: The single value or the distribution of values
-* `prior`: Data about a previous related event
+* `CorrelationID`: used to associated subscriptions.
+* `EventType`
+* `EventSubtype`
+* `EventID`: An identification number
+* `ObservationPeriod`: The time frame the event corresponds to
+* `ReleaseStartDT`: Time when the data release starts
+* `ReleaseEndDT`: Time when the data release ends. If the event
+  corresponds to a single moment, then start and end times are the same.
+* `PriorEventID`: An identification number
+* `PriorObservationPeriod`: The time frame the event corresponds to
+* `PriorReleaseStartDT`: Time when the data release starts
+* `PriorReleaseEndDT`: Time when the data release ends. If the event
+  corresponds to a single moment, then start and end times are the same.
+* `Value`: The single value or the distribution of values
 
-Calendar events add one more field to basic economic events:
+Basic calendar events have these fields:
 
-* `release_status`: Indicates if the event is scheduled or already
+* `CorrelationID`: used to associated subscriptions.
+* `EventType`
+* `EventSubtype`
+* `EventID`: An identification number
+* `ObservationPeriod`: The time frame the event corresponds to
+* `ReleaseStartDT`: Time when the data release starts
+* `ReleaseEndDT`: Time when the data release ends. If the event
+  corresponds to a single moment, then start and end times are the same.
+* `ReleaseStatus`: Indicates if the event is scheduled or already
   released.
+
+As it was mentioned above, the Go library provides extended headline and
+calendar event types that included fields in the reference data.
 
 The type of event can take one of the following values:
 
-```c++
-enum class EventType: uint8_t {
-    Unknown = 0,
-    Actual,
-    Revision,
-    Estimate,
-    Calendar,
-    Another = 99,
-};
+```go
+type EventType uint8
+
+const (
+    EventTypeUnknown EventType = iota
+    EventTypeActual
+    EventTypeRevision
+    EventTypeEstimate
+    EventTypeCalendar
+    EventTypeAnother = 99
+)
 ```
 
 The subtype of the event can take one of the following values:
 
-```c++
-enum class EventSubType: uint8_t {
-    Unknown = 0,
-    New,
-    Update,
-    Unitpaint,
-    Delete,
-    Another = 99,
-};
+```go
+type EventSubType uint8
+
+const (
+    EventSubTypeUnknown EventSubType = iota
+    EventSubTypeNew
+    EventSubTypeUpdate
+    EventSubTypeUnitpaint
+    EventSubTypeDelete
+    EventSubTypeAnother = 99
+)
 ```
 
 Value is a special type of data. It can be a single value or a distribution of
-values.  The type of value can take one of the following values. If `number` is
-1, then the value is a single value: only the field `value` is used. Otherwise,
-it is a distribution of values, so the fields `low`, `high`, `median`,
-`average`, and `standard_deviation` are used.
+values.  The type of value can take one of the following values. If `Number` is
+1, then it is a single value: only the field `Value` is used. Otherwise,
+it is a distribution, so the fields `Low`, `High`, `Median`,
+`Average`, and `StandardDeviation` are used.
 
-```c++
-struct ValueType {
-  double number;
-  double value;
-  double low;
-  double high;
-  double median;
-  double average;
-  double standard_deviation;
-};
+```go
+type ValueType struct {                                                          
+    Number            float64                                                    
+    Value             float64                                                    
+    Low               float64                                                    
+    High              float64                                                    
+    Median            float64                                                    
+    Average           float64                                                    
+    StandardDeviation float64                                                    
+} 
 ```
 
 ## Deserialization
 
 The library uses [FlatBuffers](https://google.github.io/flatbuffers/) to
-encode the notifications. Therefore, they are delivered as binary sequences. The client program
-is responsible for deserializing the data. The library provides a set of
-functions to deserialize the notifications.
+encode the notifications. Therefore, they are delivered as binary
+sequences. The client program is responsible for deserializing the data.
+The library provides a set of functions to deserialize the
+notifications.
 
-Here is an example of deserialization in C++:
+Here is an example of deserialization in Go:
 
-```c++
-void observer(const uint8_t *buffer, size_t size) {
-  flatbuffers::Verifier verifier(buffer, size);
-  if (!BlpConn::FB::VerifyMessageVector(verifier, nullptr, nullptr)) {
-    std::cout << "Invalid message" << std::endl;
-    return;
-  }
-  auto main = flatbuffers::GetRoot<BlpConn::FB::Main>(buffer);
-  if (main->message_type() == BlpConn::FB::Message_HeadlineEconomicEvent) {
-    auto fb_event = main->message_as_HeadlineEconomicEvent();
-    auto event = toHeadlineEconomicEvent(fb_event);
-    std::cout << event << std::endl;
-  } else if (main->message_type() == FB::Message_HeadlineCalendarEvent) {
-    auto fb_event = main->message_as_HeadlineCalendarEvent();
-    auto event = toHeadlineCalendarEvent(fb_event);
-    std::cout << event << std::endl;
-  } else if (main->message_type() == BlpConn::FB::Message_LogMessage) {
-    auto fb_log_message = main->message_as_LogMessage();
-    auto log_message = toLogMessage(fb_log_message);
-    std::cout << log_message << std::endl;
-  }
+```go
+var referenceMap = NewReferenceMap()
+
+func NativeHandler(bufferSlice []byte) {
+    main := FB.GetRootAsMain(bufferSlice, 0)
+    unionTable := new(flatbuffers.Table)
+    if main.Message(unionTable) {
+        switch main.MessageType() {
+            case FB.MessageMacroReferenceData:
+                var fbEvent = new(FB.MacroReferenceData)
+                fbEvent.Init(unionTable.Bytes, unionTable.Pos)
+                event := DeserializeMacroReferenceData(fbEvent)
+                referenceMap.Add(event)
+                fmt.Println(event)
+            case FB.MessageMacroHeadlineEvent:
+                var fbEvent = new(FB.MacroHeadlineEvent)
+                fbEvent.Init(unionTable.Bytes, unionTable.Pos)
+                _event := DeserializeMacroHeadlineEvent(fbEvent)
+                event := referenceMap.fillHeadlineEvent(_event)
+                fmt.Println(event)
+            default:
+                fmt.Println("Unknown message type")
+        }
+    }
 }
 ```
 
@@ -414,20 +540,27 @@ converted to a specific object.
 The project has different components organized by folders:
 
 * `bin`: C++ binary examples and tests
-* `debug`: Files generated in the debugging process. Includes FlatBuffers binary files.
-* `docs`: Documentation files. It includes a file named `go-api.txt` with the types and
-  functions used in the Go API.
-* `fb`: FlatBuffers schema files. The schema files are used to generate C++ and Go data serialization functions.
-* `go`: Go library and examples. Below more information in detailed about it.
-* `include`: C++ header files. The main header file is `blpconn.h`. It includes the
-  definitions of the functions and types used in the library.
+* `debug`: Files generated in the debugging process. Includes
+  FlatBuffers binary files.
+* `docs`: Documentation files. It includes a file named `go-api.txt`
+  with the types and functions used in the Go API.
+* `fb`: FlatBuffers schema files. The schema files are used to generate
+  C++ and Go data serialization functions.
+* `go`: Go library and examples. Below more information is detailed
+  about it.
+* `include`: C++ header files. The main header file is `blpconn.h`. It
+  includes the definitions of the functions and types used in the
+  library.
 * `lib`: C++ static libraries for C and Go.
-* `schemas`: XML schemas files provided by Bloomberg, detailing the structure of the economic data feeds.
+* `schemas`: XML schemas files provided by Bloomberg, detailing the
+  structure of the economic data feeds.
 * `src`: C++ source files
-* `swig`: SWIG files to generate C++/Go wrappers. The main file is `blpconn.i`. It includes the
-  definitions of the functions and types used in the library.
+* `swig`: SWIG files to generate C++/Go wrappers. The main file is
+  `blpconn.i`. It includes the definitions of the functions and types
+  used in the library.
 * `tests`: C++ test files.
-* `vrs`: Contains some snippets of Python code used during the development process of the library.
+* `vrs`: Contains some snippets of Python code used during the
+  development process of the library.
 
 The `go` folder contains the Go library and examples. The library is
 organized in the following way:
@@ -436,15 +569,16 @@ organized in the following way:
 * `BlpConn/FB`: The package generated by FlatBuffers to deserialize the
   notifications.
 * `cli`: Command line minimal example
-* `loadfbbin`: Example loading binary files produced by FlatBuffers
-* `simple`: Minimal example of connecting to Bloomberg B-PIPE and making a subscription.
+* `simple`: Minimal example of connecting to Bloomberg B-PIPE and making
+  a subscription.
+* `managed`: Minimal example using the managed context.
 * `tests`: Go test files
 
 ## Requirements
 
 To compile the library, the following requirements are needed:
 
-- [Blpapi SDK 3.25.3](https://www.bloomberg.com/professional/support/api-library/)
+- [Blpapi SDK 3.64](https://www.bloomberg.com/professional/support/api-library/)
 - [Boost 1.88](https://www.boost.org/))
 - [Google Test 1.16](https://google.github.io/googletest/)
 - [Swig 4.3](https://www.swig.org/)
@@ -457,7 +591,8 @@ The compilation process has several steps:
 1. Generate FlatBuffers bindings
 2. Compile C++ code
 3. Generate C++/Go wrappers using SWIG
-4. Compile Go code
+4. Setup the Go environment
+4. Compile the Go examples
 
 ## FlatBuffers Bindings
 
@@ -526,63 +661,60 @@ The following files are generated:
 * `./lib/libblpconngo.a`: A static library with C/C++ wrapper functions
 * `./go/blpconngo`: A Go interface for BlpConn function calls.
 
+**Note**: The three previous steps can be run all at once using the
+script `build.sh`.
+
 ## Generating Go Binaries
 
-To generate the Go binaries, run:
-
-```sh
-cd go
-sh install.sh
+* To setup the Go environment: `make setup`
+* To complie the examples: `make`
+* To run the tests: `make test`
+* To generate the API documentation: `make doc`
 ```
 
-This will generate the Go binaries in the `./go/bin` folder. The binaries are:
+Binaries for the examples will be located in the `./go/bin` folder. The binaries are:
 
 * `./go/bin/simple`: A minimal example of connecting to Bloomberg B-PIPE and making a request.
 * `./go/bin/cli`: A basic command line interface.
+* `./go/bin/managed`: An example using the managed context.
 
 ## Client Example
 
-Two client examples are provided:
+A client examples is provided:
 
-* `simple`: A minimal example of connecting to Bloomberg B-PIPE and making a request.
-* `cli`: A basic command line interface.
+* `./bin/cli`: C++ version
+* `./go/bin/cli`: Go version
 
 The `cli` example recognizes the following commands:
 
 ```text
-subscribe SUBSCRIPTION_TYPE CORRELATION_ID TOPIC
-unsubscribe SUBSCRIPTION_TYPE CORRELATION_ID TOPIC
+subscribe CORRELATION_ID TOPIC
+unsubscribe CORRELATION_ID TOPIC
 quit
 ```
+
+The topic should be provided as ticker identifier.
 
 This is a running example:
 
 ```
-> subscribe economic 1 CATBTOTB Index
+> subscribe 1 CATBTOTB Index
 
-HeadlineBaseEvent { id_bb_global: BBG002SBJ964, parsekyable_des: CATBTOTB
-Index, description: STCA Canada Merchandise Trade Total Balance SA CAD,
-event_type: REVISION, event_subtype: INITPAINT, event_id: 2167796,
-observation_period: Feb, release_start_dt: { microseconds: 1743701400000000,
-offset: 0 }, release_end_dt: { microseconds: 1743701400000000, offset: 0 } },
-value: ValueType { number: 1, value: 3.13, low: nan, high: nan, median: nan,
-average: nan, standard_deviation: nan }, prior_value: ValueType { number: 1,
-value: 3.97, low: nan, high: nan, median: nan, average: nan,
-standard_deviation: nan }, prior_event_id: 2167795, prior_observation_period:
-Jan, prior_economic_release_start_dt: { microseconds: 0, offset: 0 },
-prior_economic_release_end_dt: { microseconds: 0, offset: 0 } 
-```
-
-To execute the C++ example, run:
-
-```sh
-./bin/cli
-```
-
-To execute the Go example, run:
-
-```sh
-./go/bin/cli
+Macro Reference Data:
+{1 BBG002SBJ964 CATBTOTB Index STCA Canada Merchandise Trade Total
+Balance SA CAD Monthly Value CA STCA - Statistics Canada Value SA}
+Macro Calendar Event:
+{{1 BBG002SBJ964 CATBTOTB Index EventTypeCalendar EventSubTypeUnitpaint
+2167803 Sep 2025-11-04 13:30:00 +0000 UTC 2025-11-04 13:30:00 +0000 UTC
+ReleaseStatusScheduled 55.2632} STCA Canada Merchandise Trade Total
+Balance SA CAD Monthly Value CA STCA - Statistics Canada Value SA}
+Macro Headline Event:
+{{1 EventTypeActual EventSubTypeUnitpaint 2167802 Aug 2025-10-07
+12:30:00 +0000 UTC 2025-10-07 12:30:00 +0000 UTC 0  586454-01-17
+08:01:49.551616 +0000 UTC 586454-01-17 08:01:49.551616 +0000 UTC {1
+-6.32 NaN NaN NaN NaN NaN}} BBG002SBJ964 CATBTOTB Index STCA Canada
+Merchandise Trade Total Balance SA CAD Monthly Value CA STCA -
+Statistics Canada Value SA}
 ```
 
 ## Building Go Binaries
@@ -607,7 +739,8 @@ func NotificationHandler(buffer *C.uchar, len C.size_t) {
 }
 ```
 
-The comment above the observer function is needed in order to pass that function as a C object. That function is encapsulated in a C function:
+The comment line above the observer function is needed in order to pass that
+function as a C object. That function is encapsulated in a C function:
 
 ```c
 void Callback(uint8_t* buffer, size_t len) {
@@ -625,7 +758,8 @@ ctx.AddNotificationHandler(Callback)
 ...
 ```
 
-The Go program should have `cgo` parameters to compile the `blpconn` libraries. For example:
+The Go program should have `cgo` parameters to compile the `blpconn`
+libraries. For example:
 
 ```go
 /*
@@ -638,59 +772,28 @@ import "C"
 
 ## Tests
 
-The library includes test to verify critical functions, in particular the
-message serialization/deserialization process.
-
-**Serialization and Deserialization**
-
-This test generates a set of messages. Then, it makes a roud trip through the
-serialization and deserialization process.
+The library includes test to verify critical functions, in particular
+the message serialization/deserialization process. This test generates a
+set of messages. Then, it makes a roud trip through the serialization
+and deserialization process.
 
 ```sh
-./bin/test_serialdeserial
-```
-
-**Loading and Identifying Binary Buffered Messages**
-
-Based on a set of binary files encoded using FlatBuffers, the test loads all
-these file and tries to identify the type of the message. The test fails if
-there problems loading any file or detecting the type of the message.
-
-C++ version:
-
-```sh
-./bin/test_loadfbbin
-```
-
-Go version:
-
-```sh
+./bin/test_serialization
 cd go
-go test ./tests/loadfbbin
+make test
 ```
 
 ## Profiling
 
-By default, the library and examples are compiled using the `ENABLE_PROFILING` option.
-That option produces the inclusion of code to measure the time spent by critical
-functions. The profiling information is stored in the file `./profiler.txt`.
+By default, the library and examples are compiled using the
+`ENABLE_PROFILING` option.  That option produces the inclusion of code
+to measure the time spent by critical functions. The profiling
+information is stored in the file `./profiler.txt`.
 
-Here is an example of the profiling output:
-
-```text
-[2025-05-22 23:41:16.489] [perf_logger] [info] processEconomicEvent 13 microseconds
-[2025-05-22 23:41:16.489] [perf_logger] [info] processSubscriptionData 349 microseconds
-[2025-05-22 23:41:21.320] [perf_logger] [info] unsubscribe 243 microseconds
-[2025-05-22 23:41:21.320] [perf_logger] [info] serializeLogMessage 2 microseconds
-[2025-05-22 23:41:21.320] [perf_logger] [info] buildBufferLogMessage 9 microseconds
-[2025-05-22 23:41:21.320] [perf_logger] [info] log 79 microseconds
-[2025-05-22 23:41:21.320] [perf_logger] [info] toLogMessage 1 microseconds
-[2025-05-22 23:41:21.320] [perf_logger] [info] defaultObserver 11 microseconds
-[2025-05-22 23:41:21.320] [perf_logger] [info] notify 13 microseconds
-```
-
-To deactivate profiling, set the configuration variable from "test" to "prod".
-If you want to remove completely the profiling code, when compiling remove the `ENABLE_PROFILING` option from the `CMakeLists.txt` and other build files.
+To deactivate profiling, set the configuration variable from "test" to
+"prod".  If you want to remove completely the profiling code, when
+compiling remove the `ENABLE_PROFILING` option from the `CMakeLists.txt`
+and other build files.
 
 ## Engineering Comments
 
@@ -704,28 +807,31 @@ If you want to remove completely the profiling code, when compiling remove the `
 
 2025-05-12
 
-This note describe step by step the process to install BlpConn library in the TT server.
-The TT Server has a CentOS 7, which has been discontinued. Besides that, it has a special
-configuration. Therefore, support for it is only provided by Trading Technologies.
+This note describe step by step the process to install BlpConn library
+in the TT server.  The TT Server has a CentOS 7, which has been
+discontinued. Besides that, it has a special configuration. Therefore,
+support for it is only provided by Trading Technologies.
 
 ## Github Repository Connection
 
-The access to the Github repository was set up using SSH keys. Doing that, the repository
-was cloned:
+The access to the Github repository was set up using SSH keys. Doing
+that, the repository was cloned:
 
-    git clone git@github.com:jailop/bloomberg-geco-connector.git
+    git clone git@github.com:jailop/bloomberg-macro-connector.git
     
 
-## Worling directory
+## Working directory
 
-The local copy of the repository is located in `/home/axssuperuser/bloomberg-geco-connector`.
+The local copy of the repository is located in
+`/home/axssuperuser/bloomberg-macro-connector`.
 
 It is assumed that all the following commands are executed from that directory,
 unless otherwise stated.
     
 ## Configuration
 
-A zip file with the needed configuration files was copied in the TT server: `config.zip`.
+A zip file with the needed configuration files was copied in the TT
+server: `config.zip`.
 
     unzip config.zip
     
@@ -737,39 +843,44 @@ When that file was uncompressed, the following files were created:
 
 ## Flatbuffer Bindings
 
-The package `flatbuffers` is not available in the TT server nor in the repositories it has access to.
-It was intented to build from source, in the folder `/home/axssuperuser/build/flatbuffers/`, but
-that failed.
+The package `flatbuffers` is not available in the TT server nor in the
+repositories it has access to.  It was intented to build from source, in
+the folder `/home/axssuperuser/build/flatbuffers/`, but that failed.
 
-Therefore, the `flatbuffers` generated files in the development machine were included in the source
-code repository, in order to avoid their generation in the TT server. It was only needed to update
-the repoitory:
+Therefore, the `flatbuffers` generated files in the development machine
+were included in the source code repository, in order to avoid their
+generation in the TT server. It was only needed to update the repoitory:
 
     git pull
     
 ## CMake command
 
-The default `cmake` version installed in the TT server was 2.8. The building
-script is for CMake 3.17. That package was installed in the TT server:
+The default `cmake` version installed in the TT server was 2.8. The
+building script is for CMake 3.17. That package was installed in the TT
+server:
 
     sudo yum install cmake3
     
-Therefore, any time that CMake needs to be invoked, the command is `cmake3` instead of `cmake`.
+Therefore, any time that CMake needs to be invoked, the command is
+`cmake3` instead of `cmake`.
 
 ## GTest
 
-It was not possible to setup appropiately the `gtest` library in the TT server. For that reason, building
-testing files has been omitted in the TT server.
+It was not possible to setup appropiately the `gtest` library in the TT
+server. For that reason, building testing files has been omitted in the
+TT server.
 
 ## BLPAPI library
 
-The `blpapi` library was copied in the following address: `/usr/local/lib/libblpapi3_64.so`
+The `blpapi` library was copied in the following address:
+`/usr/local/lib/libblpapi3_64.so`
 
 ## Environment variables
 
-Because the TT server uses `devtoolset_9`, it is needed to pass as environment variables the location
-of the C and C++ compilers. The following variables were exported, including one related to the location of
-the BLPAPI library:
+Because the TT server uses `devtoolset_9`, it is needed to pass as
+environment variables the location of the C and C++ compilers. The
+following variables were exported, including one related to the location
+of the BLPAPI library:
 
 ```sh
 export CXX=/opt/rh/devtoolset-9/root/bin/g++
@@ -779,13 +890,16 @@ export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
     
 ## CMake configuration file
 
-The configuration file was adapted to run properly in the TT server. Changes included:
+The configuration file was adapted to run properly in the TT server.
+Changes included:
 
 - The location of the `blpapi` library.
 - Commenting the section to build the test programs
-- Adding the path for the JSON library (used to read the configuration file)
+- Adding the path for the JSON library (used to read the configuration
+  file)
 
-This adapted version of the configuration file has been uploaded to the repository.
+This adapted version of the configuration file has been uploaded to the
+repository.
 
 ## Building the C++ library and programs
 
@@ -833,15 +947,4 @@ These new files were generated:
 
     ./go/bin/cli
     ./go/bin/simple
-    
-## Running examples
-
-To run the examples, given that the configuration file is located in the
-default directory: `/home/axssuperuser/bloomberg-geco-connector`, the binaries
-should be run from there:
-
-    ./bin/simple
-    ./bin/cli
-    ./bin/deserialize tests/fbbin/fb_000001.bin
-    ./go/bin/simple
-    ./go/bin/cli
+    ./go/bin/managed

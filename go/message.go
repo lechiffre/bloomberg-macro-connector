@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+
 type ModuleType uint8
 
 const (
@@ -90,7 +91,7 @@ type DateTimeType struct {
 
 type LogMessageType struct {
 	LogDT         time.Time
-	Module        uint8
+	Module        ModuleType
 	Status        uint8
 	CorrelationID uint64
 	Message       string
@@ -118,35 +119,8 @@ func NewValueType() ValueType {
 	}
 }
 
-type HeadlineBaseEvent struct {
-	IDBBGlobal        string
-	ParsekyableDes    string
-	Description       string
-	EventType         uint8
-	EventSubType      uint8
-	EventID           uint64
-	ObservationPeriod string
-	ReleaseStartDT    time.Time
-	ReleaseEndDT      time.Time
-}
-
-type HeadlineEconomicEvent struct {
-	HeadlineBaseEvent
-	Value                       ValueType
-	PriorValue                  ValueType
-	PriorEventID                uint64
-	PriorObservationPeriod      string
-	PriorEconomicReleaseStartDT time.Time
-	PriorEconomicReleaseEndDT   time.Time
-}
-
-type HeadlineCalendarEvent struct {
-	HeadlineBaseEvent
-	ReleaseStatus uint8 
-}
-
 type MacroReferenceData struct {
-	CorrID						int64  `json:"corr_id"`
+	CorrelationID						uint64  `json:"corr_id"`
 	IDBBGlobal					string  `json:"id_bb_global"`
 	ParsekyableDes    			string	`json:"parsekyable_des"`
 	Description       			string  `json:"description"`
@@ -158,7 +132,7 @@ type MacroReferenceData struct {
 }
 
 type MacroHeadlineEvent struct {
-	CorrID						int64  		`json:"corr_id"`
+	CorrelationID						uint64  		`json:"corr_id"`
 	EventType         			EventType		`json:"event_type"`
 	EventSubType      			EventSubType	`json:"event_subtype"`
 	EventID           			uint64			`json:"event_id"`
@@ -173,7 +147,7 @@ type MacroHeadlineEvent struct {
 }
 
 type MacroCalendarEvent struct {
-	CorrID						int64  		`json:"corr_id"`
+	CorrelationID						uint64  		`json:"corr_id"`
 	IDBBGlobal					string  		`json:"id_bb_global"`
 	ParsekyableDes    			string 			`json:"parsekyable_des"`
 	EventType         			EventType		`json:"event_type"`
@@ -209,29 +183,28 @@ type CalendarEvent struct {
 	SeasonalityTransformation	string	`json:"seasonality_transformation"`
 }
 
-func ToNativeTime(microseconds uint64, offset int16) time.Time {
-	seconds := int64(microseconds / 1e6)
-	nanoseconds := int64((microseconds % 1e6) * 1e3)
-	location := time.FixedZone("UTC", int(offset)*60)
-	return time.Unix(seconds, nanoseconds).In(location)
-}
-
 type ReferenceMap struct {
-	items map[int64]MacroReferenceData
+	items map[uint64]MacroReferenceData
 }
 
 func NewReferenceMap() ReferenceMap {
 	return ReferenceMap{
-		items: make(map[int64]MacroReferenceData),
+		items: make(map[uint64]MacroReferenceData),
 	}
 }
 
 func (refMap ReferenceMap) Add(ref MacroReferenceData) {
-	refMap.items[ref.CorrID] = ref
+	refMap.items[ref.CorrelationID] = ref
+}
+
+func (refMap ReferenceMap) Remove(corrID uint64) {
+	if _, ok := refMap.items[corrID]; ok {
+		delete(refMap.items, corrID)
+	}
 }
 
 func (refMap ReferenceMap) fillHeadlineEvent(event MacroHeadlineEvent) HeadlineEvent {
-	ref, ok := refMap.items[event.CorrID] 
+	ref, ok := refMap.items[event.CorrelationID] 
 	if !ok {
 		return HeadlineEvent{
 			MacroHeadlineEvent: event,
@@ -259,7 +232,7 @@ func (refMap ReferenceMap) fillHeadlineEvent(event MacroHeadlineEvent) HeadlineE
 }
 
 func (refMap ReferenceMap) fillCalendarEvent(event MacroCalendarEvent) CalendarEvent {
-	ref, ok := refMap.items[event.CorrID] 
+	ref, ok := refMap.items[event.CorrelationID] 
 	var result CalendarEvent
 	if !ok {
 		result = CalendarEvent{

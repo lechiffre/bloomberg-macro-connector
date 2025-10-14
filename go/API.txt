@@ -1,0 +1,383 @@
+package blpconngo // import "blpconngo"
+
+
+VARIABLES
+
+var Callback = (*byte)(unsafe.Pointer(C.callback))
+var Swig_escape_always_false bool
+var Swig_escape_val interface{}
+
+FUNCTIONS
+
+func DefaultObserver(arg1 *byte, arg2 int64)
+func DeleteContext(arg1 Context)
+func DeleteSubscriptionRequest(arg1 SubscriptionRequest)
+func DeserializeDateTime(fbDateTime *FB.DateTime) time.Time
+func NativeHandler(bufferSlice []byte)
+func NotificationHandler(buffer *C.uchar, len C.size_t)
+func Swig_free(arg1 uintptr)
+func Swig_malloc(arg1 int) (_swig_ret uintptr)
+func ToNativeTime(microseconds uint64, offset int16) time.Time
+
+TYPES
+
+type BlpConnTopicType int
+
+var TopicType_Bbgid BlpConnTopicType = _swig_getTopicType_Bbgid()
+var TopicType_Ticker BlpConnTopicType = _swig_getTopicType_Ticker()
+type CalendarEvent struct {
+	MacroCalendarEvent
+	Description               string `json:"description"`
+	IndxFreq                  string `json:"indx_freq"`
+	IndxUnits                 string `json:"indx_units"`
+	CountryISO                string `json:"country_iso"`
+	IndxSource                string `json:"indx_source"`
+	SeasonalityTransformation string `json:"seasonality_transformation"`
+}
+
+type Context interface {
+	Swigcptr() uintptr
+	SwigIsContext()
+	InitializeSession(arg2 string) (_swig_ret bool)
+	ShutdownSession()
+	IsConnected() (_swig_ret bool)
+	Subscribe(arg2 SubscriptionRequest) (_swig_ret int)
+	Unsubscribe(arg2 SubscriptionRequest)
+	AddNotificationHandler(arg2 _swig_fnptr)
+	Log(arg2 byte, arg3 byte, arg4 uint64, arg5 string)
+}
+
+func NewContext() (_swig_ret Context)
+
+type DateTimeType struct {
+	Microseconds uint64
+	Offset       int16
+}
+
+type EventSubType uint8
+
+const (
+	EventSubTypeUnknown EventSubType = iota
+	EventSubTypeNew
+	EventSubTypeUpdate
+	EventSubTypeUnitpaint
+	EventSubTypeDelete
+	EventSubTypeAnother = 99
+)
+func (v EventSubType) MarshalJSON() ([]byte, error)
+
+func (i EventSubType) String() string
+
+func (v *EventSubType) UnmarshalJSON(data []byte) error
+
+type EventType uint8
+
+const (
+	EventTypeUnknown EventType = iota
+	EventTypeActual
+	EventTypeRevision
+	EventTypeEstimate
+	EventTypeCalendar
+	EventTypeAnother = 99
+)
+func (v EventType) MarshalJSON() ([]byte, error)
+
+func (i EventType) String() string
+
+func (v *EventType) UnmarshalJSON(data []byte) error
+
+type HeadlineEvent struct {
+	MacroHeadlineEvent
+	IDBBGlobal                string `json:"id_bb_global"`
+	ParsekyableDes            string `json:"parsekyable_des"`
+	Description               string `json:"description"`
+	IndxFreq                  string `json:"indx_freq"`
+	IndxUnits                 string `json:"indx_units"`
+	CountryISO                string `json:"country_iso"`
+	IndxSource                string `json:"indx_source"`
+	SeasonalityTransformation string `json:"seasonality_transformation"`
+}
+
+type LogMessageType struct {
+	LogDT         time.Time
+	Module        uint8
+	Status        uint8
+	CorrelationID uint64
+	Message       string
+}
+
+func DeserializeLogMessage(fbLogMessage *FB.LogMessage) LogMessageType
+
+type MacroCalendarEvent struct {
+	CorrID            int64         `json:"corr_id"`
+	IDBBGlobal        string        `json:"id_bb_global"`
+	ParsekyableDes    string        `json:"parsekyable_des"`
+	EventType         EventType     `json:"event_type"`
+	EventSubType      EventSubType  `json:"event_subtype"`
+	Description       string        `json:"description"`
+	EventID           uint64        `json:"event_id"`
+	ObservationPeriod string        `json:"observation_period"`
+	ReleaseStartDT    time.Time     `json:"release_start_dt"`
+	ReleaseEndDT      time.Time     `json:"release_end_dt"`
+	ReleaseStatus     ReleaseStatus `json:"release_status"`
+	RelevanceValue    float64       `json:"relevance_value"`
+}
+
+func DeserializeMacroCalendarEvent(fbEvent *FB.MacroCalendarEvent) MacroCalendarEvent
+
+type MacroHeadlineEvent struct {
+	CorrID                      int64        `json:"corr_id"`
+	EventType                   EventType    `json:"event_type"`
+	EventSubType                EventSubType `json:"event_subtype"`
+	EventID                     uint64       `json:"event_id"`
+	ObservationPeriod           string       `json:"observation_period"`
+	ReleaseStartDT              time.Time    `json:"release_start_dt"`
+	ReleaseEndDT                time.Time    `json:"release_end_dt"`
+	PriorEventID                uint64       `json:"prior_event_id"`
+	PriorObservationPeriod      string       `json:"prior_observation_period"`
+	PriorEconomicReleaseStartDT time.Time    `json:"prior_economic_release_start_dt"`
+	PriorEconomicReleaseEndDT   time.Time    `json:"prior_economic_release_end_dt"`
+	Value                       ValueType    `json:"value"`
+}
+
+func DeserializeMacroHeadlineEvent(fbEvent *FB.MacroHeadlineEvent) MacroHeadlineEvent
+
+type MacroReferenceData struct {
+	CorrID                    int64  `json:"corr_id"`
+	IDBBGlobal                string `json:"id_bb_global"`
+	ParsekyableDes            string `json:"parsekyable_des"`
+	Description               string `json:"description"`
+	IndxFreq                  string `json:"indx_freq"`
+	IndxUnits                 string `json:"indx_units"`
+	CountryISO                string `json:"country_iso"`
+	IndxSource                string `json:"indx_source"`
+	SeasonalityTransformation string `json:"seasonality_transformation"`
+}
+
+func DeserializeMacroReferenceData(fbEvent *FB.MacroReferenceData) MacroReferenceData
+
+type ManagedContext struct {
+	Context
+
+	// Has unexported fields.
+}
+    ManagedContext simplifies the session management. It keeps reference
+    of the subscription requested. Automatically manages the assignation of
+    correlations id. The correlation id is used by the handler to merge the
+    headline and calendar evets with the reference data. This extended context
+    also automatically cancel the active subscription when the context is
+    shutdown.
+
+func NewManagedContext() ManagedContext
+    Returns a new context management. Once it is create, one or more
+    notification handlers can be attached. The caller is responsible to call the
+    ManagedShutdown the close the connection.
+
+func (ctx *ManagedContext) CancelSubscription(topicType BlpConnTopicType, instrument string) error
+    Send an unsubscription request to the Bloomberg server and remove
+    subscription from the map.
+
+func (ctx *ManagedContext) CreateSubscription(topicType BlpConnTopicType, instrument string) error
+    This the general method provide by the managed context to make
+    subscriptions. However, specializated functions are provided for Tickers and
+    Bbgid type topics.
+
+func (ctx ManagedContext) GetSubscribedBbgids() []string
+    Specializated function to the retrieve the list of subscribed bbgids
+
+func (ctx ManagedContext) GetSubscribedTickers() []string
+    Specializated function to the retrieve the list of subscribed tickers
+
+func (ctx ManagedContext) GetSubscribedTopics(topicType BlpConnTopicType) []string
+    Returns the list of subscriptions for the given topic type.
+
+func (ctx *ManagedContext) ManagedShutdown()
+    Automatically cancel the active subscriptions and close the connection to
+    the Bloomberg server.
+
+func (ctx ManagedContext) RemoveBbgid(bbgid string) error
+    Specializated subscription remove function for Bbgids
+
+func (ctx *ManagedContext) RemoveSubscription(topicType BlpConnTopicType, instrument string) error
+    Removes a subscription from the map. This function don't cancel the
+    subscription. Only removes it from memory. It should be called when the
+    client receives a notification that the subscription has been ended for any
+    reason different to an unsubscription request.
+
+func (ctx ManagedContext) RemoveTicker(ticker string) error
+    Specializated subscription remove function for tickers
+
+func (ctx ManagedContext) SubscribeBbgid(bbgid string) error
+    Specializated subscription function for Bbgids
+
+func (ctx ManagedContext) SubscribeTicker(ticker string) error
+    Specializated subscription function for tickers
+
+func (ctx *ManagedContext) UnsubscribeBbgid(bbgid string) error
+    Specializated unsubscription function for Bbgids
+
+func (ctx *ManagedContext) UnsubscribeTicker(ticker string) error
+    Specializated unsubscription function for tickers
+
+type ModuleType uint8
+
+const (
+	ModuleUnknown ModuleType = iota
+	ModuleSystem
+	ModuleSession
+	ModuleSubscription
+	ModuleService
+	ModuleHeartbeat
+	ModuleAnother = 99
+)
+func (i ModuleType) String() string
+
+type PValueType struct {
+	Number            *float64 `json:"number"`
+	Value             *float64 `json:"value"`
+	Low               *float64 `json:"low"`
+	High              *float64 `json:"high"`
+	Median            *float64 `json:"median"`
+	Average           *float64 `json:"average"`
+	StandardDeviation *float64 `json:"standard_deviation"`
+}
+    A helper struct to manage json ser/des
+
+type ReferenceMap struct {
+	// Has unexported fields.
+}
+
+func NewReferenceMap() ReferenceMap
+
+func (refMap ReferenceMap) Add(ref MacroReferenceData)
+
+type ReleaseStatus uint8
+
+const (
+	ReleaseStatusUnknown ReleaseStatus = iota
+	ReleaseStatusReleased
+	ReleaseStatusScheduled
+	ReleaseStatusAnother = 99
+)
+func (v ReleaseStatus) MarshalJSON() ([]byte, error)
+
+func (i ReleaseStatus) String() string
+
+func (v *ReleaseStatus) UnmarshalJSON(data []byte) error
+
+type ServiceStatus uint8
+
+const (
+	ServiceUnknown ServiceStatus = iota
+	ServiceOpened
+	ServiceClosed
+	ServiceFailure
+	ServiceAnother = 99
+)
+func (i ServiceStatus) String() string
+
+type SessionStatus uint8
+
+const (
+	SessionUnknown SessionStatus = iota
+	SessionConnectionUp
+	SessionStarted
+	SessionConnectionDown
+	SessionTerminated
+	SessionInvalidOptions
+	SessionFailure
+	SessionAnother = 99
+)
+func (i SessionStatus) String() string
+
+type SubscriptionRequest interface {
+	Swigcptr() uintptr
+	SwigIsSubscriptionRequest()
+	SetTopic(arg2 string)
+	GetTopic() (_swig_ret string)
+	SetTopic_type(arg2 BlpConnTopicType)
+	GetTopic_type() (_swig_ret BlpConnTopicType)
+	SetOptions(arg2 string)
+	GetOptions() (_swig_ret string)
+	SetCorrelation_id(arg2 uint64)
+	GetCorrelation_id() (_swig_ret uint64)
+	ToUri() (_swig_ret string)
+}
+
+func NewSubscriptionRequest() (_swig_ret SubscriptionRequest)
+
+type SubscriptionStatus uint8
+
+const (
+	SubscriptionUnknown SubscriptionStatus = iota
+	SubscriptionStarted
+	SubscriptionStreamsActivated
+	SubscriptionTerminated
+	SubscriptionSuccess
+	SubscriptionFailure
+	SubscriptionAnother = 99
+)
+func (i SubscriptionStatus) String() string
+
+type SwigcptrContext uintptr
+
+func (arg1 SwigcptrContext) AddNotificationHandler(arg2 _swig_fnptr)
+
+func (arg1 SwigcptrContext) InitializeSession(arg2 string) (_swig_ret bool)
+
+func (arg1 SwigcptrContext) IsConnected() (_swig_ret bool)
+
+func (arg1 SwigcptrContext) Log(arg2 byte, arg3 byte, arg4 uint64, arg5 string)
+
+func (arg1 SwigcptrContext) ShutdownSession()
+
+func (arg1 SwigcptrContext) Subscribe(arg2 SubscriptionRequest) (_swig_ret int)
+
+func (p SwigcptrContext) SwigIsContext()
+
+func (p SwigcptrContext) Swigcptr() uintptr
+
+func (arg1 SwigcptrContext) Unsubscribe(arg2 SubscriptionRequest)
+
+type SwigcptrSubscriptionRequest uintptr
+
+func (arg1 SwigcptrSubscriptionRequest) GetCorrelation_id() (_swig_ret uint64)
+
+func (arg1 SwigcptrSubscriptionRequest) GetOptions() (_swig_ret string)
+
+func (arg1 SwigcptrSubscriptionRequest) GetTopic() (_swig_ret string)
+
+func (arg1 SwigcptrSubscriptionRequest) GetTopic_type() (_swig_ret BlpConnTopicType)
+
+func (arg1 SwigcptrSubscriptionRequest) SetCorrelation_id(arg2 uint64)
+
+func (arg1 SwigcptrSubscriptionRequest) SetOptions(arg2 string)
+
+func (arg1 SwigcptrSubscriptionRequest) SetTopic(arg2 string)
+
+func (arg1 SwigcptrSubscriptionRequest) SetTopic_type(arg2 BlpConnTopicType)
+
+func (p SwigcptrSubscriptionRequest) SwigIsSubscriptionRequest()
+
+func (p SwigcptrSubscriptionRequest) Swigcptr() uintptr
+
+func (arg1 SwigcptrSubscriptionRequest) ToUri() (_swig_ret string)
+
+type ValueType struct {
+	Number            float64
+	Value             float64
+	Low               float64
+	High              float64
+	Median            float64
+	Average           float64
+	StandardDeviation float64
+}
+
+func DeserializeValue(fbValue *FB.Value) ValueType
+
+func NewValueType() ValueType
+
+func (v ValueType) MarshalJSON() ([]byte, error)
+
+func (v *ValueType) UnmarshalJSON(data []byte) error
+

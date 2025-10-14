@@ -35,8 +35,8 @@ func TestDeserializeMacroReferenceData(t *testing.T) {
 	var fbEvent = new(FB.MacroReferenceData)
 	fbEvent.Init(unionTable.Bytes, unionTable.Pos)
 	event := blpconngo.DeserializeMacroReferenceData(fbEvent)
-	if event.CorrID != 12 {
-		t.Errorf("Expected CorrID 12, got %d", event.CorrID)
+	if event.CorrelationID != 12 {
+		t.Errorf("Expected CorrelationID 12, got %d", event.CorrelationID)
 	}
 	if event.IDBBGlobal != "BBG002SBJ964" {
 		t.Errorf("Expected IDBBGlobal 'BBG002SBJ964', got '%s'", event.IDBBGlobal)
@@ -80,8 +80,8 @@ func TestDeserializeMacroHeadlineEvent(t *testing.T) {
 	var fbEvent = new(FB.MacroHeadlineEvent)
 	fbEvent.Init(unionTable.Bytes, unionTable.Pos)
 	event := blpconngo.DeserializeMacroHeadlineEvent(fbEvent)
-	if event.CorrID != 12 {
-		t.Errorf("Expected CorrID 12, got %d", event.CorrID)
+	if event.CorrelationID != 12 {
+		t.Errorf("Expected CorrelationID 12, got %d", event.CorrelationID)
 	}
 	if event.EventType != blpconngo.EventTypeRevision {
 		t.Errorf("Expected EventType Revision, got %d", event.EventType)
@@ -168,8 +168,8 @@ func TestDeserializeMacroCalendarEvent(t *testing.T) {
 	var fbEvent = new(FB.MacroCalendarEvent)
 	fbEvent.Init(unionTable.Bytes, unionTable.Pos)
 	event := blpconngo.DeserializeMacroCalendarEvent(fbEvent)
-	if event.CorrID != 12 {
-		t.Errorf("Expected CorrID 12, got %d", event.CorrID)
+	if event.CorrelationID != 12 {
+		t.Errorf("Expected CorrelationID 12, got %d", event.CorrelationID)
 	}
 	if event.IDBBGlobal != "" {
 		t.Errorf("Expected IDBBGlobal '', got '%s'", event.IDBBGlobal)

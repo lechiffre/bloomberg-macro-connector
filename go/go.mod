@@ -7,7 +7,6 @@ require (
 	github.com/google/flatbuffers v25.2.10+incompatible
 )
 
-
 require (
 	github.com/yuin/goldmark v1.7.13 // indirect
 	golang.org/x/mod v0.27.0 // indirect

@@ -1,8 +1,9 @@
 2025-10-14:
 
+- ✓ Add test for ser/deser Log Messages
 - Enhance the NativeHandler example in README.md to include a simple
   filtering demonstration
-- The report.md mentions that the handler "removes entries from the
+- ✓ The report.md mentions that the handler "removes entries from the
   cache upon receiving a subscription failure notification." This is
   critical for preventing memory leaks in the reference map. However,
   this behavior is not explicitly documented for the user in README.md.
@@ -14,3 +15,6 @@
 - Update the diagram
 - Last question:  is this repo a fork of the old one with new changes
   yeah? https://github.com/lechiffre/bloomberg-macro-connector
+- ✓ Test for ReferenceMap
+- Example of filtering
+- prior value

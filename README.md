@@ -859,16 +859,25 @@ import "C"
 
 ## Tests
 
-The library includes test to verify critical functions, in particular
-the message serialization/deserialization process. This test generates a
-set of messages. Then, it makes a roud trip through the serialization
-and deserialization process.
+The library includes tests to verify critical functions, in particular
+the connection, subscription, and message serialization/deserialization
+process.
 
-```sh
-./bin/test_serialization
-cd go
-make test
-```
+C++ tests:
+
+- `test_connection`: Openning and closing the connection with the
+  Bloomberg server
+- `test_subscription`: Subscribing and unsubscribing
+- `test_serialization`: Tets for the flatbuffers functions
+- `test_deserialize`: Deserialization of data received from the
+  Bloomberg server
+
+Go tests:
+
+- `deserialize_test.go`: Deserialization of data received from the
+  Bloomberg server
+- `referencemap_test.go`: Validation of operations on the ReferenceMap
+  structure
 
 ## Profiling
 
@@ -1028,6 +1037,7 @@ updated the module information, using `go mod tidy`:
 
     cd go
     go mod tidy
+    make setup
     sh install.sh
     
 These new files were generated:

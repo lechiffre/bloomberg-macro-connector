@@ -50,7 +50,7 @@ class LogMessage(object):
         return 0
 
     # LogMessage
-    def CorrelationId(self):
+    def CorrId(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(10))
         if o != 0:
             return self._tab.Get(flatbuffers.number_types.Uint64Flags, o + self._tab.Pos)
@@ -87,11 +87,11 @@ def LogMessageAddStatus(builder, status):
 def AddStatus(builder, status):
     LogMessageAddStatus(builder, status)
 
-def LogMessageAddCorrelationId(builder, correlationId):
-    builder.PrependUint64Slot(3, correlationId, 0)
+def LogMessageAddCorrId(builder, corrId):
+    builder.PrependUint64Slot(3, corrId, 0)
 
-def AddCorrelationId(builder, correlationId):
-    LogMessageAddCorrelationId(builder, correlationId)
+def AddCorrId(builder, corrId):
+    LogMessageAddCorrId(builder, corrId)
 
 def LogMessageAddMessage(builder, message):
     builder.PrependUOffsetTRelativeSlot(4, flatbuffers.number_types.UOffsetTFlags.py_type(message), 0)

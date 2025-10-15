@@ -99,6 +99,102 @@ TEST(Deserialize, MacroCalendarEvent) {
     EXPECT_DOUBLE_EQ(data.relevance_value, 55.2632);
 }
 
+/*
+>>> fb_000005.bin                                                                
+2025-10-10 18:36:20|Subscription|Success|CorrelationID(12)|Subscription          
+successful 
+
+struct LogMessage {
+  DateTimeType log_dt;
+  uint8_t module = 0;
+  uint8_t status = 0;
+  uint64_t correlation_id = 0;
+  std::string message;
+};
+ */
+
+TEST(Deserialize, SubscriptionSuccess) {
+    auto buffer = readFBFile("fb_000005.bin");
+    flatbuffers::Verifier verifier(buffer.data(), buffer.size());
+    EXPECT_TRUE(BlpConn::FB::VerifyMessageVector(verifier, nullptr, nullptr));
+    auto main = flatbuffers::GetRoot<BlpConn::FB::Main>(buffer.data());
+    EXPECT_TRUE(main->message_type() == BlpConn::FB::Message_LogMessage);
+    auto fb_data = main->message_as_LogMessage();
+    auto data = toLogMessage(fb_data);
+    EXPECT_EQ(data.log_dt.microseconds, 1760135780990650);
+    EXPECT_EQ(data.log_dt.offset, 65236);
+    EXPECT_EQ(static_cast<Module>(data.module), Module::Subscription);
+    EXPECT_EQ(static_cast<SubscriptionStatus>(data.status), SubscriptionStatus::Success);
+    EXPECT_EQ(data.correlation_id, 12);
+    EXPECT_EQ(data.message, "Subscription successful");
+}
+
+/*
+>>> fb_000006.bin                                                                
+2025-10-10                                                                       
+18:36:21|Subscription|Started|CorrelationID(12)|SubscriptionStarted = {          
+exceptions[] = { } streamIds[] = { "1" } receivedFrom = { address =              
+"gbr.cloudpoint.bloomberg.com:8194" } reason = "Subscriber made a                
+subscription" } 
+*/
+
+TEST(Deserialize, SubscriptionStarted) {
+    auto buffer = readFBFile("fb_000006.bin");
+    flatbuffers::Verifier verifier(buffer.data(), buffer.size());
+    EXPECT_TRUE(BlpConn::FB::VerifyMessageVector(verifier, nullptr, nullptr));
+    auto main = flatbuffers::GetRoot<BlpConn::FB::Main>(buffer.data());
+    EXPECT_TRUE(main->message_type() == BlpConn::FB::Message_LogMessage);
+    auto fb_data = main->message_as_LogMessage();
+    auto data = toLogMessage(fb_data);
+    EXPECT_EQ(static_cast<Module>(data.module), Module::Subscription);
+    EXPECT_EQ(static_cast<SubscriptionStatus>(data.status), SubscriptionStatus::Started);
+    EXPECT_EQ(data.correlation_id, 12);
+}
+
+/*
+>>> fb_000007.bin                                                                
+2025-10-10                                                                       
+18:36:21|Subscription|StreamsActivated|CorrelationID(12)|SubscriptionStreamsActivated
+= { streams[] = { streams = { id = "1" endpoint = { address =                    
+"gbr.cloudpoint.bloomberg.com:8194" serverId = "ba44595-apicszfb" } } }          
+reason = "Subscriber made a subscription" } 
+*/
+
+TEST(Deserialize, SubscriptionStreamsActivated) {
+    auto buffer = readFBFile("fb_000007.bin");
+    flatbuffers::Verifier verifier(buffer.data(), buffer.size());
+    EXPECT_TRUE(BlpConn::FB::VerifyMessageVector(verifier, nullptr, nullptr));
+    auto main = flatbuffers::GetRoot<BlpConn::FB::Main>(buffer.data());
+    EXPECT_TRUE(main->message_type() == BlpConn::FB::Message_LogMessage);
+    auto fb_data = main->message_as_LogMessage();
+    auto data = toLogMessage(fb_data);
+    EXPECT_EQ(static_cast<Module>(data.module), Module::Subscription);
+    EXPECT_EQ(static_cast<SubscriptionStatus>(data.status), SubscriptionStatus::StreamsActivated);
+    EXPECT_EQ(data.correlation_id, 12);
+}
+
+/*
+>>> fb_000015.bin                                                                
+2025-10-10                                                                       
+18:36:30|Subscription|Terminated|CorrelationID(12)|SubscriptionTerminated        
+= { reason = { source = "SubscriptionManager" category = "CANCELLED"             
+errorCode = 0 description = "Subscription cancelled" } }  
+*/
+
+TEST(Deserialize, SubscriptionTerminated) {
+    auto buffer = readFBFile("fb_000015.bin");
+    flatbuffers::Verifier verifier(buffer.data(), buffer.size());
+    EXPECT_TRUE(BlpConn::FB::VerifyMessageVector(verifier, nullptr, nullptr));
+    auto main = flatbuffers::GetRoot<BlpConn::FB::Main>(buffer.data());
+    EXPECT_TRUE(main->message_type() == BlpConn::FB::Message_LogMessage);
+    auto fb_data = main->message_as_LogMessage();
+    auto data = toLogMessage(fb_data);
+    EXPECT_EQ(static_cast<Module>(data.module), Module::Subscription);
+    EXPECT_EQ(static_cast<SubscriptionStatus>(data.status), SubscriptionStatus::Terminated);
+    EXPECT_EQ(data.correlation_id, 12);
+    EXPECT_EQ(data.message, "SubscriptionTerminated = { reason = { source = \"SubscriptionManager\" category = \"CANCELLED\" errorCode = 0 description = \"Subscription cancelled\" } }");
+}
+
 int main(int argc, char **argv) {
     if (chdir(datadir) == -1) {
         throw std::runtime_error("Error changing directory to debug directory");

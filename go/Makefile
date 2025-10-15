@@ -20,6 +20,7 @@ setup:
 
 test:
 	go test ./tests/deserialize_test.go
+	go test ./tests/referencemap_test.go
 
 doc:
 	go doc --all > API.txt

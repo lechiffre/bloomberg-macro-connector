@@ -13,6 +13,10 @@ setup:
 	stringer -type=ReleaseStatus
 	stringer -type=EventSubType
 	stringer -type=EventType
+	go get blpconngo
+	go get blpconngo/cli
+	go get blpconngo/simple
+	go get blpconngo/managed
 
 test:
 	go test ./tests/deserialize_test.go

@@ -173,7 +173,7 @@ table LogMessage {
     log_dt: DateTime; // Timestamp of the log
     module: uint8; // Module that generated the log
     status: uint8;
-    correlation_id: uint64;
+    corr_id: uint64;
     message: string; // Log message
 }
 

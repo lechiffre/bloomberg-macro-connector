@@ -95,40 +95,12 @@ func TestDeserializeMacroHeadlineEvent(t *testing.T) {
 	if event.ObservationPeriod != "Aug" {
 		t.Errorf("Expected ObservationPeriod 'Aug', got '%s'", event.ObservationPeriod)
 	}
-	/*
-	if event.ReleaseStartDT.Micros() != 1759840200000000 {
-		t.Errorf("Expected ReleaseStartDT.Micros() 1759840200000000, got %d", event.ReleaseStartDT.Micros())
-	}
-	if event.ReleaseStartDT.Offset() != 0 {
-		t.Errorf("Expected ReleaseStartDT.Offset() 0, got %d", event.ReleaseStartDT.Offset())
-	}
-	if event.ReleaseEndDT.Micros() != 1759840200000000 {
-		t.Errorf("Expected ReleaseEndDT.Micros() 1759840200000000, got %d", event.ReleaseEndDT.Micros())
-	}
-	if event.ReleaseEndDT.Offset() != 0 {
-		t.Errorf("Expected ReleaseEndDT.Offset() 0, got %d", event.ReleaseEndDT.Offset())
-	}
-	*/
 	if event.PriorEventID != 2167801 {
 		t.Errorf("Expected PriorEventID 2167801, got %d", event.PriorEventID)
 	}
 	if event.PriorObservationPeriod != "Jul" {
 		t.Errorf("Expected PriorObservationPeriod 'Jul', got '%s'", event.PriorObservationPeriod)
 	}
-	/*
-	if event.PriorEconomicReleaseStartDT.Micros() != 1756989000000000 {
-		t.Errorf("Expected PriorEconomicReleaseStartDT.Micros() 1756989000000000, got %d", event.PriorEconomicReleaseStartDT.Micros())
-	}
-	if event.PriorEconomicReleaseStartDT.Offset() != 0 {
-		t.Errorf("Expected PriorEconomicReleaseStartDT.Offset() 0, got %d", event.PriorEconomicReleaseStartDT.Offset())
-	}
-	if event.PriorEconomicReleaseEndDT.Micros() != 1756989000000000 {
-		t.Errorf("Expected PriorEconomicReleaseEndDT.Micros() 1756989000000000, got %d", event.PriorEconomicReleaseEndDT.Micros())
-	}
-	if event.PriorEconomicReleaseEndDT.Offset() != 0 {
-		t.Errorf("Expected PriorEconomicReleaseEndDT.Offset() 0, got %d", event.PriorEconomicReleaseEndDT.Offset())
-	}
-	*/
 	if event.Value.Number != 1.0 {
 		t.Errorf("Expected Value.Number 1, got %f", event.Value.Number)
 	}
@@ -192,25 +164,123 @@ func TestDeserializeMacroCalendarEvent(t *testing.T) {
 	if event.ObservationPeriod != "Dec" {
 		t.Errorf("Expected ObservationPeriod 'Dec', got '%s'", event.ObservationPeriod)
 	}
-	/*
-	if event.ReleaseStartDT.Micros() != 1770298200000000 {
-		t.Errorf("Expected ReleaseStartDT.Micros() 1770298200000000, got %d", event.ReleaseStartDT.Micros())
-	}
-	if event.ReleaseStartDT.Offset() != 0 {
-		t.Errorf("Expected ReleaseStartDT.Offset() 0, got %d", event.ReleaseStartDT.Offset())
-	}
-	if event.ReleaseEndDT.Micros() != 1770298200000000 {
-		t.Errorf("Expected ReleaseEndDT.Micros() 1770298200000000, got %d", event.ReleaseEndDT.Micros())
-	}
-	if event.ReleaseEndDT.Offset() != 0 {
-		t.Errorf("Expected ReleaseEndDT.Offset() 0, got %d", event.ReleaseEndDT.Offset())
-	}
-	if event.ReleaseStatus != blpconngo.ReleaseStatusScheduled {
-		t.Errorf("Expected ReleaseStatus Scheduled, got %d", event.ReleaseStatus)
-	}
-	*/
 	if event.RelevanceValue != 55.2632 {
 		t.Errorf("Expected RelevanceValue 55.2632, got %f", event.RelevanceValue)
+	}
+}
+
+func TestDeserializeSubscriptionSuccess(t *testing.T) {
+	buffer := readFBFile("fb_000005.bin")
+	main := FB.GetRootAsMain(buffer, 0)
+	if main == nil {
+		t.Fatal("Failed to parse FlatBuffers main object")
+	}
+	if main.MessageType() != FB.MessageLogMessage {
+		t.Fatalf("Expected MessageLogMessage, got %d", main.MessageType())
+	}
+	unionTable := new(flatbuffers.Table)
+	if !main.Message(unionTable) {
+		t.Fatal("Failed to get union table")
+	}
+	var fbEvent = new(FB.LogMessage)
+	fbEvent.Init(unionTable.Bytes, unionTable.Pos)
+	event := blpconngo.DeserializeLogMessage(fbEvent)
+	if event.CorrelationID != 12 {
+		t.Errorf("Expected CorrelationID 12, got %d", event.CorrelationID)
+	}
+	if event.Module != blpconngo.ModuleSubscription {
+		t.Errorf("Expected Module Subscription, got %d", event.Module)
+	}
+	if blpconngo.SubscriptionStatus(event.Status) != blpconngo.SubscriptionSuccess {
+		t.Errorf("Expected Status Success, got %d", event.Status)
+	}
+	if event.Message != "Subscription successful" {
+		t.Errorf("Expected Message 'Subscription successful', got '%s'", event.Message)
+	}
+}
+
+// TEST(Deserialize, SubscriptionStreamsActivated) {
+//     auto buffer = readFBFile("fb_000007.bin");
+//     flatbuffers::Verifier verifier(buffer.data(), buffer.size());
+//     EXPECT_TRUE(BlpConn::FB::VerifyMessageVector(verifier, nullptr, nullptr));
+//     auto main = flatbuffers::GetRoot<BlpConn::FB::Main>(buffer.data());
+//     EXPECT_TRUE(main->message_type() == BlpConn::FB::Message_LogMessage);
+//     auto fb_data = main->message_as_LogMessage();
+//     auto data = toLogMessage(fb_data);
+//     EXPECT_EQ(static_cast<Module>(data.module), Module::Subscription);
+//     EXPECT_EQ(static_cast<SubscriptionStatus>(data.status), SubscriptionStatus::StreamsActivated);
+//     EXPECT_EQ(data.correlation_id, 12);
+// }
+
+func TestDeserializeSubscriptionStreamsActivated(t *testing.T) {
+	buffer := readFBFile("fb_000007.bin")
+	main := FB.GetRootAsMain(buffer, 0)
+	if main == nil {
+		t.Fatal("Failed to parse FlatBuffers main object")
+	}
+	if main.MessageType() != FB.MessageLogMessage {
+		t.Fatalf("Expected MessageLogMessage, got %d", main.MessageType())
+	}
+	unionTable := new(flatbuffers.Table)
+	if !main.Message(unionTable) {
+		t.Fatal("Failed to get union table")
+	}
+	var fbEvent = new(FB.LogMessage)
+	fbEvent.Init(unionTable.Bytes, unionTable.Pos)
+	event := blpconngo.DeserializeLogMessage(fbEvent)
+	if event.CorrelationID != 12 {
+		t.Errorf("Expected CorrelationID 12, got %d", event.CorrelationID)
+	}
+	if event.Module != blpconngo.ModuleSubscription {
+		t.Errorf("Expected Module Subscription, got %d", event.Module)
+	}
+	if blpconngo.SubscriptionStatus(event.Status) != blpconngo.SubscriptionStreamsActivated {
+		t.Errorf("Expected Status StreamsActivated, got %d", event.Status)
+	}
+}
+
+// TEST(Deserialize, SubscriptionTerminated) {
+//     auto buffer = readFBFile("fb_000015.bin");
+//     flatbuffers::Verifier verifier(buffer.data(), buffer.size());
+//     EXPECT_TRUE(BlpConn::FB::VerifyMessageVector(verifier, nullptr, nullptr));
+//     auto main = flatbuffers::GetRoot<BlpConn::FB::Main>(buffer.data());
+//     EXPECT_TRUE(main->message_type() == BlpConn::FB::Message_LogMessage);
+//     auto fb_data = main->message_as_LogMessage();
+//     auto data = toLogMessage(fb_data);
+//     EXPECT_EQ(static_cast<Module>(data.module), Module::Subscription);
+//     EXPECT_EQ(static_cast<SubscriptionStatus>(data.status), SubscriptionStatus::Terminated);
+//     EXPECT_EQ(data.correlation_id, 12);
+//     EXPECT_EQ(data.message, "SubscriptionTerminated = { reason = { source = \"SubscriptionManager\" category = \"CANCELLED\" errorCode = 0 description = \"Subscription cancelled\" } }");
+// }
+
+func TestDeserializeSubscriptionTerminated(t *testing.T) {
+	buffer := readFBFile("fb_000015.bin")
+	main := FB.GetRootAsMain(buffer, 0)
+	if main == nil {
+		t.Fatal("Failed to parse FlatBuffers main object")
+	}
+	if main.MessageType() != FB.MessageLogMessage {
+		t.Fatalf("Expected MessageLogMessage, got %d", main.MessageType())
+	}
+	unionTable := new(flatbuffers.Table)
+	if !main.Message(unionTable) {
+		t.Fatal("Failed to get union table")
+	}
+	var fbEvent = new(FB.LogMessage)
+	fbEvent.Init(unionTable.Bytes, unionTable.Pos)
+	event := blpconngo.DeserializeLogMessage(fbEvent)
+	if event.CorrelationID != 12 {
+		t.Errorf("Expected CorrelationID 12, got %d", event.CorrelationID)
+	}
+	if event.Module != blpconngo.ModuleSubscription {
+		t.Errorf("Expected Module Subscription, got %d", event.Module)
+	}
+	if blpconngo.SubscriptionStatus(event.Status) != blpconngo.SubscriptionTerminated {
+		t.Errorf("Expected Status Terminated, got %d", event.Status)
+	}
+	expectedMessage := "SubscriptionTerminated = { reason = { source = \"SubscriptionManager\" category = \"CANCELLED\" errorCode = 0 description = \"Subscription cancelled\" } }"
+	if event.Message != expectedMessage {
+		t.Errorf("Expected Message '%s', got '%s'", expectedMessage, event.Message)
 	}
 }
 

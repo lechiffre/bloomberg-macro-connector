@@ -1510,7 +1510,7 @@ struct LogMessage FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     VT_LOG_DT = 4,
     VT_MODULE_ = 6,
     VT_STATUS = 8,
-    VT_CORRELATION_ID = 10,
+    VT_CORR_ID = 10,
     VT_MESSAGE = 12
   };
   const BlpConn::FB::DateTime *log_dt() const {
@@ -1522,8 +1522,8 @@ struct LogMessage FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   uint8_t status() const {
     return GetField<uint8_t>(VT_STATUS, 0);
   }
-  uint64_t correlation_id() const {
-    return GetField<uint64_t>(VT_CORRELATION_ID, 0);
+  uint64_t corr_id() const {
+    return GetField<uint64_t>(VT_CORR_ID, 0);
   }
   const ::flatbuffers::String *message() const {
     return GetPointer<const ::flatbuffers::String *>(VT_MESSAGE);
@@ -1534,7 +1534,7 @@ struct LogMessage FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
            verifier.VerifyTable(log_dt()) &&
            VerifyField<uint8_t>(verifier, VT_MODULE_, 1) &&
            VerifyField<uint8_t>(verifier, VT_STATUS, 1) &&
-           VerifyField<uint64_t>(verifier, VT_CORRELATION_ID, 8) &&
+           VerifyField<uint64_t>(verifier, VT_CORR_ID, 8) &&
            VerifyOffset(verifier, VT_MESSAGE) &&
            verifier.VerifyString(message()) &&
            verifier.EndTable();
@@ -1554,8 +1554,8 @@ struct LogMessageBuilder {
   void add_status(uint8_t status) {
     fbb_.AddElement<uint8_t>(LogMessage::VT_STATUS, status, 0);
   }
-  void add_correlation_id(uint64_t correlation_id) {
-    fbb_.AddElement<uint64_t>(LogMessage::VT_CORRELATION_ID, correlation_id, 0);
+  void add_corr_id(uint64_t corr_id) {
+    fbb_.AddElement<uint64_t>(LogMessage::VT_CORR_ID, corr_id, 0);
   }
   void add_message(::flatbuffers::Offset<::flatbuffers::String> message) {
     fbb_.AddOffset(LogMessage::VT_MESSAGE, message);
@@ -1576,10 +1576,10 @@ inline ::flatbuffers::Offset<LogMessage> CreateLogMessage(
     ::flatbuffers::Offset<BlpConn::FB::DateTime> log_dt = 0,
     uint8_t module_ = 0,
     uint8_t status = 0,
-    uint64_t correlation_id = 0,
+    uint64_t corr_id = 0,
     ::flatbuffers::Offset<::flatbuffers::String> message = 0) {
   LogMessageBuilder builder_(_fbb);
-  builder_.add_correlation_id(correlation_id);
+  builder_.add_corr_id(corr_id);
   builder_.add_message(message);
   builder_.add_log_dt(log_dt);
   builder_.add_status(status);
@@ -1592,7 +1592,7 @@ inline ::flatbuffers::Offset<LogMessage> CreateLogMessageDirect(
     ::flatbuffers::Offset<BlpConn::FB::DateTime> log_dt = 0,
     uint8_t module_ = 0,
     uint8_t status = 0,
-    uint64_t correlation_id = 0,
+    uint64_t corr_id = 0,
     const char *message = nullptr) {
   auto message__ = message ? _fbb.CreateString(message) : 0;
   return BlpConn::FB::CreateLogMessage(
@@ -1600,7 +1600,7 @@ inline ::flatbuffers::Offset<LogMessage> CreateLogMessageDirect(
       log_dt,
       module_,
       status,
-      correlation_id,
+      corr_id,
       message__);
 }
 

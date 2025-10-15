@@ -130,14 +130,13 @@ MacroCalendarEvent toMacroCalendarEvent(
     return event;
 }
 
-
 LogMessage toLogMessage(const BlpConn::FB::LogMessage* fb_log_message) {
     PROFILE_FUNCTION()
     BlpConn::LogMessage log_message;
     log_message.log_dt = deserializeDateTime(fb_log_message->log_dt());
-    log_message.module = fb_log_message->module_(); // Fix: Use correct field name 'module_'
+    log_message.module = fb_log_message->module_();
     log_message.status = fb_log_message->status();
-    log_message.correlation_id = fb_log_message->correlation_id();
+    log_message.correlation_id = fb_log_message->corr_id();
     log_message.message = fb_log_message->message()->str();
     END_PROFILE_FUNCTION()
     return log_message;

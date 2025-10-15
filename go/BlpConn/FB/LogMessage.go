@@ -78,7 +78,7 @@ func (rcv *LogMessage) MutateStatus(n byte) bool {
 	return rcv._tab.MutateByteSlot(8, n)
 }
 
-func (rcv *LogMessage) CorrelationId() uint64 {
+func (rcv *LogMessage) CorrId() uint64 {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(10))
 	if o != 0 {
 		return rcv._tab.GetUint64(o + rcv._tab.Pos)
@@ -86,7 +86,7 @@ func (rcv *LogMessage) CorrelationId() uint64 {
 	return 0
 }
 
-func (rcv *LogMessage) MutateCorrelationId(n uint64) bool {
+func (rcv *LogMessage) MutateCorrId(n uint64) bool {
 	return rcv._tab.MutateUint64Slot(10, n)
 }
 
@@ -110,8 +110,8 @@ func LogMessageAddModule(builder *flatbuffers.Builder, module byte) {
 func LogMessageAddStatus(builder *flatbuffers.Builder, status byte) {
 	builder.PrependByteSlot(2, status, 0)
 }
-func LogMessageAddCorrelationId(builder *flatbuffers.Builder, correlationId uint64) {
-	builder.PrependUint64Slot(3, correlationId, 0)
+func LogMessageAddCorrId(builder *flatbuffers.Builder, corrId uint64) {
+	builder.PrependUint64Slot(3, corrId, 0)
 }
 func LogMessageAddMessage(builder *flatbuffers.Builder, message flatbuffers.UOffsetT) {
 	builder.PrependUOffsetTSlot(4, flatbuffers.UOffsetT(message), 0)

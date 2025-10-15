@@ -3,6 +3,7 @@ package blpconngo
 import (
 	"blpconngo/BlpConn/FB"
 	"time"
+	"fmt"
 )
 
 func DeserializeDateTime(fbDateTime *FB.DateTime) time.Time {
@@ -70,10 +71,12 @@ func DeserializeMacroCalendarEvent(fbEvent *FB.MacroCalendarEvent) MacroCalendar
 }
 
 func DeserializeLogMessage(fbLogMessage *FB.LogMessage) LogMessageType {
+	fmt.Printf("Status: %d\n", fbLogMessage.Status())
 	return LogMessageType{
 		LogDT:      DeserializeDateTime(fbLogMessage.LogDt(nil)),
 		Module: 	ModuleType(fbLogMessage.Module()),
-		Status: 	fbLogMessage.Status(),
+		Status: 	uint8(fbLogMessage.Status()),
+		CorrelationID: uint64(fbLogMessage.CorrId()),
 		Message:    string(fbLogMessage.Message()),
 	}
 }

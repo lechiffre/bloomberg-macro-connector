@@ -36,7 +36,7 @@ func NewManagedContext() ManagedContext {
 	return ManagedContext{
 		Context: NewContext(),
 		subscriptions: make(map[string]SubscriptionRequest),
-		nextCorrId: 1,
+		nextCorrId: 0,
 	}
 }
 
@@ -52,26 +52,25 @@ func (ctx *ManagedContext) ManagedShutdown() {
 // This the general method provide by the managed context to make
 // subscriptions. However, specializated functions are provided for
 // Tickers and Bbgid type topics.
-func (ctx *ManagedContext) CreateSubscription(topicType BlpConnTopicType, instrument string) error {
+func (ctx *ManagedContext) CreateSubscription(topicType BlpConnTopicType, instrument string) (uint64, error) {
 	ctx.mu.Lock()
 	defer ctx.mu.Unlock()
 	// The key for the subscriptions map is formed by the
 	// topic type and the instrument/topic
 	key := topicType.getLabel() + instrument
 	if _, exists := ctx.subscriptions[key]; exists {
-		return fmt.Errorf("%s already subscribed", instrument)
+		return 0, fmt.Errorf("%s already subscribed", instrument)
 	}
+	ctx.nextCorrId += 1
 	// Creating a new request
 	request := NewSubscriptionRequest()
 	request.SetTopic(instrument)
 	request.SetTopic_type(topicType)
 	request.SetCorrelation_id(ctx.nextCorrId)
 	ctx.Subscribe(request)
-	// Updating the correlation id
-	ctx.nextCorrId += 1
 	// Updating the subscriptions map
 	ctx.subscriptions[key] = request
-	return nil
+	return ctx.nextCorrId, nil
 }
 
 // Removes a subscription from the map. This function don't cancel the
@@ -95,13 +94,22 @@ func (ctx *ManagedContext) CancelSubscription(topicType BlpConnTopicType, instru
  	ctx.mu.Lock()
  	defer ctx.mu.Unlock()
 	key := topicType.getLabel() + instrument
-	subs, ok := ctx.subscriptions[key];
+	subs, ok := ctx.subscriptions[key]
 	if !ok {
 		return fmt.Errorf("%s is not subscribed", instrument)
 	}
 	ctx.Unsubscribe(subs)
 	delete(ctx.subscriptions, key)
 	return nil
+}
+
+func (ctx ManagedContext) GetCorrelationId(topicType BlpConnTopicType, instrument string) (uint64, error) {
+	key := topicType.getLabel() + instrument
+	subs, ok := ctx.subscriptions[key];
+	if !ok {
+		return 0, fmt.Errorf("%s is not subscribed", instrument)
+	}
+	return subs.GetCorrelation_id(), nil
 }
 
 // Returns the list of subscriptions for the given topic type.
@@ -115,14 +123,13 @@ func (ctx ManagedContext) GetSubscribedTopics(topicType BlpConnTopicType) []stri
 	return keys
 }
 
-
 // Specializated subscription function for tickers
-func (ctx ManagedContext) SubscribeTicker(ticker string) error {
+func (ctx ManagedContext) SubscribeTicker(ticker string) (uint64, error) {
 	return ctx.CreateSubscription(TopicType_Ticker, ticker)
 }
 
 // Specializated subscription function for Bbgids
-func (ctx ManagedContext) SubscribeBbgid(bbgid string) error {
+func (ctx ManagedContext) SubscribeBbgid(bbgid string) (uint64, error) {
 	return ctx.CreateSubscription(TopicType_Bbgid, bbgid)
 }
 
@@ -154,4 +161,12 @@ func (ctx ManagedContext) GetSubscribedTickers() []string {
 // Specializated function to the retrieve the list of subscribed bbgids
 func (ctx ManagedContext) GetSubscribedBbgids() []string {
 	return ctx.GetSubscribedTopics(TopicType_Bbgid)
+}
+
+func (ctx ManagedContext) GetTickerCorrelationId(ticker string) (uint64, error) {
+	return ctx.GetCorrelationId(TopicType_Ticker, ticker)	
+}
+
+func (ctx ManagedContext) GetBbgidCorrelationId(bbgid string) (uint64, error) {
+	return ctx.GetCorrelationId(TopicType_Bbgid, bbgid)
 }

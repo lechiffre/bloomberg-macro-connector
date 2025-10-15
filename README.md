@@ -200,7 +200,7 @@ ctx.Unsubscribe(request)
 ## Managed Context (Go)
 
 As it was mentioned above, the Go library has an additional layer, the
-managed context. The automatically manage the correlation id
+managed context. This automatically manage the correlation id
 assignation, as well as take care to close the open subscriptions when the
 context is shutdown. The to do subscriptions, the client program only
 needs to provide the identification ticker or bbgid.
@@ -253,10 +253,16 @@ The managed context layer provides the following functions:
   subscription when the notification manager has received an alert that
   the subscription has ended for a reason different than an
   unsubscription.
-* `RemoveBbgid(ticker string)`: To remove from memory a ticker
+* `RemoveBbgid(ticker string)`: To remove from memory a bbgid
   subscription when the notification manager has received an alert that
   the subscription has ended for a reason different than an
   unsubscription.
+* `GetTickerCorrelationId(ticker string)`: To obtain the corelation id
+  assigned to a ticker subscription
+* `GetBbgidCorrelationId(ticker string)`: To obtain the corelation id
+  assigned to a bbgic subscription
+
+Check the file `managed.go` for more details.
 
 ## Observer Functions 
 
@@ -307,12 +313,6 @@ to the extended event types.
 
 * `HeadlineEvent`
 * `CalendarEvent`
-
-The client program is responsible to create a new ReferenceMap object,
-store references when they arrive, as well as to extend economic and
-calendar events. The source code includes by default a notification
-handler that shows to use this features (review the source code file
-`handler.go`)
 
 ## Log Messages
 
@@ -512,6 +512,7 @@ func NativeHandler(bufferSlice []byte) {
     unionTable := new(flatbuffers.Table)
     if main.Message(unionTable) {
         switch main.MessageType() {
+            ...
             case FB.MessageMacroReferenceData:
                 var fbEvent = new(FB.MacroReferenceData)
                 fbEvent.Init(unionTable.Bytes, unionTable.Pos)
@@ -521,9 +522,10 @@ func NativeHandler(bufferSlice []byte) {
             case FB.MessageMacroHeadlineEvent:
                 var fbEvent = new(FB.MacroHeadlineEvent)
                 fbEvent.Init(unionTable.Bytes, unionTable.Pos)
-                _event := DeserializeMacroHeadlineEvent(fbEvent)
-                event := referenceMap.fillHeadlineEvent(_event)
+                basicEvent := DeserializeMacroHeadlineEvent(fbEvent)
+                extendedEvent := referenceMap.fillHeadlineEvent(_event)
                 fmt.Println(event)
+            ...
             default:
                 fmt.Println("Unknown message type")
         }
@@ -534,6 +536,91 @@ func NativeHandler(bufferSlice []byte) {
 The buffer is converted to a general object named `Main`. This object contains
 information about the type of message. Based on that information, the buffer is
 converted to a specific object.
+
+## Map of References for Events
+
+In the Go library, a map for references indexed by the correlation IDs
+is provided to use the extended types for headline and calendar events.
+The client program is responsible to create a new ReferenceMap object,
+store references when they arrive, extend economic and calendar events
+and look for ended subscriptions.
+
+The source code includes by default a notification handler that shows
+how to use this features (review the source code file `handler.go`)
+
+The logic to manage references is as follows:
+
+A new reference map is created as a global variable to be used by the
+notification handler:
+
+```go
+var referenceMap = NewReferenceMap()
+```
+
+When a new macro reference data is received, that reference is added to
+the map:
+
+```go
+event := DeserializeMacroReferenceData(fbEvent)
+referenceMap.Add(event)
+```
+
+when a new headline or calendar event is received, the event is extended to
+include the reference data:
+
+```go
+basicEvent := DeserializeMacroHeadlineEvent(fbEvent)
+extendedEvent := referenceMap.fillHeadlineEvent(_event)
+
+// or
+
+basicEvent := DeserializeMacroCalendarEvent(fbEvent)
+extendedEvent := referenceMap.fillCalendarEvent(_event)
+```
+
+Finally, in order to remove unused references, log messages are looked
+for notifications related to ended subscriptions.
+
+```go
+event := DeserializeLogMessage(fbEvent)
+referenceMap.LookAndRemove(event)
+```
+
+The file `referencemap.go` provided the implementation for the above
+described features. As an illustration, the code for the function
+`LookAndRemove` is shown:
+
+```go
+func (refMap ReferenceMap) LookAndRemove(event LogMessageType) {
+	if event.Module == ModuleSubscription {
+		status := SubscriptionStatus(event.Status)
+		failure := (status == SubscriptionFailure)
+		terminated := (status == SubscriptionTerminated)
+		if failure || terminated {
+			refMap.Remove(event.CorrelationID);
+		}
+	}
+}
+```
+
+## Querying references
+
+Using the correlation id, the client program can query directly the
+refence data for a given subscription. For a managed context, the
+following example shown how to do it:
+
+```go
+corrID, err := ctx.SubscribeTicker("INJCJC Index")
+// Check for errors
+...
+// Or, when the subscription has been made
+corrID, err := ctx.GetTickerCorrelationId("INJCJC Index")
+// Check for errors
+...
+ref, err := refMap.Get(corrID)
+// Check for errors
+...
+```
 
 ## Project Structure
 

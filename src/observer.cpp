@@ -12,7 +12,7 @@ void defaultObserver(const uint8_t *buffer, size_t size) {
         return;
     }
     auto main = flatbuffers::GetRoot<BlpConn::FB::Main>(buffer);
-    std::cout << "Received message of type: " << main->message_type() << std::endl;
+    // std::cout << "Received message of type: " << main->message_type() << std::endl;
     if (main->message_type() == BlpConn::FB::Message_HeadlineEconomicEvent) {
         auto fb_event = main->message_as_HeadlineEconomicEvent();
         auto event = toHeadlineEconomicEvent(fb_event);

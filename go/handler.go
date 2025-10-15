@@ -24,15 +24,8 @@ func NativeHandler(bufferSlice []byte) {
 				var fbEvent = new(FB.LogMessage)
 				fbEvent.Init(unionTable.Bytes, unionTable.Pos)
 				event := DeserializeLogMessage(fbEvent)
-				// Cheching if the message is related to a subscription
-				// status and if it is reporting a failure. In that
-				// case, the reference data for that subscription is
-				// removed from the reference map.
-				if event.Module == ModuleSubscription {
-					if SubscriptionStatus(event.Status) == SubscriptionFailure {
-						referenceMap.Remove(event.CorrelationID);
-					}
-				}
+				referenceMap.LookAndRemove(event)
+				fmt.Println("Log Message")
 				fmt.Println(event)
 			case FB.MessageMacroReferenceData:
 				var fbEvent = new(FB.MacroReferenceData)

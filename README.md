@@ -6,7 +6,7 @@ from Bloomberg's economic data feed (`//blp/macro-indicators`).
 
 ## Workflow
 
-![Workflow](./imgs/process.jpg)
+![Workflow](./imgs/flowchart.png)
 
 The above diagram shows the workflow to retrieve real-time data from Bloomberg
 B-PIPE. The process is as follows:

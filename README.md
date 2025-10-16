@@ -9,38 +9,7 @@ from Bloomberg's economic data feed (`//blp/macro-indicators`).
 ![Workflow](./imgs/flowchart.png)
 
 The above diagram shows the workflow to retrieve real-time data from Bloomberg
-B-PIPE. The process is as follows:
-
-1. **Initialize**: A session to connect to Bloomberg's services is created. The
-   session is responsible for managing the connection and communication with
-   the server. The session opens a service. A service is a specific
-   functionality provided by Bloomberg. In this case, the service is
-   `//blp/macro-indicators`.
-2. **Subscribe**: The client program sends a subscription request to the
-   service. The request contains the information about the data the client
-   wants to receive. The request is sent to the server, and responses are
-   received asynchronously.
-3. **Observe**: The client program registers one or more observer functions.
-   These functions are called when the server sends notifications about the
-   service status and the subscription data. The observer functions are
-   responsible for processing the notifications and updating the client program
-   state with the new data.
-4. **Unsubscribe**: The client program can unsubscribe from the service at any
-   time. Subscriptions are identified by a correlation ID assigned by the
-   client program. The correlation ID is used to identify the subscription and
-   unsubscribe from it. The client program can also close the session, which
-   will automatically unsubscribe from all services and close the connection to
-   the server.
-5. **Shutdown**: The client program can shut down the service at any time. This
-   will close the connection to the server and free up any resources used by
-   the session. The client program can also shut down the service when it is no
-   longer needed. This will close the connection to the server and free up any
-   resources used by the session.
-
-The Go library includes a managed context to automatically keep record
-of the active subscriptions and their correlation IDs. As a consequence,
-the client program doesn't need to deal with these details (see "Managed
-Context").
+B-PIPE.
 
 ## Application Context
 

@@ -90,26 +90,26 @@ table Value {
     standard_deviation: double;
 }
 
-// table HeadlineEconomicEvent {
-//     // Shared fields
-//     id_bb_global: string (required);
-//     parsekyable_des: string (required);
-//     description: string;
-//     event_type: EventType;
-//     event_subtype: EventSubType;
-//     event_id: uint64;
-//     observation_period: string;
-//     release_start_dt: DateTime;
-//     release_end_dt: DateTime;
-// 
-//     // Specific fields
-//     value: Value;
-//     prior_value: Value;
-//     prior_event_id: int;
-//     prior_observation_period: string;
-//     prior_economic_release_start_dt: DateTime;
-//     prior_economic_release_end_dt: DateTime;
-// }
+table HeadlineEconomicEvent {
+    // Shared fields
+    id_bb_global: string (required);
+    parsekyable_des: string (required);
+    description: string;
+    event_type: EventType;
+    event_subtype: EventSubType;
+    event_id: uint64;
+    observation_period: string;
+    release_start_dt: DateTime;
+    release_end_dt: DateTime;
+
+    // Specific fields
+    value: Value;
+    prior_value: Value;
+    prior_event_id: int;
+    prior_observation_period: string;
+    prior_economic_release_start_dt: DateTime;
+    prior_economic_release_end_dt: DateTime;
+}
 
 table MacroReferenceData {
     corr_id: int64;
@@ -153,21 +153,21 @@ table MacroCalendarEvent {
     relevance_value: double;
 }
 
-// table HeadlineCalendarEvent {
-//     // Shared fields
-//     id_bb_global: string (required);
-//     parsekyable_des: string (required);
-//     description: string;
-//     event_type: EventType;
-//     event_subtype: EventSubType;
-//     event_id: int;
-//     observation_period: string;
-//     release_start_dt: DateTime;
-//     release_end_dt: DateTime;
-// 
-//     // Specific fields
-//     release_status: ReleaseStatus;
-// }
+table HeadlineCalendarEvent {
+    // Shared fields
+    id_bb_global: string (required);
+    parsekyable_des: string (required);
+    description: string;
+    event_type: EventType;
+    event_subtype: EventSubType;
+    event_id: int;
+    observation_period: string;
+    release_start_dt: DateTime;
+    release_end_dt: DateTime;
+
+    // Specific fields
+    release_status: ReleaseStatus;
+}
 
 table LogMessage {
     log_dt: DateTime; // Timestamp of the log

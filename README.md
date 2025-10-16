@@ -1036,9 +1036,8 @@ To generate the Go example binaries, as additional step it is need just to
 updated the module information, using `go mod tidy`:
 
     cd go
-    go mod tidy
     make setup
-    sh install.sh
+    make
     
 These new files were generated:
 

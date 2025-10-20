@@ -804,7 +804,7 @@ void Callback(uint8_t* buffer, size_t len) {
 }
 ```
 
-And the encapsulating function is passed in Go as a C pointer:
+And the encapsulated function is passed in Go as a C pointer:
 
 ```go
 ...
@@ -882,8 +882,7 @@ support for it is only provided by Trading Technologies.
 The access to the Github repository was set up using SSH keys. Doing
 that, the repository was cloned:
 
-    git clone git@github.com:jailop/bloomberg-macro-connector.git
-    
+    git clone git@github.com:lechiffre/bloomberg-macro-connector.git
 
 ## Working directory
 
@@ -908,7 +907,7 @@ When that file was uncompressed, the following files were created:
 
 ## Flatbuffer Bindings
 
-The package `flatbuffers` is not available in the TT server nor in the
+The package `flatbuffers` is not available in the TT server or in the
 repositories it has access to.  It was intented to build from source, in
 the folder `/home/axssuperuser/build/flatbuffers/`, but that failed.
 

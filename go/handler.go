@@ -38,14 +38,14 @@ func NativeHandler(bufferSlice []byte) {
 				var fbEvent = new(FB.MacroHeadlineEvent)
 				fbEvent.Init(unionTable.Bytes, unionTable.Pos)
 				_event := DeserializeMacroHeadlineEvent(fbEvent)
-				event := referenceMap.fillHeadlineEvent(_event)
+				event := referenceMap.FillHeadlineEvent(_event)
 				fmt.Println("Macro Headline Event:")
 				fmt.Println(event)
 			case FB.MessageMacroCalendarEvent:
 				var fbEvent = new(FB.MacroCalendarEvent)
 				fbEvent.Init(unionTable.Bytes, unionTable.Pos)
 				_event := DeserializeMacroCalendarEvent(fbEvent)
-				event := referenceMap.fillCalendarEvent(_event)
+				event := referenceMap.FillCalendarEvent(_event)
 				fmt.Println("Macro Calendar Event:")
 				fmt.Println(event)
 			default:

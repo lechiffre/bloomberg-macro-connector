@@ -9,12 +9,14 @@ package main
 
 extern void MainHandler(uint8_t* buffer, size_t len);
 
+// The C wrapper over the Go callback function.
 static void custom_callback(uint8_t* buffer, size_t len) {
     MainHandler(buffer, len);
 }
 
-// Go requires a pointer to the callback function. This auxiliar
-// function returns such pointer.
+// Go requires a pointer to the C callback function. Because the callback
+// function is in the same file, the linker will no be able to find it.
+// It is because of that we need an auxiliar function to return such pointer.
 static void* get_custom_callback() {
     return (void*)custom_callback;
 }
@@ -42,10 +44,29 @@ func MainHandler(buffer *C.uchar, len C.size_t) {
 }
 
 // Global state
-var ctxManaged = blpconngo.NewManagedContext()
-var ctxSimple = blpconngo.NewContext()
-var referenceMap = blpconngo.NewReferenceMap()
+var callback = (*byte)(C.get_custom_callback())
+var startManaged time.Time
+var startSimple time.Time
+var managedCorrID uint64 = 1  // It is only one subscription
 
+func timeTrack(start time.Time, name string) {
+	elapsed := time.Since(start)
+	fmt.Printf(">%s,%s\n", name, elapsed)
+}
+
+func reviewLogMessage(event blpconngo.LogMessageType) {
+	if event.Module == blpconngo.ModuleSubscription {
+		if blpconngo.SubscriptionStatus(event.Status) ==  blpconngo.SubscriptionSuccess {
+			if event.CorrelationID == managedCorrID {
+				timeTrack(startManaged, "managed")
+			} else if event.CorrelationID == 10 {
+				timeTrack(startSimple, "simple")
+			}
+		}
+	}
+}
+
+// A custom handler dedicated to detect log messages
 func NativeHandler(bufferSlice []byte) {
 	main := FB.GetRootAsMain(bufferSlice, 0)
 	if main == nil {
@@ -59,44 +80,45 @@ func NativeHandler(bufferSlice []byte) {
 				var fbEvent = new(FB.LogMessage)
 				fbEvent.Init(unionTable.Bytes, unionTable.Pos)
 				event := blpconngo.DeserializeLogMessage(fbEvent)
-				referenceMap.LookAndRemove(event)
-				fmt.Println("Log Message")
-				fmt.Println(event)
-			case FB.MessageMacroReferenceData:
-				var fbEvent = new(FB.MacroReferenceData)
-				fbEvent.Init(unionTable.Bytes, unionTable.Pos)
-				event := blpconngo.DeserializeMacroReferenceData(fbEvent)
-				referenceMap.Add(event)
-				fmt.Println("Macro Reference Data:")
-				fmt.Println(event)
-			case FB.MessageMacroHeadlineEvent:
-				var fbEvent = new(FB.MacroHeadlineEvent)
-				fbEvent.Init(unionTable.Bytes, unionTable.Pos)
-				_event := blpconngo.DeserializeMacroHeadlineEvent(fbEvent)
-				event := referenceMap.FillHeadlineEvent(_event)
-				fmt.Println("Macro Headline Event:")
-				fmt.Println(event)
-			case FB.MessageMacroCalendarEvent:
-				var fbEvent = new(FB.MacroCalendarEvent)
-				fbEvent.Init(unionTable.Bytes, unionTable.Pos)
-				_event := blpconngo.DeserializeMacroCalendarEvent(fbEvent)
-				event := referenceMap.FillCalendarEvent(_event)
-				fmt.Println("Macro Calendar Event:")
-				fmt.Println(event)
+				reviewLogMessage(event)
 			default:
 				fmt.Println("Unknown message type")
 		}
 	}
 }
 
-func main() {
+func ManagedProfile() {
+	ctx := blpconngo.NewManagedContext()
 	configPath := "./config.json"
-	callback := (*byte)(C.get_custom_callback())
-	ctxManaged.AddNotificationHandler(callback)
-	if ok := ctxManaged.InitializeSession(configPath); !ok {
+	ctx.AddNotificationHandler(callback)
+	if ok := ctx.InitializeSession(configPath); !ok {
 		log.Fatal("Failed to initialize session")
 	}
-	defer ctxManaged.ManagedShutdown()
-	ctxManaged.SubscribeTicker("INJCJC Index")
-	time.Sleep(10 * time.Second)
+	defer ctx.ManagedShutdown()
+	startManaged = time.Now()
+	ctx.SubscribeTicker("INJCJC Index")
+	time.Sleep(1 * time.Second)
+}
+
+func SimpleProfile() {
+	ctx := blpconngo.NewContext()
+	ctx.AddNotificationHandler(callback)
+	configPath := "./config.json"
+	res := ctx.InitializeSession(configPath)
+	if !res {
+		log.Fatal("Failed to initialize session")
+	}
+	defer ctx.ShutdownSession()
+	startSimple = time.Now()
+	request := blpconngo.NewSubscriptionRequest()
+	request.SetTopic("INJCJC Index")
+	request.SetCorrelation_id(10)
+	ctx.Subscribe(request)
+	time.Sleep(1 * time.Second)
+	ctx.Unsubscribe(request)
+}
+
+func main() {
+	ManagedProfile()
+	SimpleProfile()
 }

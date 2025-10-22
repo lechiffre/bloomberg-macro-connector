@@ -47,7 +47,7 @@ func (refMap ReferenceMap) LookAndRemove(event LogMessageType) {
 	}
 }
 
-func (refMap ReferenceMap) fillHeadlineEvent(event MacroHeadlineEvent) HeadlineEvent {
+func (refMap ReferenceMap) FillHeadlineEvent(event MacroHeadlineEvent) HeadlineEvent {
 	ref, ok := refMap.items[event.CorrelationID] 
 	if !ok {
 		return HeadlineEvent{
@@ -75,7 +75,7 @@ func (refMap ReferenceMap) fillHeadlineEvent(event MacroHeadlineEvent) HeadlineE
 	}
 }
 
-func (refMap ReferenceMap) fillCalendarEvent(event MacroCalendarEvent) CalendarEvent {
+func (refMap ReferenceMap) FillCalendarEvent(event MacroCalendarEvent) CalendarEvent {
 	ref, ok := refMap.items[event.CorrelationID] 
 	var result CalendarEvent
 	if !ok {

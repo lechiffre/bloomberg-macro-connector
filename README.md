@@ -492,7 +492,7 @@ func NativeHandler(bufferSlice []byte) {
                 var fbEvent = new(FB.MacroHeadlineEvent)
                 fbEvent.Init(unionTable.Bytes, unionTable.Pos)
                 basicEvent := DeserializeMacroHeadlineEvent(fbEvent)
-                extendedEvent := referenceMap.fillHeadlineEvent(_event)
+                extendedEvent := referenceMap.FillHeadlineEvent(_event)
                 fmt.Println(event)
             ...
             default:
@@ -539,12 +539,12 @@ include the reference data:
 
 ```go
 basicEvent := DeserializeMacroHeadlineEvent(fbEvent)
-extendedEvent := referenceMap.fillHeadlineEvent(_event)
+extendedEvent := referenceMap.FillHeadlineEvent(_event)
 
 // or
 
 basicEvent := DeserializeMacroCalendarEvent(fbEvent)
-extendedEvent := referenceMap.fillCalendarEvent(_event)
+extendedEvent := referenceMap.FillCalendarEvent(_event)
 ```
 
 Finally, in order to remove unused references, log messages are looked

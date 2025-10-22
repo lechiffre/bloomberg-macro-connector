@@ -2,6 +2,7 @@ all:
 	GOBIN=${PWD}/bin go install ./simple
 	GOBIN=${PWD}/bin go install ./cli
 	GOBIN=${PWD}/bin go install ./managed
+	GOBIN=${PWD}/bin go install ./profiler
 
 setup:
 	go install golang.org/x/tools/cmd/stringer@latest
@@ -17,6 +18,7 @@ setup:
 	go get blpconngo/cli
 	go get blpconngo/simple
 	go get blpconngo/managed
+	go get blpconngo/profiler
 
 test:
 	go test ./tests/deserialize_test.go

@@ -79,7 +79,7 @@ enum class EventType : uint8_t {
 
 struct DateTimeType {
   uint64_t microseconds = 0;
-  uint16_t offset = 0;
+  int16_t offset = 0;
 };
 
 struct LogMessage {

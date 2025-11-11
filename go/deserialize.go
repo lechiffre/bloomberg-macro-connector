@@ -7,7 +7,15 @@ import (
 )
 
 func DeserializeDateTime(fbDateTime *FB.DateTime) time.Time {
-	return ToNativeTime(fbDateTime.Micros(), fbDateTime.Offset())
+	micros := fbDateTime.Micros()
+	// Handle unset/invalid datetimes
+	// 0 = explicitly unset
+	// > MaxValidMicroseconds = invalid (overflow from negative time_t)
+	if micros == 0 || !IsValidDateTime(micros) {
+		// Return zero time for invalid/unset datetimes
+		return time.Time{}
+	}
+	return ToNativeTime(micros, fbDateTime.Offset())
 }
 
 func DeserializeValue(fbValue *FB.Value) ValueType {

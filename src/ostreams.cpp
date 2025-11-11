@@ -128,10 +128,7 @@ std::ostream& operator<<(std::ostream& os, const HeadlineCalendarEvent& event) {
 }
 
 std::ostream& operator<<(std::ostream& os, const DateTimeType& dt) {
-    // Convert to a human-readable format
-    std::time_t time = dt.microseconds / 1000000; // Convert microseconds to seconds
-    std::tm* tm = std::localtime(&time);
-    os << std::put_time(tm, "%Y-%m-%d %H:%M:%S");
+    os << formatDateTime(dt);
     return os;
 }
 

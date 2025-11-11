@@ -5,6 +5,7 @@
 #include <cmath>
 #include <ctime>
 #include <string>
+#include <exception>
 
 #include "blpconn_fb_generated.h"
 #include "blpconn_message.h"
@@ -106,18 +107,47 @@ static double getFloatFromString(const blpapi::Element& elem,
 
 static uint64_t toMicrosecondsSinceEpoch(const blpapi::Datetime& blpDatetime) {
     std::tm timeStruct = {};
+    std::time_t timeSinceEpoch;
+    int64_t micros = 0;
+    int orig_year = 0, orig_month = 0, orig_day = 0;
     if (blpDatetime.hasParts(blpapi::DatetimeParts::DATE)) {
-        timeStruct.tm_year = blpDatetime.year() - 1900;
-        timeStruct.tm_mon = blpDatetime.month() - 1;
-        timeStruct.tm_mday = blpDatetime.day();
+        int year = blpDatetime.year();
+        int month = blpDatetime.month();
+        int day = blpDatetime.day();
+        if (year == 0) {
+            throw std::invalid_argument("Invalid datetime: year is not set");
+        }
+        if (month < 1 || month > 12) {
+            throw std::invalid_argument("Invalid datetime: month out of range");
+        }
+        if (day < 1 || day > 31) {
+            throw std::invalid_argument("Invalid datetime: day out of range");
+        }
+        timeStruct.tm_year = year - 1900;
+        timeStruct.tm_mon = month - 1;
+        timeStruct.tm_mday = day;
+        orig_year = timeStruct.tm_year;
+        orig_month = timeStruct.tm_mon;
+        orig_day = timeStruct.tm_mday;
     }
     if (blpDatetime.hasParts(blpapi::DatetimeParts::TIME)) {
         timeStruct.tm_hour = blpDatetime.hours();
         timeStruct.tm_min = blpDatetime.minutes();
         timeStruct.tm_sec = blpDatetime.seconds();
     }
-    std::time_t timeSinceEpoch = timegm(&timeStruct);
-    int64_t micros = blpDatetime.hasParts(blpapi::DatetimeParts::FRACSECONDS)
+    timeSinceEpoch = timegm(&timeStruct);
+    if (timeSinceEpoch == -1) {
+        throw std::invalid_argument("Invalid datetime: cannot convert to epoch");
+    }
+    if (blpDatetime.hasParts(blpapi::DatetimeParts::DATE)) {
+        std::tm verifyStruct = *gmtime(&timeSinceEpoch);
+        if (verifyStruct.tm_year != orig_year ||
+            verifyStruct.tm_mon != orig_month ||
+            verifyStruct.tm_mday != orig_day) {
+            throw std::invalid_argument("Invalid datetime: day does not exist in month");
+        }
+    }
+    micros = blpDatetime.hasParts(blpapi::DatetimeParts::FRACSECONDS)
                          ? blpDatetime.microseconds()
                          : 0;
     return static_cast<uint64_t>(timeSinceEpoch) * 1000000 + micros;
@@ -133,8 +163,12 @@ DateTimeType convertToDateTime(const blpapi::Datetime& blpDatetime) {
 static struct DateTimeInterval getReleaseDT(const blpapi::Element& elem,
                                             const blpapi::Name& name) {
     struct DateTimeInterval interval;
-    interval.start = convertToDateTime(blpapi::Datetime());
-    interval.end = convertToDateTime(blpapi::Datetime());
+    // Use zero/unset values as default (instead of converting empty datetime)
+    interval.start.microseconds = 0;
+    interval.start.offset = 0;
+    interval.end.microseconds = 0;
+    interval.end.offset = 0;
+    
     // Use default values if element or subelements are missing/invalid
     if (!elem.hasElement(name)) {
         return interval;

@@ -19,7 +19,6 @@ std::string formatDateTimeUTC(const DateTimeType& dt) {
     if (!isValidDateTime(dt.microseconds)) {
         return "N/A";
     }
-    
     std::time_t seconds = dt.microseconds / 1000000;
     uint64_t micros = dt.microseconds % 1000000;
     std::tm* tm = std::gmtime(&seconds);

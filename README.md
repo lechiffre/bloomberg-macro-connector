@@ -834,19 +834,34 @@ process.
 
 C++ tests:
 
-- `test_connection`: Openning and closing the connection with the
+- `test_connection`: Opening and closing the connection with the
   Bloomberg server
-- `test_subscription`: Subscribing and unsubscribing
-- `test_serialization`: Tets for the flatbuffers functions
-- `test_deserialize`: Deserialization of data received from the
-  Bloomberg server
+- `test_subscription`: Subscribing and unsubscribing to data feeds
+- `test_serialization`: Tests for the FlatBuffers serialization functions
+- `test_deserialize`: Deserialization of messages received from the
+  Bloomberg server, validating all message types with actual data
+- `test_loadfbbin`: Batch deserialization of all binary files in `data/`,
+  verifying correct message type identification and counting
+- `test_serialdeserial`: Round-trip serialization/deserialization tests
+- `test_macro`: Macro-specific event handling tests
+- `test_datetime_format`: DateTime formatting and validation tests
+- `test_convert_to_datetime`: DateTime conversion function tests
+- `test_toMicrosecondsSinceEpoch`: Microsecond timestamp conversion tests
+- `test_fbBufferToFile`: FlatBuffer file I/O operations tests
 
 Go tests:
 
 - `deserialize_test.go`: Deserialization of data received from the
-  Bloomberg server
+  Bloomberg server, testing all message types with field validation
+- `loadfbbin_test.go`: Batch deserialization of all binary files in `data/`,
+  identifying and counting each message type
 - `referencemap_test.go`: Validation of operations on the ReferenceMap
-  structure
+  structure (add, get, remove references)
+- `datetime_test.go`: DateTime conversion and timezone handling tests
+- `prettyprint_test.go`: JSON marshaling tests for ValueType with NaN
+  value handling and roundtrip verification
+- `json_conversion_test.go`: End-to-end JSON conversion tests for all
+  message types with NaN handling and roundtrip integrity checks
 
 ## Profiling
 
@@ -867,7 +882,38 @@ and other build files.
 * Errors are handled internally, they are not propagated to the client program.
   It is expected that the client program will detect anormal situations by
   monitoring the log messages.
-  
+
+## Go JSON Serialization
+
+The Go implementation provides JSON serialization with automatic NaN
+handling and enum serialization. Includes support for the macro economic
+messages and the log messages.
+
+```go
+// Deserialize from FlatBuffers
+event := blpconngo.DeserializeMacroHeadlineEvent(fbEvent)
+
+// Convert to JSON
+jsonData, err := json.MarshalIndent(event, "", "  ")
+if err != nil {
+    fmt.Printf("Error: %v\n", err)
+    return
+}
+
+fmt.Println(string(jsonData))
+
+// Restore from JSON
+var restored blpconngo.MacroHeadlineEvent
+err = json.Unmarshal(jsonData, &restored)
+if err != nil {
+    fmt.Printf("Error: %v\n", err)
+    return
+}
+```
+
+Note how NaN values in the `ValueType` structure are represented as `null` in
+JSON, making the output valid and compatible with JSON parsers.
+
 # Annex: TT Installation
 
 2025-05-12

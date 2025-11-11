@@ -3,7 +3,6 @@ package blpconngo
 import (
 	"encoding/json"
 	"math"
-	"fmt"
 )
 
 // A helper struct to manage json ser/des
@@ -32,7 +31,6 @@ func safeFloat(p *float64) float64 {
 }
 
 func (v ValueType) MarshalJSON() ([]byte, error) {
-	fmt.Println(v)
 	alt := PValueType{
 		Number:		safePtr(v.Number),
 		Value:		safePtr(v.Value),
@@ -42,7 +40,6 @@ func (v ValueType) MarshalJSON() ([]byte, error) {
 		Average:	safePtr(v.Average),
 		StandardDeviation: safePtr(v.StandardDeviation),
 	}
-	fmt.Println(alt)
 	return json.Marshal(alt)
 }
 

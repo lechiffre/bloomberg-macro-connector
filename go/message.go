@@ -90,11 +90,11 @@ type DateTimeType struct {
 }
 
 type LogMessageType struct {
-	LogDT         time.Time
-	Module        ModuleType
-	Status        uint8
-	CorrelationID uint64
-	Message       string
+	LogDT         time.Time `json:"log_dt"`
+	Module        ModuleType `json:"module"`
+	Status        uint8 `json:"status"`
+	CorrelationID uint64 `json:"correlation_id"`
+	Message       string `json:"message"`
 }
 
 type ValueType struct {

@@ -966,7 +966,8 @@ struct MacroHeadlineEvent FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
     VT_PRIOR_OBSERVATION_PERIOD = 20,
     VT_PRIOR_ECONOMIC_RELEASE_START_DT = 22,
     VT_PRIOR_ECONOMIC_RELEASE_END_DT = 24,
-    VT_VALUE = 26
+    VT_VALUE = 26,
+    VT_PRIOR_VALUE = 28
   };
   int64_t corr_id() const {
     return GetField<int64_t>(VT_CORR_ID, 0);
@@ -1004,6 +1005,9 @@ struct MacroHeadlineEvent FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
   const BlpConn::FB::Value *value() const {
     return GetPointer<const BlpConn::FB::Value *>(VT_VALUE);
   }
+  const BlpConn::FB::Value *prior_value() const {
+    return GetPointer<const BlpConn::FB::Value *>(VT_PRIOR_VALUE);
+  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int64_t>(verifier, VT_CORR_ID, 8) &&
@@ -1025,6 +1029,8 @@ struct MacroHeadlineEvent FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table
            verifier.VerifyTable(prior_economic_release_end_dt()) &&
            VerifyOffset(verifier, VT_VALUE) &&
            verifier.VerifyTable(value()) &&
+           VerifyOffset(verifier, VT_PRIOR_VALUE) &&
+           verifier.VerifyTable(prior_value()) &&
            verifier.EndTable();
   }
 };
@@ -1069,6 +1075,9 @@ struct MacroHeadlineEventBuilder {
   void add_value(::flatbuffers::Offset<BlpConn::FB::Value> value) {
     fbb_.AddOffset(MacroHeadlineEvent::VT_VALUE, value);
   }
+  void add_prior_value(::flatbuffers::Offset<BlpConn::FB::Value> prior_value) {
+    fbb_.AddOffset(MacroHeadlineEvent::VT_PRIOR_VALUE, prior_value);
+  }
   explicit MacroHeadlineEventBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -1093,9 +1102,11 @@ inline ::flatbuffers::Offset<MacroHeadlineEvent> CreateMacroHeadlineEvent(
     ::flatbuffers::Offset<::flatbuffers::String> prior_observation_period = 0,
     ::flatbuffers::Offset<BlpConn::FB::DateTime> prior_economic_release_start_dt = 0,
     ::flatbuffers::Offset<BlpConn::FB::DateTime> prior_economic_release_end_dt = 0,
-    ::flatbuffers::Offset<BlpConn::FB::Value> value = 0) {
+    ::flatbuffers::Offset<BlpConn::FB::Value> value = 0,
+    ::flatbuffers::Offset<BlpConn::FB::Value> prior_value = 0) {
   MacroHeadlineEventBuilder builder_(_fbb);
   builder_.add_corr_id(corr_id);
+  builder_.add_prior_value(prior_value);
   builder_.add_value(value);
   builder_.add_prior_economic_release_end_dt(prior_economic_release_end_dt);
   builder_.add_prior_economic_release_start_dt(prior_economic_release_start_dt);
@@ -1123,7 +1134,8 @@ inline ::flatbuffers::Offset<MacroHeadlineEvent> CreateMacroHeadlineEventDirect(
     const char *prior_observation_period = nullptr,
     ::flatbuffers::Offset<BlpConn::FB::DateTime> prior_economic_release_start_dt = 0,
     ::flatbuffers::Offset<BlpConn::FB::DateTime> prior_economic_release_end_dt = 0,
-    ::flatbuffers::Offset<BlpConn::FB::Value> value = 0) {
+    ::flatbuffers::Offset<BlpConn::FB::Value> value = 0,
+    ::flatbuffers::Offset<BlpConn::FB::Value> prior_value = 0) {
   auto observation_period__ = observation_period ? _fbb.CreateString(observation_period) : 0;
   auto prior_observation_period__ = prior_observation_period ? _fbb.CreateString(prior_observation_period) : 0;
   return BlpConn::FB::CreateMacroHeadlineEvent(
@@ -1139,7 +1151,8 @@ inline ::flatbuffers::Offset<MacroHeadlineEvent> CreateMacroHeadlineEventDirect(
       prior_observation_period__,
       prior_economic_release_start_dt,
       prior_economic_release_end_dt,
-      value);
+      value,
+      prior_value);
 }
 
 struct MacroCalendarEvent FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {

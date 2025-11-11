@@ -180,6 +180,7 @@ flatbuffers::Offset<FB::MacroHeadlineEvent> serializeMacroHeadlineEvent(
     auto prior_release_end_dt = serializeDateTime(
             builder, event.prior_economic_release_end_dt);
     auto value = serializeValue(builder, event.value);
+    auto prior_value = serializeValue(builder, event.prior_value);
     END_PROFILE_FUNCTION()
     return FB::CreateMacroHeadlineEvent(
             builder,
@@ -194,7 +195,8 @@ flatbuffers::Offset<FB::MacroHeadlineEvent> serializeMacroHeadlineEvent(
             prior_observation_period,
             prior_release_start_dt,
             prior_release_end_dt,
-            value);
+            value,
+            prior_value);
 }
 
 flatbuffers::Offset<FB::MacroCalendarEvent> serializeMacroCalendarEvent(

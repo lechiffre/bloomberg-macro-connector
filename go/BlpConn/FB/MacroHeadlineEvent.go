@@ -182,8 +182,21 @@ func (rcv *MacroHeadlineEvent) Value(obj *Value) *Value {
 	return nil
 }
 
+func (rcv *MacroHeadlineEvent) PriorValue(obj *Value) *Value {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(28))
+	if o != 0 {
+		x := rcv._tab.Indirect(o + rcv._tab.Pos)
+		if obj == nil {
+			obj = new(Value)
+		}
+		obj.Init(rcv._tab.Bytes, x)
+		return obj
+	}
+	return nil
+}
+
 func MacroHeadlineEventStart(builder *flatbuffers.Builder) {
-	builder.StartObject(12)
+	builder.StartObject(13)
 }
 func MacroHeadlineEventAddCorrId(builder *flatbuffers.Builder, corrId int64) {
 	builder.PrependInt64Slot(0, corrId, 0)
@@ -220,6 +233,9 @@ func MacroHeadlineEventAddPriorEconomicReleaseEndDt(builder *flatbuffers.Builder
 }
 func MacroHeadlineEventAddValue(builder *flatbuffers.Builder, value flatbuffers.UOffsetT) {
 	builder.PrependUOffsetTSlot(11, flatbuffers.UOffsetT(value), 0)
+}
+func MacroHeadlineEventAddPriorValue(builder *flatbuffers.Builder, priorValue flatbuffers.UOffsetT) {
+	builder.PrependUOffsetTSlot(12, flatbuffers.UOffsetT(priorValue), 0)
 }
 func MacroHeadlineEventEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	return builder.EndObject()

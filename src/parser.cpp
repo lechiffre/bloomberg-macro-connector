@@ -37,11 +37,12 @@ static const blpapi::Name EVENT_TYPE("EVENT_TYPE");
 static const blpapi::Name EVENT_SUBTYPE("EVENT_SUBTYPE");
 static const blpapi::Name EVENT_ID("EVENT_ID");
 static const blpapi::Name OBSERVATION_PERIOD("OBSERVATION_PERIOD");
-static const blpapi::Name ECO_RELEASE_DT("ECO_RELEASE_DT");
+static const blpapi::Name ECO_RELEASE_DT("ECO_RELEASE_DATE_TIME");
+static const blpapi::Name ECO_RELEASE_DATE_TIME("ECO_RELEASE_DATE_TIME");
 static const blpapi::Name VALUE("VALUE");
 static const blpapi::Name PRIOR_VALUE("PRIOR_VALUE");
 static const blpapi::Name REVISION_METADATA("REVISION_METADATA");
-static const blpapi::Name PRIOR_ECONOMIC_RELEASE_DT("PRIOR_ECO_RELEASE_DT");
+static const blpapi::Name PRIOR_ECONOMIC_RELEASE_DT("PRIOR_ECO_RELEASE_DATE_TIME");
 static const blpapi::Name PRIOR_OBSERVATION_PERIOD("PRIOR_OBSERVATION_PERIOD");
 static const blpapi::Name PRIOR_EVENT_ID("PRIOR_EVENT_ID");
 static const blpapi::Name RELEASE_STATUS("RELEASE_STATUS");
@@ -368,42 +369,59 @@ flatbuffers::Offset<FB::Value> serializeValue(
     flatbuffers::FlatBufferBuilder& builder, const blpapi::Element& elem,
     const blpapi::Name name) {
     if (!elem.hasElement(name)) {
-        return FB::CreateValue(builder, 0, std::nan(""), std::nan(""),
+        return FB::CreateValue(builder, std::nan(""), std::nan(""), std::nan(""),
                                std::nan(""), std::nan(""), std::nan(""),
                                std::nan(""));
     }
-    blpapi::Element subElem = elem.getElement(name);
-    blpapi::Element choice = subElem.getChoice();
-    if (choice.name() == SINGLE) {
-        double value = getFloatFromStringElement(choice);
-        return FB::CreateValue(builder, 1, value, std::nan(""), std::nan(""),
-                               std::nan(""), std::nan(""), std::nan(""));
-    } else if (choice.name() == DISTRIBUTION) {
-        int number = choice.hasElement(NUMBER)
-                         ? getIntFromStringElement(choice.getElement(NUMBER))
-                         : 0;
-        double average =
-            choice.hasElement(AVERAGE)
-                ? getFloatFromStringElement(choice.getElement(AVERAGE))
-                : std::nan("");
-        double low = choice.hasElement(LOW)
-                         ? getFloatFromStringElement(choice.getElement(LOW))
-                         : std::nan("");
-        double high = choice.hasElement(HIGH)
-                          ? getFloatFromStringElement(choice.getElement(HIGH))
-                          : std::nan("");
-        double median =
-            choice.hasElement(MEDIAN)
-                ? getFloatFromStringElement(choice.getElement(MEDIAN))
-                : std::nan("");
-        double stddev = choice.hasElement(STANDARD_DEVIATION)
-                            ? getFloatFromStringElement(
-                                  choice.getElement(STANDARD_DEVIATION))
-                            : std::nan("");
-        return FB::CreateValue(builder, number, std::nan(""), low, high, median,
-                               average, stddev);
+    
+    try {
+        blpapi::Element subElem = elem.getElement(name);
+        
+        // Check if the element is a choice before trying to get the choice
+        if (!subElem.isComplexType() || subElem.numValues() == 0) {
+            return FB::CreateValue(builder, std::nan(""), std::nan(""), std::nan(""),
+                                   std::nan(""), std::nan(""), std::nan(""),
+                                   std::nan(""));
+        }
+        
+        blpapi::Element choice = subElem.getChoice();
+        if (choice.name() == SINGLE) {
+            double value = getFloatFromStringElement(choice);
+            return FB::CreateValue(builder, 1, value, std::nan(""), std::nan(""),
+                                   std::nan(""), std::nan(""), std::nan(""));
+        } else if (choice.name() == DISTRIBUTION) {
+            int number = choice.hasElement(NUMBER)
+                             ? getIntFromStringElement(choice.getElement(NUMBER))
+                             : 0;
+            double average =
+                choice.hasElement(AVERAGE)
+                    ? getFloatFromStringElement(choice.getElement(AVERAGE))
+                    : std::nan("");
+            double low = choice.hasElement(LOW)
+                             ? getFloatFromStringElement(choice.getElement(LOW))
+                             : std::nan("");
+            double high = choice.hasElement(HIGH)
+                              ? getFloatFromStringElement(choice.getElement(HIGH))
+                              : std::nan("");
+            double median =
+                choice.hasElement(MEDIAN)
+                    ? getFloatFromStringElement(choice.getElement(MEDIAN))
+                    : std::nan("");
+            double stddev = choice.hasElement(STANDARD_DEVIATION)
+                                ? getFloatFromStringElement(
+                                      choice.getElement(STANDARD_DEVIATION))
+                                : std::nan("");
+            return FB::CreateValue(builder, number, std::nan(""), low, high, median,
+                                   average, stddev);
+        }
+    } catch (const std::exception& e) {
+        // If any error occurs (e.g., element is not a choice), return default
+        return FB::CreateValue(builder, std::nan(""), std::nan(""), std::nan(""),
+                               std::nan(""), std::nan(""), std::nan(""),
+                               std::nan(""));
     }
-    return FB::CreateValue(builder, 0, std::nan(""), std::nan(""), std::nan(""),
+    
+    return FB::CreateValue(builder, std::nan(""), std::nan(""), std::nan(""),
                            std::nan(""), std::nan(""), std::nan(""));
 }
 
@@ -582,12 +600,13 @@ flatbuffers::Offset<FB::MacroHeadlineEvent> serializeMacroHeadlineEvent(
         }
     }
     auto value = serializeValue(builder, elem, VALUE);
+    auto prior_value = serializeValue(builder, elem, PRIOR_VALUE);
     return FB::CreateMacroHeadlineEvent(
         builder, corrId, static_cast<FB::EventType>(event_type),
         static_cast<FB::EventSubType>(event_subtype), event_id,
         observation_period, release_start_dt, release_end_dt, prior_event_id,
         prior_observation_period, prior_release_start_dt,
-        prior_release_end_dt, value);
+        prior_release_end_dt, value, prior_value);
 }
 
 flatbuffers::Offset<FB::MacroCalendarEvent> serializeMacroCalendarEvent(
@@ -812,7 +831,12 @@ MacroHeadlineEvent parseMacroHeadlineEvent(int64_t corrId,
         message.observation_period =
             elem.getElement(OBSERVATION_PERIOD).getValueAsString();
     }
-    if (elem.hasElement(ECO_RELEASE_DT)) {
+    // Try both field name variations for release datetime
+    if (elem.hasElement(ECO_RELEASE_DATE_TIME)) {
+        DateTimeInterval interval = getReleaseDT(elem, ECO_RELEASE_DATE_TIME);
+        message.release_start_dt = interval.start;
+        message.release_end_dt = interval.end;
+    } else if (elem.hasElement(ECO_RELEASE_DT)) {
         DateTimeInterval interval = getReleaseDT(elem, ECO_RELEASE_DT);
         message.release_start_dt = interval.start;
         message.release_end_dt = interval.end;
@@ -824,6 +848,7 @@ MacroHeadlineEvent parseMacroHeadlineEvent(int64_t corrId,
         message.prior_observation_period =
             elem.getElement(PRIOR_OBSERVATION_PERIOD).getValueAsString();
     }
+    // Try both field name variations for prior release datetime
     if (elem.hasElement(PRIOR_ECONOMIC_RELEASE_DT)) {
         DateTimeInterval interval =
             getReleaseDT(elem, PRIOR_ECONOMIC_RELEASE_DT);
@@ -832,6 +857,9 @@ MacroHeadlineEvent parseMacroHeadlineEvent(int64_t corrId,
     }
     if (elem.hasElement(VALUE)) {
         message.value = getValue(elem, VALUE);
+    }
+    if (elem.hasElement(PRIOR_VALUE)) {
+        message.prior_value = getValue(elem, PRIOR_VALUE);
     }
     END_PROFILE_FUNCTION()
     return message;

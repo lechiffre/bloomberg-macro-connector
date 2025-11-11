@@ -12,8 +12,10 @@ void Logger::addNotificationHandler(ObserverFunc fnc) noexcept {
 }
 
 void Logger::notify(const uint8_t* buffer, size_t size) {
-    // auto filename = fbGetNextFileName("data/");
-    // fbBufferToFile(buffer, size, filename);
+#ifdef EXTRA_DEBUG
+    auto filename = fbGetNextFileName("data/");
+    fbBufferToFile(buffer, size, filename);
+#endif
     PROFILE_FUNCTION();
     for (const auto& callback : callbacks_) {
         callback(buffer, size);

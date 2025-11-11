@@ -144,6 +144,7 @@ type MacroHeadlineEvent struct {
 	PriorEconomicReleaseStartDT time.Time		`json:"prior_economic_release_start_dt"`
 	PriorEconomicReleaseEndDT   time.Time		`json:"prior_economic_release_end_dt"`
 	Value                       ValueType		`json:"value"`
+	PriorValue                  ValueType		`json:"prior_value"`
 }
 
 type MacroCalendarEvent struct {

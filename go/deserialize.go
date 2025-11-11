@@ -7,6 +7,10 @@ import (
 )
 
 func DeserializeDateTime(fbDateTime *FB.DateTime) time.Time {
+	if fbDateTime == nil {
+		// Return zero time if DateTime object is nil
+		return time.Time{}
+	}
 	micros := fbDateTime.Micros()
 	// Handle unset/invalid datetimes
 	// 0 = explicitly unset
@@ -19,6 +23,10 @@ func DeserializeDateTime(fbDateTime *FB.DateTime) time.Time {
 }
 
 func DeserializeValue(fbValue *FB.Value) ValueType {
+	if fbValue == nil {
+		// Return ValueType with NaN values if fbValue is nil
+		return NewValueType()
+	}
 	return ValueType{
 		Number:            fbValue.Number(),
 		Value:             fbValue.Value(),
@@ -58,6 +66,7 @@ func DeserializeMacroHeadlineEvent(fbEvent *FB.MacroHeadlineEvent) MacroHeadline
 		PriorEconomicReleaseStartDT: 	DeserializeDateTime(fbEvent.PriorEconomicReleaseStartDt(nil)),
 		PriorEconomicReleaseEndDT:   	DeserializeDateTime(fbEvent.PriorEconomicReleaseEndDt(nil)),
 		Value:                       	DeserializeValue(fbEvent.Value(nil)),
+		PriorValue:                  	DeserializeValue(fbEvent.PriorValue(nil)),
 	}
 }
 

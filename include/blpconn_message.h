@@ -146,6 +146,7 @@ struct MacroHeadlineEvent {
     DateTimeType prior_economic_release_start_dt;
     DateTimeType prior_economic_release_end_dt;
     ValueType value;
+    ValueType prior_value;
 };
 
 struct MacroCalendarEvent {

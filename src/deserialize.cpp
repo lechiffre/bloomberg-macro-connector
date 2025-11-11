@@ -101,6 +101,7 @@ MacroHeadlineEvent toMacroHeadlineEvent(
     event.prior_economic_release_end_dt = deserializeDateTime(
             fb_event->prior_economic_release_end_dt());
     event.value = deserializeValue(fb_event->value());
+    event.prior_value = deserializeValue(fb_event->prior_value());
     END_PROFILE_FUNCTION()
     return event;
 }

@@ -1,17 +1,9 @@
 #include <gtest/gtest.h>
 #include <fstream>
 #include <string>
-#include "blpconn_serialize.h"
+#include "blpconn_fbtofile.h"
 
 using namespace BlpConn;
-
-// Test for getLastFileNumber
-TEST(FbToFileTest, GetLastFileNumber) {
-    // Setup: Create mock files
-    system("touch fb_000001.bin fb_000002.bin");
-    EXPECT_EQ(getLastFileNumber(), 2);
-    system("rm fb_000001.bin fb_000002.bin");
-}
 
 // Test for fbGetNextFileName
 TEST(FbToFileTest, GetNextFileName) {

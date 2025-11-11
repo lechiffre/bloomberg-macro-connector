@@ -97,10 +97,8 @@ std::ostream& operator<<(std::ostream& os, const HeadlineBaseEvent& event) {
        << ", event_subtype: " << eventSubTypeToString(event.event_subtype)
        << ", event_id: " << event.event_id
        << ", observation_period: " << event.observation_period
-       << ", release_start_dt: { microseconds: " << event.release_start_dt.microseconds
-       << ", offset: " << event.release_start_dt.offset << " }"
-       << ", release_end_dt: { microseconds: " << event.release_end_dt.microseconds
-       << ", offset: " << event.release_end_dt.offset << " }"
+       << ", release_start_dt: " << formatDateTime(event.release_start_dt)
+       << ", release_end_dt: " << formatDateTime(event.release_end_dt)
        << " }";
     return os;
 }
@@ -111,10 +109,8 @@ std::ostream& operator<<(std::ostream& os, const HeadlineEconomicEvent& event) {
        << ", prior_value: " << event.prior_value
        << ", prior_event_id: " << event.prior_event_id
        << ", prior_observation_period: " << event.prior_observation_period
-       << ", prior_economic_release_start_dt: { microseconds: " << event.prior_economic_release_start_dt.microseconds
-       << ", offset: " << event.prior_economic_release_start_dt.offset << " }"
-       << ", prior_economic_release_end_dt: { microseconds: " << event.prior_economic_release_end_dt.microseconds
-       << ", offset: " << event.prior_economic_release_end_dt.offset << " }"
+       << ", prior_economic_release_start_dt: " << formatDateTime(event.prior_economic_release_start_dt)
+       << ", prior_economic_release_end_dt: " << formatDateTime(event.prior_economic_release_end_dt)
        << " }";
     return os;
 }
@@ -184,17 +180,14 @@ std::ostream& operator<<(std::ostream& os, const MacroHeadlineEvent& event) {
        << ", event_subtype: " << eventSubTypeToString(event.event_subtype)
        << ", event_id: " << event.event_id
        << ", observation_period: " << event.observation_period
-       << ", release_start_dt: { microseconds: " << event.release_start_dt.microseconds
-       << ", offset: " << event.release_start_dt.offset << " }"
-       << ", release_end_dt: { microseconds: " << event.release_end_dt.microseconds
-       << ", offset: " << event.release_end_dt.offset << " }"
+       << ", release_start_dt: " << formatDateTime(event.release_start_dt)
+       << ", release_end_dt: " << formatDateTime(event.release_end_dt)
        << ", prior_event_id: " << event.prior_event_id
        << ", prior_observation_period: " << event.prior_observation_period
-       << ", prior_economic_release_start_dt: { microseconds: " << event.prior_economic_release_start_dt.microseconds
-       << ", offset: " << event.prior_economic_release_start_dt.offset << " }"
-       << ", prior_economic_release_end_dt: { microseconds: " << event.prior_economic_release_end_dt.microseconds
-       << ", offset: " << event.prior_economic_release_end_dt.offset << " }"
+       << ", prior_economic_release_start_dt: " << formatDateTime(event.prior_economic_release_start_dt)
+       << ", prior_economic_release_end_dt: " << formatDateTime(event.prior_economic_release_end_dt)
        << ", value: " << event.value
+       << ", prior_value: " << event.prior_value
        << " }";
     return os;
 }
@@ -208,10 +201,8 @@ std::ostream& operator<<(std::ostream& os, const MacroCalendarEvent& event) {
        << ", description: " << event.description
        << ", event_id: " << event.event_id
        << ", observation_period: " << event.observation_period
-       << ", release_start_dt: { microseconds: " << event.release_start_dt.microseconds
-       << ", offset: " << event.release_start_dt.offset << " }"
-       << ", release_end_dt: { microseconds: " << event.release_end_dt.microseconds
-       << ", offset: " << event.release_end_dt.offset << " }"
+       << ", release_start_dt: " << formatDateTime(event.release_start_dt)
+       << ", release_end_dt: " << formatDateTime(event.release_end_dt)
        << ", release_status: " << releaseStatusToString(event.release_status)
        << ", relevance_value: " << event.relevance_value
        << " }";

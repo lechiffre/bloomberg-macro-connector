@@ -35,8 +35,8 @@ func TestDeserializeMacroReferenceData(t *testing.T) {
 	var fbEvent = new(FB.MacroReferenceData)
 	fbEvent.Init(unionTable.Bytes, unionTable.Pos)
 	event := blpconngo.DeserializeMacroReferenceData(fbEvent)
-	if event.CorrelationID != 12 {
-		t.Errorf("Expected CorrelationID 12, got %d", event.CorrelationID)
+	if event.CorrelationID != 1 {
+		t.Errorf("Expected CorrelationID 1, got %d", event.CorrelationID)
 	}
 	if event.IDBBGlobal != "BBG002SBJ964" {
 		t.Errorf("Expected IDBBGlobal 'BBG002SBJ964', got '%s'", event.IDBBGlobal)
@@ -65,7 +65,7 @@ func TestDeserializeMacroReferenceData(t *testing.T) {
 }
 
 func TestDeserializeMacroHeadlineEvent(t *testing.T) {
-	buffer := readFBFile("fb_000014.bin")
+	buffer := readFBFile("fb_000013.bin")
 	main := FB.GetRootAsMain(buffer, 0)
 	if main == nil {
 		t.Fatal("Failed to parse FlatBuffers main object")
@@ -80,8 +80,8 @@ func TestDeserializeMacroHeadlineEvent(t *testing.T) {
 	var fbEvent = new(FB.MacroHeadlineEvent)
 	fbEvent.Init(unionTable.Bytes, unionTable.Pos)
 	event := blpconngo.DeserializeMacroHeadlineEvent(fbEvent)
-	if event.CorrelationID != 12 {
-		t.Errorf("Expected CorrelationID 12, got %d", event.CorrelationID)
+	if event.CorrelationID != 1 {
+		t.Errorf("Expected CorrelationID 1, got %d", event.CorrelationID)
 	}
 	if event.EventType != blpconngo.EventTypeRevision {
 		t.Errorf("Expected EventType Revision, got %d", event.EventType)
@@ -125,7 +125,7 @@ func TestDeserializeMacroHeadlineEvent(t *testing.T) {
 }
 
 func TestDeserializeMacroCalendarEvent(t *testing.T) {
-	buffer := readFBFile("fb_000012.bin")
+	buffer := readFBFile("fb_000011.bin")
 	main := FB.GetRootAsMain(buffer, 0)
 	if main == nil {
 		t.Fatal("Failed to parse FlatBuffers main object")
@@ -140,8 +140,8 @@ func TestDeserializeMacroCalendarEvent(t *testing.T) {
 	var fbEvent = new(FB.MacroCalendarEvent)
 	fbEvent.Init(unionTable.Bytes, unionTable.Pos)
 	event := blpconngo.DeserializeMacroCalendarEvent(fbEvent)
-	if event.CorrelationID != 12 {
-		t.Errorf("Expected CorrelationID 12, got %d", event.CorrelationID)
+	if event.CorrelationID != 1 {
+		t.Errorf("Expected CorrelationID 1, got %d", event.CorrelationID)
 	}
 	if event.IDBBGlobal != "" {
 		t.Errorf("Expected IDBBGlobal '', got '%s'", event.IDBBGlobal)
@@ -185,8 +185,8 @@ func TestDeserializeSubscriptionSuccess(t *testing.T) {
 	var fbEvent = new(FB.LogMessage)
 	fbEvent.Init(unionTable.Bytes, unionTable.Pos)
 	event := blpconngo.DeserializeLogMessage(fbEvent)
-	if event.CorrelationID != 12 {
-		t.Errorf("Expected CorrelationID 12, got %d", event.CorrelationID)
+	if event.CorrelationID != 1 {
+		t.Errorf("Expected CorrelationID 1, got %d", event.CorrelationID)
 	}
 	if event.Module != blpconngo.ModuleSubscription {
 		t.Errorf("Expected Module Subscription, got %d", event.Module)
@@ -228,8 +228,8 @@ func TestDeserializeSubscriptionStreamsActivated(t *testing.T) {
 	var fbEvent = new(FB.LogMessage)
 	fbEvent.Init(unionTable.Bytes, unionTable.Pos)
 	event := blpconngo.DeserializeLogMessage(fbEvent)
-	if event.CorrelationID != 12 {
-		t.Errorf("Expected CorrelationID 12, got %d", event.CorrelationID)
+	if event.CorrelationID != 1 {
+		t.Errorf("Expected CorrelationID 1, got %d", event.CorrelationID)
 	}
 	if event.Module != blpconngo.ModuleSubscription {
 		t.Errorf("Expected Module Subscription, got %d", event.Module)
@@ -269,8 +269,8 @@ func TestDeserializeSubscriptionTerminated(t *testing.T) {
 	var fbEvent = new(FB.LogMessage)
 	fbEvent.Init(unionTable.Bytes, unionTable.Pos)
 	event := blpconngo.DeserializeLogMessage(fbEvent)
-	if event.CorrelationID != 12 {
-		t.Errorf("Expected CorrelationID 12, got %d", event.CorrelationID)
+	if event.CorrelationID != 1 {
+		t.Errorf("Expected CorrelationID 1, got %d", event.CorrelationID)
 	}
 	if event.Module != blpconngo.ModuleSubscription {
 		t.Errorf("Expected Module Subscription, got %d", event.Module)

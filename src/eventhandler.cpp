@@ -7,6 +7,10 @@
 #include "blpconn_message.h"
 #include "blpconn_deserialize.h"
 
+#ifdef EXTRA_DEBUG
+#include "blpconn_fbtofile.h"
+#endif
+
 namespace BlpConn {
 
 static const uint8_t module = static_cast<uint8_t>(Module::System);
@@ -106,6 +110,10 @@ bool processSubscriptionData(const blpapi::Event& event, blpapi::Session *sessio
     while (msgIter.next()) {
         blpapi::Message msg = msgIter.message();
         blpapi::Element elem = msg.asElement();
+#ifdef EXTRA_DEBUG 
+        std::cout << "Subscription Element: " << std::endl
+                  << elem << std::endl;
+#endif
         blpapi::CorrelationId id = msg.correlationId();
         int64_t corrId = id.valueType() == blpapi::CorrelationId::ValueType::INT_VALUE
             ? id.asInteger() : 0;
@@ -188,15 +196,23 @@ bool processSubscriptionStatus(const blpapi::Event& event, blpapi::Session *sess
         std::ostringstream oss;
         oss << elem;
         if (elem.name() == SUBSCRIPTION_STARTED) {
-            logger.log(module, static_cast<uint8_t>(SubscriptionStatus::Started), correlation_id, oss.str());
+            logger.log(module, static_cast<uint8_t>(
+                    SubscriptionStatus::Started),
+                    correlation_id, oss.str());
         } else if (elem.name() == SUBSCRIPTION_STREAMS_ACTIVATED) {
-            logger.log(module, static_cast<uint8_t>(SubscriptionStatus::StreamsActivated), correlation_id, oss.str());
+            logger.log(module, static_cast<uint8_t>(
+                    SubscriptionStatus::StreamsActivated),
+                    correlation_id, oss.str());
         } else if (elem.name() == SUBSCRIPTION_TERMINATED) {
-            logger.log(module, static_cast<uint8_t>(SubscriptionStatus::Terminated), correlation_id, oss.str());
+            logger.log(module, static_cast<uint8_t>(
+                    SubscriptionStatus::Terminated),
+                    correlation_id, oss.str());
         } else if (elem.name() == SUBSCRIPTION_FAILURE) {
-            logger.log(module, static_cast<uint8_t>(SubscriptionStatus::Failure), correlation_id, oss.str());
+            logger.log(module, static_cast<uint8_t>(SubscriptionStatus::Failure),
+                    correlation_id, oss.str());
         } else {
-            logger.log(module, static_cast<uint8_t>(SubscriptionStatus::Unknown), correlation_id, oss.str());
+            logger.log(module, static_cast<uint8_t>(SubscriptionStatus::Unknown),
+                    correlation_id, oss.str());
         }
     }
     END_PROFILE_FUNCTION()
@@ -214,7 +230,8 @@ bool EventHandler::processEvent(const blpapi::Event& event, blpapi::Session *ses
         case blpapi::Event::SUBSCRIPTION_STATUS:
             return processSubscriptionStatus(event, session, logger_);
         default:
-            std::cout << "#### Unhandled event type: " << event.eventType() << std::endl;
+            std::cout << "#### Unhandled event type: " << event.eventType()
+                      << std::endl;
             blpapi::MessageIterator msg_iter(event);
             while (msg_iter.next()) {
                 blpapi::Message msg = msg_iter.message();

@@ -32,12 +32,17 @@ std::vector<uint8_t> readBinaryFile(const std::string& filepath) {
     return buffer;
 }
 
-// Test deserialization and identification of all files in tests/fbbin
+// Test deserialization and identification of all files in data folder
 TEST(FBBinDeserializeTest, DeserializeAndIdentifyAllFiles) {
-    const std::string folder = "tests/fbbin";
+    const std::string folder = "data";
+    
+    int log_message_count = 0;
+    int macro_reference_data_count = 0;
+    int macro_headline_event_count = 0;
+    int macro_calendar_event_count = 0;
 
     for (const auto& entry : fs::directory_iterator(folder)) {
-        if (fs::is_regular_file(entry)) {
+        if (fs::is_regular_file(entry) && entry.path().extension() == ".bin") {
             const std::string filepath = entry.path().string();
             SCOPED_TRACE("Processing file: " + filepath);
 
@@ -57,24 +62,57 @@ TEST(FBBinDeserializeTest, DeserializeAndIdentifyAllFiles) {
                 }
 
                 switch (main->message_type()) {
-                    case FB::Message_HeadlineEconomicEvent: {
-                        auto fb_event = main->message_as_HeadlineEconomicEvent();
-                        if (!fb_event) {
-                            ADD_FAILURE() << "Failed to parse HeadlineEconomicEvent in file: " << filepath;
+                    case FB::Message_MacroReferenceData: {
+                        auto fb_data = main->message_as_MacroReferenceData();
+                        if (!fb_data) {
+                            ADD_FAILURE() << "Failed to parse MacroReferenceData in file: " << filepath;
                             continue;
                         }
-                        HeadlineEconomicEvent event = toHeadlineEconomicEvent(fb_event);
-                        EXPECT_FALSE(event.id_bb_global.empty());
+                        MacroReferenceData data = toMacroReferenceData(fb_data);
+                        EXPECT_FALSE(data.id_bb_global.empty());
+                        EXPECT_EQ(data.id_bb_global, "BBG002SBJ964");
+                        EXPECT_EQ(data.parsekyable_des, "CATBTOTB Index");
+                        EXPECT_EQ(data.indx_freq, "Monthly");
+                        EXPECT_EQ(data.country_iso, "CA");
+                        macro_reference_data_count++;
                         break;
                     }
-                    case FB::Message_HeadlineCalendarEvent: {
-                        auto fb_event = main->message_as_HeadlineCalendarEvent();
+                    case FB::Message_MacroHeadlineEvent: {
+                        auto fb_event = main->message_as_MacroHeadlineEvent();
                         if (!fb_event) {
-                            ADD_FAILURE() << "Failed to parse HeadlineCalendarEvent in file: " + filepath;
+                            ADD_FAILURE() << "Failed to parse MacroHeadlineEvent in file: " << filepath;
                             continue;
                         }
-                        HeadlineCalendarEvent event = toHeadlineCalendarEvent(fb_event);
-                        EXPECT_FALSE(event.id_bb_global.empty());
+                        MacroHeadlineEvent event = toMacroHeadlineEvent(fb_event);
+                        EXPECT_EQ(event.event_id, 2167802);
+                        EXPECT_EQ(event.observation_period, "Aug");
+                        
+                        // Check if it's ACTUAL or REVISION based on event_type
+                        if (event.event_type == EventType::Actual) {
+                            EXPECT_EQ(event.value.value, -6.32);
+                            EXPECT_TRUE(std::isnan(event.prior_value.value));
+                        } else if (event.event_type == EventType::Revision) {
+                            EXPECT_EQ(event.value.value, -3.82);
+                            EXPECT_EQ(event.prior_event_id, 2167801);
+                            EXPECT_EQ(event.prior_observation_period, "Jul");
+                        }
+                        
+                        macro_headline_event_count++;
+                        break;
+                    }
+                    case FB::Message_MacroCalendarEvent: {
+                        auto fb_event = main->message_as_MacroCalendarEvent();
+                        if (!fb_event) {
+                            ADD_FAILURE() << "Failed to parse MacroCalendarEvent in file: " << filepath;
+                            continue;
+                        }
+                        MacroCalendarEvent event = toMacroCalendarEvent(fb_event);
+                        EXPECT_TRUE(event.event_id == 2167804 || 
+                                   event.event_id == 2167805 || 
+                                   event.event_id == 2167806);
+                        EXPECT_EQ(event.event_type, EventType::Calendar);
+                        EXPECT_EQ(event.release_status, ReleaseStatus::Scheduled);
+                        macro_calendar_event_count++;
                         break;
                     }
                     case FB::Message_LogMessage: {
@@ -85,6 +123,7 @@ TEST(FBBinDeserializeTest, DeserializeAndIdentifyAllFiles) {
                         }
                         LogMessage log_message = toLogMessage(fb_message);
                         EXPECT_FALSE(log_message.message.empty());
+                        log_message_count++;
                         break;
                     }
                     default:
@@ -97,6 +136,12 @@ TEST(FBBinDeserializeTest, DeserializeAndIdentifyAllFiles) {
             }
         }
     }
+    
+    // Verify we loaded the expected number of each type based on data/README.md
+    EXPECT_EQ(log_message_count, 12) << "Expected 12 LogMessage files";
+    EXPECT_EQ(macro_reference_data_count, 1) << "Expected 1 MacroReferenceData file (fb_000008.bin)";
+    EXPECT_EQ(macro_headline_event_count, 2) << "Expected 2 MacroHeadlineEvent files (fb_000012.bin, fb_000013.bin)";
+    EXPECT_EQ(macro_calendar_event_count, 3) << "Expected 3 MacroCalendarEvent files (fb_000009-000011.bin)";
 }
 
 int main(int argc, char** argv) {

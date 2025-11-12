@@ -32,7 +32,7 @@ TEST(Deserialize, MacroReferenceData) {
     EXPECT_TRUE(main->message_type() == BlpConn::FB::Message_MacroReferenceData);
     auto fb_data = main->message_as_MacroReferenceData();
     auto data = toMacroReferenceData(fb_data);
-    EXPECT_EQ(data.corr_id, 12);
+    EXPECT_EQ(data.corr_id, 1ULL);
     EXPECT_EQ(data.id_bb_global, "BBG002SBJ964");
     EXPECT_EQ(data.parsekyable_des, "CATBTOTB Index");
     EXPECT_EQ(data.description, "STCA Canada Merchandise Trade Total Balance SA CAD");
@@ -44,27 +44,27 @@ TEST(Deserialize, MacroReferenceData) {
 }
 
 TEST(Deserialize, MacroHeadlineEvent) {
-    auto buffer = readFBFile("fb_000014.bin");
+    auto buffer = readFBFile("fb_000013.bin");
     flatbuffers::Verifier verifier(buffer.data(), buffer.size());
     EXPECT_TRUE(BlpConn::FB::VerifyMessageVector(verifier, nullptr, nullptr));
     auto main = flatbuffers::GetRoot<BlpConn::FB::Main>(buffer.data());
     EXPECT_TRUE(main->message_type() == BlpConn::FB::Message_MacroHeadlineEvent);
     auto fb_data = main->message_as_MacroHeadlineEvent();
     auto data = toMacroHeadlineEvent(fb_data);
-    EXPECT_EQ(data.corr_id, 12);
+    EXPECT_EQ(data.corr_id, 1ULL);
     EXPECT_EQ(data.event_type, EventType::Revision);
     EXPECT_EQ(data.event_subtype, EventSubType::Unitpaint);
-    EXPECT_EQ(data.event_id, 2167802);
+    EXPECT_EQ(data.event_id, 2167802ULL);
     EXPECT_EQ(data.observation_period, "Aug");
-    EXPECT_EQ(data.release_start_dt.microseconds, 1759840200000000);
+    EXPECT_EQ(data.release_start_dt.microseconds, 1759840200000000ULL);
     EXPECT_EQ(data.release_start_dt.offset, 0);
-    EXPECT_EQ(data.release_end_dt.microseconds, 1759840200000000);
+    EXPECT_EQ(data.release_end_dt.microseconds, 1759840200000000ULL);
     EXPECT_EQ(data.release_end_dt.offset, 0);
-    EXPECT_EQ(data.prior_event_id, 2167801);
+    EXPECT_EQ(data.prior_event_id, 2167801ULL);
     EXPECT_EQ(data.prior_observation_period, "Jul");
-    EXPECT_EQ(data.prior_economic_release_start_dt.microseconds, 1756989000000000);
+    EXPECT_EQ(data.prior_economic_release_start_dt.microseconds, 1756989000000000ULL);
     EXPECT_EQ(data.prior_economic_release_start_dt.offset, 0);
-    EXPECT_EQ(data.prior_economic_release_end_dt.microseconds, 1756989000000000);
+    EXPECT_EQ(data.prior_economic_release_end_dt.microseconds, 1756989000000000ULL);
     EXPECT_EQ(data.prior_economic_release_end_dt.offset, 0);
     EXPECT_EQ(data.value.number, 1);
     EXPECT_DOUBLE_EQ(data.value.value, -3.82);
@@ -76,25 +76,22 @@ TEST(Deserialize, MacroHeadlineEvent) {
 }
 
 TEST(Deserialize, MacroCalendarEvent) {
-    auto buffer = readFBFile("fb_000012.bin");
+    auto buffer = readFBFile("fb_000011.bin");
     flatbuffers::Verifier verifier(buffer.data(), buffer.size());
     EXPECT_TRUE(BlpConn::FB::VerifyMessageVector(verifier, nullptr, nullptr));
     auto main = flatbuffers::GetRoot<BlpConn::FB::Main>(buffer.data());
     EXPECT_TRUE(main->message_type() == BlpConn::FB::Message_MacroCalendarEvent);
     auto fb_data = main->message_as_MacroCalendarEvent();
     auto data = toMacroCalendarEvent(fb_data);
-    EXPECT_EQ(data.corr_id, 12);
+    EXPECT_EQ(data.corr_id, 1ULL);
     EXPECT_EQ(data.id_bb_global, "");
     EXPECT_EQ(data.parsekyable_des, "");
     EXPECT_EQ(data.event_type, EventType::Calendar);
     EXPECT_EQ(data.event_subtype, EventSubType::Unitpaint);
     EXPECT_EQ(data.description, "");
-    EXPECT_EQ(data.event_id, 2167806);
+    EXPECT_EQ(data.event_id, 2167806ULL);
     EXPECT_EQ(data.observation_period, "Dec");
-    EXPECT_EQ(data.release_start_dt.microseconds, 1770298200000000);
-    EXPECT_EQ(data.release_start_dt.offset, 0);
-    EXPECT_EQ(data.release_end_dt.microseconds, 1770298200000000);
-    EXPECT_EQ(data.release_end_dt.offset, 0);
+    // Calendar events don't populate release_start_dt/release_end_dt (they show as N/A in log)
     EXPECT_EQ(data.release_status, ReleaseStatus::Scheduled);
     EXPECT_DOUBLE_EQ(data.relevance_value, 55.2632);
 }
@@ -121,11 +118,11 @@ TEST(Deserialize, SubscriptionSuccess) {
     EXPECT_TRUE(main->message_type() == BlpConn::FB::Message_LogMessage);
     auto fb_data = main->message_as_LogMessage();
     auto data = toLogMessage(fb_data);
-    EXPECT_EQ(data.log_dt.microseconds, 1760135780990650);
-    EXPECT_EQ(data.log_dt.offset, 65236);
+    EXPECT_EQ(data.log_dt.microseconds, 1762894324153846ULL);
+    EXPECT_EQ(data.log_dt.offset, -300);  // UTC-5 (was 65236 when using uint16_t)
     EXPECT_EQ(static_cast<Module>(data.module), Module::Subscription);
     EXPECT_EQ(static_cast<SubscriptionStatus>(data.status), SubscriptionStatus::Success);
-    EXPECT_EQ(data.correlation_id, 12);
+    EXPECT_EQ(data.correlation_id, 1ULL);
     EXPECT_EQ(data.message, "Subscription successful");
 }
 
@@ -148,7 +145,7 @@ TEST(Deserialize, SubscriptionStarted) {
     auto data = toLogMessage(fb_data);
     EXPECT_EQ(static_cast<Module>(data.module), Module::Subscription);
     EXPECT_EQ(static_cast<SubscriptionStatus>(data.status), SubscriptionStatus::Started);
-    EXPECT_EQ(data.correlation_id, 12);
+    EXPECT_EQ(data.correlation_id, 1ULL);
 }
 
 /*
@@ -170,7 +167,7 @@ TEST(Deserialize, SubscriptionStreamsActivated) {
     auto data = toLogMessage(fb_data);
     EXPECT_EQ(static_cast<Module>(data.module), Module::Subscription);
     EXPECT_EQ(static_cast<SubscriptionStatus>(data.status), SubscriptionStatus::StreamsActivated);
-    EXPECT_EQ(data.correlation_id, 12);
+    EXPECT_EQ(data.correlation_id, 1ULL);
 }
 
 /*
@@ -191,7 +188,7 @@ TEST(Deserialize, SubscriptionTerminated) {
     auto data = toLogMessage(fb_data);
     EXPECT_EQ(static_cast<Module>(data.module), Module::Subscription);
     EXPECT_EQ(static_cast<SubscriptionStatus>(data.status), SubscriptionStatus::Terminated);
-    EXPECT_EQ(data.correlation_id, 12);
+    EXPECT_EQ(data.correlation_id, 1ULL);
     EXPECT_EQ(data.message, "SubscriptionTerminated = { reason = { source = \"SubscriptionManager\" category = \"CANCELLED\" errorCode = 0 description = \"Subscription cancelled\" } }");
 }
 

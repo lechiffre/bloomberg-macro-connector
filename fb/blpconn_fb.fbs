@@ -136,6 +136,7 @@ table MacroHeadlineEvent {
     prior_economic_release_start_dt: DateTime;
     prior_economic_release_end_dt: DateTime;
     value: Value;
+    prior_value: Value;
 }
 
 table MacroCalendarEvent {

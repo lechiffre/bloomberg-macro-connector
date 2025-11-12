@@ -90,11 +90,11 @@ type DateTimeType struct {
 }
 
 type LogMessageType struct {
-	LogDT         time.Time
-	Module        ModuleType
-	Status        uint8
-	CorrelationID uint64
-	Message       string
+	LogDT         time.Time `json:"log_dt"`
+	Module        ModuleType `json:"module"`
+	Status        uint8 `json:"status"`
+	CorrelationID uint64 `json:"correlation_id"`
+	Message       string `json:"message"`
 }
 
 type ValueType struct {
@@ -144,6 +144,7 @@ type MacroHeadlineEvent struct {
 	PriorEconomicReleaseStartDT time.Time		`json:"prior_economic_release_start_dt"`
 	PriorEconomicReleaseEndDT   time.Time		`json:"prior_economic_release_end_dt"`
 	Value                       ValueType		`json:"value"`
+	PriorValue                  ValueType		`json:"prior_value"`
 }
 
 type MacroCalendarEvent struct {

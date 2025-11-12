@@ -80,6 +80,13 @@ flatbuffers::FlatBufferBuilder buildBufferLogMessage(LogMessage &log_message);
 DateTimeType currentTime() noexcept;
 std::string currentTimeStamp();
 
+// DateTime formatting functions
+bool isValidDateTime(uint64_t microseconds);
+std::string formatDateTimeUTC(const DateTimeType& dt);
+std::string formatDateTime(const DateTimeType& dt);
+std::string formatDateTimeISO(const DateTimeType& dt);
+std::string formatDateTime(uint64_t microseconds, int16_t offset);
+
 } // namespace BlpConn
 
 #endif // _BLPCONN_DESERIALIZE_H_

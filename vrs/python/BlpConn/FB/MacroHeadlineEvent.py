@@ -128,8 +128,19 @@ class MacroHeadlineEvent(object):
             return obj
         return None
 
+    # MacroHeadlineEvent
+    def PriorValue(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(28))
+        if o != 0:
+            x = self._tab.Indirect(o + self._tab.Pos)
+            from BlpConn.FB.Value import Value
+            obj = Value()
+            obj.Init(self._tab.Bytes, x)
+            return obj
+        return None
+
 def MacroHeadlineEventStart(builder):
-    builder.StartObject(12)
+    builder.StartObject(13)
 
 def Start(builder):
     MacroHeadlineEventStart(builder)
@@ -205,6 +216,12 @@ def MacroHeadlineEventAddValue(builder, value):
 
 def AddValue(builder, value):
     MacroHeadlineEventAddValue(builder, value)
+
+def MacroHeadlineEventAddPriorValue(builder, priorValue):
+    builder.PrependUOffsetTRelativeSlot(12, flatbuffers.number_types.UOffsetTFlags.py_type(priorValue), 0)
+
+def AddPriorValue(builder, priorValue):
+    MacroHeadlineEventAddPriorValue(builder, priorValue)
 
 def MacroHeadlineEventEnd(builder):
     return builder.EndObject()

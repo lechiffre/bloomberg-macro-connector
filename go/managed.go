@@ -124,22 +124,22 @@ func (ctx ManagedContext) GetSubscribedTopics(topicType BlpConnTopicType) []stri
 }
 
 // Specializated subscription function for tickers
-func (ctx ManagedContext) SubscribeTicker(ticker string) (uint64, error) {
+func (ctx *ManagedContext) SubscribeTicker(ticker string) (uint64, error) {
 	return ctx.CreateSubscription(TopicType_Ticker, ticker)
 }
 
 // Specializated subscription function for Bbgids
-func (ctx ManagedContext) SubscribeBbgid(bbgid string) (uint64, error) {
+func (ctx *ManagedContext) SubscribeBbgid(bbgid string) (uint64, error) {
 	return ctx.CreateSubscription(TopicType_Bbgid, bbgid)
 }
 
 // Specializated subscription remove function for tickers
-func (ctx ManagedContext) RemoveTicker(ticker string) error {
+func (ctx *ManagedContext) RemoveTicker(ticker string) error {
 	return ctx.RemoveSubscription(TopicType_Ticker, ticker)
 }
 
 // Specializated subscription remove function for Bbgids
-func (ctx ManagedContext) RemoveBbgid(bbgid string) error {
+func (ctx *ManagedContext) RemoveBbgid(bbgid string) error {
 	return ctx.RemoveSubscription(TopicType_Bbgid, bbgid)
 }
 

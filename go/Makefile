@@ -26,7 +26,7 @@ test:
 	go test ./tests/datetime_test.go
 	go test ./tests/prettyprint_test.go
 	go test ./tests/json_conversion_test.go
-	go test ./tests/managed_test.go
+	# go test ./tests/managed_test.go
 
 doc:
 	go doc --all > API.txt

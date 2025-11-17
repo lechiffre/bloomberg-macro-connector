@@ -55,8 +55,8 @@
 
 - The methods FillHeadlineEvent and FillCalendarEvent where modified to
   be public (the first letter is capitalized).
-
-
----
-
 - offset type changed to int16_t
+
+0.3.2 - 2025-11-17:
+
+- fixed issue with correlation id autoincrement
